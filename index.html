@@ -3,1583 +3,1524 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lalithaa Jewels — Agency Management System</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>Lalithaa Jewels — AMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --gold: #C9962A;
-    --gold-light: #E8C96A;
-    --gold-pale: #F5E9C8;
-    --onyx: #0E0E0E;
-    --charcoal: #1C1C1E;
-    --graphite: #2C2C2E;
-    --mist: #F0EDE8;
-    --cream: #FAF8F4;
-    --text: #1C1C1E;
-    --text-muted: #6B6B6B;
-    --border: rgba(201,150,42,0.2);
-    --card: #FFFFFF;
-    --danger: #C0392B;
-    --success: #1A7A4A;
-    --info: #1A5276;
-    --sidebar-w: 240px;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--cream);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    overflow: hidden;
-  }
-
-  /* ── SIDEBAR ── */
-  .sidebar {
-    width: var(--sidebar-w);
-    background: var(--onyx);
-    display: flex;
-    flex-direction: column;
-    flex-shrink: 0;
-    height: 100vh;
-    position: fixed;
-    left: 0; top: 0;
-    z-index: 100;
-    overflow-y: auto;
-  }
-
-  .sidebar-logo {
-    padding: 28px 20px 20px;
-    border-bottom: 1px solid rgba(201,150,42,0.25);
-  }
-
-  .sidebar-logo .brand {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--gold-light);
-    letter-spacing: 1px;
-    line-height: 1.2;
-  }
-
-  .sidebar-logo .subtitle {
-    font-size: 9px;
-    color: rgba(255,255,255,0.35);
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    margin-top: 4px;
-  }
-
-  .nav-section {
-    padding: 18px 12px 6px;
-  }
-
-  .nav-label {
-    font-size: 9px;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.25);
-    padding: 0 8px;
-    margin-bottom: 6px;
-  }
-
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 9px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    color: rgba(255,255,255,0.55);
-    font-size: 13px;
-    font-weight: 400;
-    transition: all 0.18s;
-    margin-bottom: 2px;
-  }
-
-  .nav-item:hover { background: rgba(201,150,42,0.12); color: var(--gold-light); }
-
-  .nav-item.active {
-    background: linear-gradient(135deg, rgba(201,150,42,0.25), rgba(201,150,42,0.1));
-    color: var(--gold-light);
-    font-weight: 500;
-    border-left: 2px solid var(--gold);
-  }
-
-  .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
-
-  .sidebar-footer {
-    margin-top: auto;
-    padding: 16px;
-    border-top: 1px solid rgba(255,255,255,0.07);
-  }
-
-  .user-chip {
-    display: flex; align-items: center; gap: 10px;
-    padding: 8px;
-    border-radius: 8px;
-    background: rgba(255,255,255,0.05);
-  }
-
-  .user-avatar {
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--gold), #8B6914);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 600; color: white;
-  }
-
-  .user-info .name { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.8); }
-  .user-info .role { font-size: 10px; color: rgba(255,255,255,0.35); }
-
-  /* ── MAIN ── */
-  .main {
-    margin-left: var(--sidebar-w);
-    flex: 1;
-    height: 100vh;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .topbar {
-    background: white;
-    border-bottom: 1px solid rgba(0,0,0,0.07);
-    padding: 14px 28px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky; top: 0; z-index: 50;
-  }
-
-  .topbar-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 22px;
-    font-weight: 600;
-    color: var(--onyx);
-    letter-spacing: 0.3px;
-  }
-
-  .topbar-right {
-    display: flex; align-items: center; gap: 14px;
-  }
-
-  .topbar-date {
-    font-size: 12px; color: var(--text-muted);
-  }
-
-  .btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px; font-weight: 500;
-    cursor: pointer;
-    border: none;
-    transition: all 0.18s;
-  }
-
-  .btn-gold {
-    background: linear-gradient(135deg, var(--gold), #A07820);
-    color: white;
-    box-shadow: 0 2px 8px rgba(201,150,42,0.35);
-  }
-
-  .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(201,150,42,0.45); }
-
-  .btn-outline {
-    background: white; color: var(--gold);
-    border: 1.5px solid var(--gold);
-  }
-
-  .btn-outline:hover { background: var(--gold-pale); }
-
-  .btn-sm { padding: 6px 12px; font-size: 12px; }
-
-  /* ── PAGE CONTENT ── */
-  .page { display: none; padding: 28px; }
-  .page.active { display: block; }
-
-  /* ── KPI CARDS ── */
-  .kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-
-  .kpi-card {
-    background: white;
-    border-radius: 14px;
-    padding: 20px;
-    border: 1px solid rgba(0,0,0,0.05);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .kpi-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--gold), var(--gold-light));
-  }
-
-  .kpi-label { font-size: 11px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
-  .kpi-value { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 600; color: var(--onyx); line-height: 1; }
-  .kpi-sub { font-size: 11px; color: var(--success); margin-top: 6px; }
-  .kpi-sub.down { color: var(--danger); }
-  .kpi-icon { position: absolute; right: 16px; top: 16px; font-size: 28px; opacity: 0.12; }
-
-  /* ── SECTION CARD ── */
-  .card {
-    background: white;
-    border-radius: 14px;
-    border: 1px solid rgba(0,0,0,0.05);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    overflow: hidden;
-    margin-bottom: 20px;
-  }
-
-  .card-header {
-    padding: 16px 20px;
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .card-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 17px;
-    font-weight: 600;
-    color: var(--onyx);
-  }
-
-  .card-body { padding: 20px; }
-
-  /* ── TABLE ── */
-  .data-table { width: 100%; border-collapse: collapse; }
-  .data-table th {
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    padding: 10px 14px;
-    text-align: left;
-    border-bottom: 1px solid rgba(0,0,0,0.06);
-    font-weight: 500;
-    background: rgba(245,233,200,0.3);
-  }
-
-  .data-table td {
-    padding: 11px 14px;
-    font-size: 13px;
-    border-bottom: 1px solid rgba(0,0,0,0.04);
-    vertical-align: middle;
-  }
-
-  .data-table tr:last-child td { border-bottom: none; }
-  .data-table tr:hover td { background: rgba(245,233,200,0.2); }
-
-  .badge {
-    display: inline-flex; align-items: center;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 500;
-  }
-
-  .badge-green { background: #E8F5EE; color: var(--success); }
-  .badge-gold { background: var(--gold-pale); color: #7A5A10; }
-  .badge-blue { background: #E8F0FA; color: var(--info); }
-  .badge-red { background: #FDECEA; color: var(--danger); }
-  .badge-grey { background: #F0F0F0; color: #666; }
-
-  /* ── FORM ── */
-  .form-grid { display: grid; gap: 14px; }
-  .form-grid-2 { grid-template-columns: 1fr 1fr; }
-  .form-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
-
-  .field { display: flex; flex-direction: column; gap: 5px; }
-  .field label { font-size: 11px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; }
-
-  .field input, .field select, .field textarea {
-    padding: 9px 12px;
-    border: 1.5px solid rgba(0,0,0,0.1);
-    border-radius: 8px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    color: var(--text);
-    background: white;
-    outline: none;
-    transition: border-color 0.18s;
-  }
-
-  .field input:focus, .field select:focus, .field textarea:focus {
-    border-color: var(--gold);
-    box-shadow: 0 0 0 3px rgba(201,150,42,0.1);
-  }
-
-  .field textarea { resize: vertical; min-height: 80px; }
-
-  .section-divider {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--gold);
-    padding: 6px 0 10px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 16px;
-    letter-spacing: 0.5px;
-  }
-
-  /* ── FIELDS REFERENCE ── */
-  .fields-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 16px;
-  }
-
-  .fields-module {
-    background: white;
-    border-radius: 12px;
-    border: 1px solid rgba(0,0,0,0.05);
-    overflow: hidden;
-  }
-
-  .fields-module-header {
-    padding: 12px 16px;
-    background: linear-gradient(135deg, var(--onyx), var(--graphite));
-    color: var(--gold-light);
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .field-item {
-    padding: 8px 16px;
-    border-bottom: 1px solid rgba(0,0,0,0.04);
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    font-size: 12px;
-  }
-
-  .field-item:last-child { border-bottom: none; }
-  .field-name { font-weight: 500; color: var(--text); min-width: 130px; flex-shrink: 0; }
-  .field-desc { color: var(--text-muted); font-size: 11px; }
-  .field-req { color: var(--gold); font-size: 10px; }
-
-  /* ── PROGRESS BAR ── */
-  .progress-bar {
-    height: 6px;
-    background: rgba(0,0,0,0.06);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    border-radius: 4px;
-    background: linear-gradient(90deg, var(--gold), var(--gold-light));
-    transition: width 0.5s ease;
-  }
-
-  /* ── STATS ROW ── */
-  .stats-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 20px;
-  }
-
-  /* ── ACTIVITY FEED ── */
-  .activity-item {
-    display: flex;
-    gap: 12px;
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(0,0,0,0.04);
-  }
-
-  .activity-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--gold);
-    margin-top: 5px;
-    flex-shrink: 0;
-  }
-
-  .activity-text { font-size: 13px; color: var(--text); }
-  .activity-time { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-
-  /* ── TAB SYSTEM ── */
-  .tabs { display: flex; gap: 4px; margin-bottom: 20px; padding: 4px; background: rgba(0,0,0,0.04); border-radius: 10px; width: fit-content; }
-
-  .tab {
-    padding: 7px 16px;
-    border-radius: 7px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    color: var(--text-muted);
-    transition: all 0.15s;
-  }
-
-  .tab.active { background: white; color: var(--gold); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-
-  /* ── SEARCH BAR ── */
-  .search-bar {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 9px 14px;
-    background: white;
-    border: 1.5px solid rgba(0,0,0,0.1);
-    border-radius: 8px;
-    width: 260px;
-  }
-
-  .search-bar input {
-    border: none; outline: none;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    color: var(--text);
-    width: 100%;
-  }
-
-  .modal-overlay {
-    display: none;
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 200;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .modal-overlay.open { display: flex; }
-
-  .modal {
-    background: white;
-    border-radius: 16px;
-    width: 680px;
-    max-width: 95vw;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-  }
-
-  .modal-header {
-    padding: 20px 24px;
-    border-bottom: 1px solid rgba(0,0,0,0.07);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky; top: 0; background: white; z-index: 1;
-  }
-
-  .modal-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 20px; font-weight: 600; color: var(--onyx);
-  }
-
-  .modal-close {
-    width: 30px; height: 30px;
-    border-radius: 50%;
-    border: none;
-    background: rgba(0,0,0,0.06);
-    cursor: pointer;
-    font-size: 16px;
-    display: flex; align-items: center; justify-content: center;
-  }
-
-  .modal-body { padding: 24px; }
-  .modal-footer { padding: 16px 24px; border-top: 1px solid rgba(0,0,0,0.07); display: flex; gap: 10px; justify-content: flex-end; }
-
-  .ornament {
-    font-family: 'Cormorant Garamond', serif;
-    color: var(--gold-light);
-    opacity: 0.4;
-    font-size: 14px;
-    letter-spacing: 4px;
-  }
-
-  @media (max-width: 1100px) {
-    .kpi-grid { grid-template-columns: 1fr 1fr; }
-    .fields-grid { grid-template-columns: 1fr 1fr; }
-    .form-grid-3 { grid-template-columns: 1fr 1fr; }
-  }
+:root{
+  --gold:#C9962A;--gold-l:#E8C96A;--gold-pale:#F5E9C8;
+  --onyx:#0E0E0E;--graphite:#2C2C2E;--cream:#FAF8F4;
+  --text:#1C1C1E;--muted:#6B6B6B;--border:rgba(201,150,42,0.18);
+  --danger:#C0392B;--success:#1A7A4A;--info:#1A5276;--warn:#B7770D;
+  --sw:238px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);display:flex;overflow:hidden;height:100vh;}
+
+/* SIDEBAR */
+.sb{width:var(--sw);background:var(--onyx);display:flex;flex-direction:column;height:100vh;position:fixed;left:0;top:0;z-index:100;overflow-y:auto;flex-shrink:0;}
+.sb-logo{padding:22px 18px 16px;border-bottom:1px solid rgba(201,150,42,.22);}
+.sb-brand{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--gold-l);letter-spacing:.8px;}
+.sb-sub{font-size:9px;color:rgba(255,255,255,.28);letter-spacing:3px;text-transform:uppercase;margin-top:3px;}
+.sb-section{padding:14px 10px 4px;}
+.sb-lbl{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.2);padding:0 8px;margin-bottom:5px;}
+.nav{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:7px;cursor:pointer;color:rgba(255,255,255,.48);font-size:13px;transition:all .15s;margin-bottom:2px;border-left:2px solid transparent;}
+.nav:hover{background:rgba(201,150,42,.1);color:var(--gold-l);}
+.nav.on{background:linear-gradient(135deg,rgba(201,150,42,.2),rgba(201,150,42,.07));color:var(--gold-l);font-weight:500;border-left:2px solid var(--gold);}
+.nav .ic{font-size:14px;width:18px;text-align:center;}
+.sb-foot{margin-top:auto;padding:12px;border-top:1px solid rgba(255,255,255,.06);}
+.u-chip{display:flex;align-items:center;gap:9px;padding:7px;border-radius:7px;background:rgba(255,255,255,.04);}
+.u-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#8B6914);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;flex-shrink:0;}
+.u-name{font-size:12px;font-weight:500;color:rgba(255,255,255,.75);}
+.u-role{font-size:10px;color:rgba(255,255,255,.3);}
+
+/* MAIN */
+.main{margin-left:var(--sw);flex:1;height:100vh;overflow-y:auto;display:flex;flex-direction:column;}
+.topbar{background:#fff;border-bottom:1px solid rgba(0,0,0,.07);padding:11px 22px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.tb-title{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;color:var(--onyx);}
+.tb-right{display:flex;align-items:center;gap:10px;}
+.tb-date{font-size:12px;color:var(--muted);}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#A07820);color:#fff;box-shadow:0 2px 7px rgba(201,150,42,.3);}
+.btn-gold:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(201,150,42,.4);}
+.btn-outline{background:#fff;color:var(--gold);border:1.5px solid var(--gold);}
+.btn-outline:hover{background:var(--gold-pale);}
+.btn-danger{background:#FDECEA;color:var(--danger);border:1.5px solid #F5C6C2;}
+.btn-danger:hover{background:#F5C6C2;}
+.btn-edit{background:#E8F0FA;color:var(--info);border:1.5px solid #C0D4F0;}
+.btn-edit:hover{background:#C0D4F0;}
+.btn-success{background:#E8F5EE;color:var(--success);border:1.5px solid #A8D5BC;}
+.btn-success:hover{background:#A8D5BC;}
+.btn-sm{padding:5px 10px;font-size:11px;}
+.btn-xs{padding:3px 8px;font-size:11px;}
+
+/* PAGES */
+.pg{display:none;padding:22px;}
+.pg.on{display:block;}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:18px;}
+.kpi{background:#fff;border-radius:12px;padding:17px;border:1px solid rgba(0,0,0,.05);box-shadow:0 2px 6px rgba(0,0,0,.04);position:relative;overflow:hidden;}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-l));}
+.kpi-lbl{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;}
+.kpi-val{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--onyx);line-height:1;}
+.kpi-sub{font-size:11px;color:var(--success);margin-top:4px;}
+.kpi-sub.dn{color:var(--danger);}
+.kpi-ico{position:absolute;right:13px;top:13px;font-size:25px;opacity:.1;}
+
+/* CARDS */
+.card{background:#fff;border-radius:12px;border:1px solid rgba(0,0,0,.05);box-shadow:0 2px 6px rgba(0,0,0,.04);overflow:hidden;margin-bottom:16px;}
+.ch{padding:13px 17px;border-bottom:1px solid rgba(0,0,0,.05);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.ct{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--onyx);}
+.cb{padding:17px;}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;}
+.tbl th{font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);padding:8px 11px;text-align:left;border-bottom:1px solid rgba(0,0,0,.06);font-weight:500;background:rgba(245,233,200,.3);}
+.tbl td{padding:9px 11px;font-size:12.5px;border-bottom:1px solid rgba(0,0,0,.04);vertical-align:middle;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:rgba(245,233,200,.15);}
+
+/* BADGES */
+.b{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:500;}
+.b-g{background:#E8F5EE;color:var(--success);}
+.b-au{background:var(--gold-pale);color:#7A5A10;}
+.b-b{background:#E8F0FA;color:var(--info);}
+.b-r{background:#FDECEA;color:var(--danger);}
+.b-gr{background:#F0F0F0;color:#666;}
+.b-o{background:#FEF3CD;color:var(--warn);}
+
+/* FORMS */
+.fg{display:grid;gap:11px;}
+.fg2{grid-template-columns:1fr 1fr;}
+.fg3{grid-template-columns:1fr 1fr 1fr;}
+.fg4{grid-template-columns:1fr 1fr 1fr 1fr;}
+.fld{display:flex;flex-direction:column;gap:4px;}
+.fld label{font-size:10px;font-weight:500;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;}
+.fld input,.fld select,.fld textarea{padding:8px 10px;border:1.5px solid rgba(0,0,0,.1);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:#fff;outline:none;transition:border-color .15s;}
+.fld input:focus,.fld select:focus,.fld textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,150,42,.1);}
+.fld textarea{resize:vertical;min-height:65px;}
+.sdiv{font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:600;color:var(--gold);padding:4px 0 8px;border-bottom:1px solid var(--border);margin-bottom:12px;letter-spacing:.3px;}
+
+/* MODALS */
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:200;align-items:center;justify-content:center;}
+.mo.op{display:flex;}
+.modal{background:#fff;border-radius:14px;width:720px;max-width:96vw;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25);}
+.modal.wide{width:860px;}
+.mh{padding:16px 20px;border-bottom:1px solid rgba(0,0,0,.07);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:1;}
+.mt{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;color:var(--onyx);}
+.mc{width:27px;height:27px;border-radius:50%;border:none;background:rgba(0,0,0,.06);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;}
+.mb{padding:20px;}
+.mf{padding:13px 20px;border-top:1px solid rgba(0,0,0,.07);display:flex;gap:8px;justify-content:flex-end;}
+
+/* SEARCH ROW */
+.sr{display:flex;align-items:center;gap:9px;margin-bottom:14px;flex-wrap:wrap;}
+.sbox{display:flex;align-items:center;gap:7px;padding:7px 11px;background:#fff;border:1.5px solid rgba(0,0,0,.1);border-radius:7px;flex:1;min-width:180px;}
+.sbox input{border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);width:100%;}
+
+/* TABS */
+.tabs{display:flex;gap:3px;padding:3px;background:rgba(0,0,0,.04);border-radius:9px;width:fit-content;}
+.tab{padding:5px 13px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;color:var(--muted);transition:all .13s;}
+.tab.on{background:#fff;color:var(--gold);box-shadow:0 1px 4px rgba(0,0,0,.1);}
+
+/* ACTION BUTTONS */
+.abtn{display:flex;gap:4px;flex-wrap:wrap;}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:38px 20px;color:var(--muted);}
+.empty .eico{font-size:38px;margin-bottom:8px;opacity:.3;}
+.empty p{font-size:13px;}
+
+/* CONFIRM */
+.conf{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;align-items:center;justify-content:center;}
+.conf.op{display:flex;}
+.conf-box{background:#fff;border-radius:13px;padding:28px;width:350px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.3);}
+.conf-box h3{font-family:'Cormorant Garamond',serif;font-size:21px;margin-bottom:7px;color:var(--onyx);}
+.conf-box p{font-size:13px;color:var(--muted);margin-bottom:18px;}
+.conf-btns{display:flex;gap:9px;justify-content:center;}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--onyx);color:#fff;padding:11px 18px;border-radius:9px;font-size:13px;z-index:400;transform:translateY(80px);opacity:0;transition:all .3s;border-left:3px solid var(--gold);max-width:320px;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* PROGRESS */
+.prog{height:5px;background:rgba(0,0,0,.06);border-radius:4px;overflow:hidden;margin-top:3px;}
+.prog-f{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gold),var(--gold-l));}
+
+/* PRINT */
+@media print{.sb,.topbar,.abtn,.btn,.tabs,.sr,.conf,.toast,.mo{display:none!important;} .main{margin-left:0!important;} .pg{display:block!important;} body{overflow:auto!important;}}
+
+/* DETAIL VIEW */
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.detail-item{padding:9px 12px;background:rgba(245,233,200,.2);border-radius:8px;border:1px solid var(--border);}
+.detail-lbl{font-size:10px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px;}
+.detail-val{font-size:13px;font-weight:500;color:var(--text);}
+
+/* REPAIR */
+.repair-status-Active{color:var(--info);}
+.repair-status-Completed{color:var(--success);}
+.repair-status-Delivered{color:#666;}
+
+/* STATS 2-COL */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+
+@media(max-width:1100px){
+  .kpi-grid{grid-template-columns:1fr 1fr;}
+  .fg3{grid-template-columns:1fr 1fr;}
+  .fg4{grid-template-columns:1fr 1fr;}
+  .two-col{grid-template-columns:1fr;}
+}
 </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
-  <div class="sidebar-logo">
-    <div class="brand">Lalithaa Jewels</div>
-    <div class="subtitle">Agency Management System</div>
+<!-- ══ SIDEBAR ══ -->
+<aside class="sb">
+  <div class="sb-logo">
+    <div class="sb-brand">Lalithaa Jewels</div>
+    <div class="sb-sub">Agency Management System</div>
   </div>
-
-  <div class="nav-section">
-    <div class="nav-label">Main</div>
-    <div class="nav-item active" onclick="navigate('dashboard', this)">
-      <span class="icon">◈</span> Dashboard
-    </div>
-    <div class="nav-item" onclick="navigate('customers', this)">
-      <span class="icon">◉</span> Customers
-    </div>
-    <div class="nav-item" onclick="navigate('marketing', this)">
-      <span class="icon">◇</span> Marketing
-    </div>
-    <div class="nav-item" onclick="navigate('sales', this)">
-      <span class="icon">◆</span> Sales Monitor
-    </div>
+  <div class="sb-section">
+    <div class="sb-lbl">Main</div>
+    <div class="nav on" onclick="go('dashboard',this)"><span class="ic">◈</span> Dashboard</div>
+    <div class="nav" onclick="go('customers',this)"><span class="ic">👥</span> Customers</div>
+    <div class="nav" onclick="go('sales',this)"><span class="ic">💰</span> Sales</div>
+    <div class="nav" onclick="go('marketing',this)"><span class="ic">📣</span> Marketing</div>
   </div>
-
-  <div class="nav-section">
-    <div class="nav-label">Operations</div>
-    <div class="nav-item" onclick="navigate('schemes', this)">
-      <span class="icon">◎</span> Schemes & Plans
-    </div>
-    <div class="nav-item" onclick="navigate('agents', this)">
-      <span class="icon">▣</span> Agents / Staff
-    </div>
-    <div class="nav-item" onclick="navigate('followups', this)">
-      <span class="icon">◷</span> Follow-ups
-    </div>
-    <div class="nav-item" onclick="navigate('fields', this)">
-      <span class="icon">☰</span> Field Reference
-    </div>
+  <div class="sb-section">
+    <div class="sb-lbl">Operations</div>
+    <div class="nav" onclick="go('schemes',this)"><span class="ic">📋</span> Schemes & Plans</div>
+    <div class="nav" onclick="go('agents',this)"><span class="ic">👤</span> Agents & Staff</div>
+    <div class="nav" onclick="go('followups',this)"><span class="ic">📞</span> Follow-ups</div>
+    <div class="nav" onclick="go('repairs',this)"><span class="ic">🔧</span> Repairs</div>
+    <div class="nav" onclick="go('exchange',this)"><span class="ic">🔄</span> Exchange / Old Gold</div>
+    <div class="nav" onclick="go('nonconv',this)"><span class="ic">🚫</span> Non-Conversions</div>
   </div>
-
-  <div class="sidebar-footer">
-    <div class="user-chip">
-      <div class="user-avatar">SM</div>
-      <div class="user-info">
-        <div class="name">Santosh</div>
-        <div class="role">Showroom Manager</div>
-      </div>
+  <div class="sb-section">
+    <div class="sb-lbl">Reports</div>
+    <div class="nav" onclick="go('reports',this)"><span class="ic">📊</span> Reports & Export</div>
+  </div>
+  <div class="sb-foot">
+    <div class="u-chip">
+      <div class="u-av">SM</div>
+      <div><div class="u-name">Santosh</div><div class="u-role">Showroom Manager · Kakinada</div></div>
     </div>
   </div>
 </aside>
 
-<!-- MAIN AREA -->
+<!-- ══ MAIN ══ -->
 <main class="main">
-
-  <!-- TOP BAR -->
   <div class="topbar">
-    <div class="topbar-title" id="page-title">Dashboard</div>
-    <div class="topbar-right">
-      <div class="topbar-date" id="topbar-date"></div>
-      <button class="btn btn-gold" onclick="openModal('add-customer-modal')">＋ Add Customer</button>
+    <div class="tb-title" id="pg-title">Dashboard</div>
+    <div class="tb-right">
+      <div class="tb-date" id="tb-date"></div>
+      <button class="btn btn-gold" id="main-add" onclick="mainAdd()">＋ Add</button>
     </div>
   </div>
 
   <!-- ── DASHBOARD ── -->
-  <div id="page-dashboard" class="page active">
+  <div id="pg-dashboard" class="pg on">
     <div class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-icon">👥</div>
-        <div class="kpi-label">Total Customers</div>
-        <div class="kpi-value">1,284</div>
-        <div class="kpi-sub">↑ 38 this month</div>
+      <div class="kpi"><div class="kpi-ico">👥</div><div class="kpi-lbl">Total Customers</div><div class="kpi-val" id="k-cust">0</div><div class="kpi-sub" id="k-cust-s">Registered</div></div>
+      <div class="kpi"><div class="kpi-ico">💰</div><div class="kpi-lbl">Total Sales Value</div><div class="kpi-val" id="k-sales">₹0</div><div class="kpi-sub" id="k-sales-s">All transactions</div></div>
+      <div class="kpi"><div class="kpi-ico">📋</div><div class="kpi-lbl">Active Schemes</div><div class="kpi-val" id="k-schemes">0</div><div class="kpi-sub" id="k-schemes-s">Enrolled members</div></div>
+      <div class="kpi"><div class="kpi-ico">📞</div><div class="kpi-lbl">Pending Follow-ups</div><div class="kpi-val" id="k-fu">0</div><div class="kpi-sub dn" id="k-fu-s">Action needed</div></div>
+    </div>
+    <div class="two-col">
+      <div class="kpi" style="grid-column:unset"><div class="kpi-ico">🔧</div><div class="kpi-lbl">Pending Repairs</div><div class="kpi-val" id="k-rep">0</div><div class="kpi-sub">In workshop</div></div>
+      <div class="kpi" style="grid-column:unset"><div class="kpi-ico">📣</div><div class="kpi-lbl">Active Campaigns</div><div class="kpi-val" id="k-camp">0</div><div class="kpi-sub">Marketing activities</div></div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="ch"><div class="ct">Recent Customers</div><button class="btn btn-outline btn-sm" onclick="go('customers',document.querySelectorAll('.nav')[1])">View All</button></div>
+        <div id="d-cust" style="padding:0"></div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon">💰</div>
-        <div class="kpi-label">Monthly Sales</div>
-        <div class="kpi-value">₹84.6L</div>
-        <div class="kpi-sub">↑ 12% vs last month</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon">📣</div>
-        <div class="kpi-label">Active Campaigns</div>
-        <div class="kpi-value">7</div>
-        <div class="kpi-sub">↑ 2 launched this week</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon">📋</div>
-        <div class="kpi-label">Pending Follow-ups</div>
-        <div class="kpi-value">43</div>
-        <div class="kpi-sub down">↑ 8 overdue</div>
+      <div class="card">
+        <div class="ch"><div class="ct">Recent Sales</div><button class="btn btn-outline btn-sm" onclick="go('sales',document.querySelectorAll('.nav')[2])">View All</button></div>
+        <div id="d-sales" style="padding:0"></div>
       </div>
     </div>
-
-    <div class="stats-row">
+    <div class="two-col">
       <div class="card">
-        <div class="card-header">
-          <div class="card-title">Sales vs Target — June 2025</div>
-          <span class="badge badge-gold">FY 2025–26</span>
-        </div>
-        <div class="card-body">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Category</th>
-                <th>Target (₹L)</th>
-                <th>Achieved (₹L)</th>
-                <th>Progress</th>
-                <th>%</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Gold Jewellery</td>
-                <td>60.0</td>
-                <td>52.4</td>
-                <td><div class="progress-bar"><div class="progress-fill" style="width:87%"></div></div></td>
-                <td><span class="badge badge-gold">87%</span></td>
-              </tr>
-              <tr>
-                <td>Diamond Jewellery</td>
-                <td>20.0</td>
-                <td>19.1</td>
-                <td><div class="progress-bar"><div class="progress-fill" style="width:95%"></div></div></td>
-                <td><span class="badge badge-green">95%</span></td>
-              </tr>
-              <tr>
-                <td>Silver Articles</td>
-                <td>8.0</td>
-                <td>6.2</td>
-                <td><div class="progress-bar"><div class="progress-fill" style="width:77%"></div></div></td>
-                <td><span class="badge badge-grey">77%</span></td>
-              </tr>
-              <tr>
-                <td>Coins & Bullion</td>
-                <td>12.0</td>
-                <td>6.9</td>
-                <td><div class="progress-bar"><div class="progress-fill" style="width:57%" style="background:#C0392B"></div></div></td>
-                <td><span class="badge badge-red">57%</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <div class="ch"><div class="ct">Upcoming Follow-ups</div></div>
+        <div id="d-fu" style="padding:0"></div>
       </div>
-
       <div class="card">
-        <div class="card-header">
-          <div class="card-title">Recent Activity</div>
-        </div>
-        <div class="card-body">
-          <div class="activity-item">
-            <div class="activity-dot"></div>
-            <div>
-              <div class="activity-text">New customer <strong>Priya Lakshmi</strong> registered — Gold scheme ₹5,000/m</div>
-              <div class="activity-time">Today, 10:32 AM</div>
-            </div>
-          </div>
-          <div class="activity-item">
-            <div class="activity-dot" style="background:#1A7A4A"></div>
-            <div>
-              <div class="activity-text">Invoice <strong>#LJK-2847</strong> raised — Diamond necklace set ₹1.8L</div>
-              <div class="activity-time">Today, 9:15 AM</div>
-            </div>
-          </div>
-          <div class="activity-item">
-            <div class="activity-dot" style="background:#1A5276"></div>
-            <div>
-              <div class="activity-text">WhatsApp campaign <strong>"Akshaya Tritiya Offer"</strong> sent to 450 customers</div>
-              <div class="activity-time">Yesterday, 6:00 PM</div>
-            </div>
-          </div>
-          <div class="activity-item">
-            <div class="activity-dot" style="background:#C0392B"></div>
-            <div>
-              <div class="activity-text">Follow-up overdue for <strong>Ramesh Babu</strong> — scheme maturity</div>
-              <div class="activity-time">Yesterday, 5:00 PM</div>
-            </div>
-          </div>
-          <div class="activity-item">
-            <div class="activity-dot"></div>
-            <div>
-              <div class="activity-text">Agent <strong>Kavitha</strong> enrolled 3 new scheme customers</div>
-              <div class="activity-time">June 4, 3:45 PM</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">Top Customers This Month</div>
-        <button class="btn btn-outline btn-sm" onclick="navigate('customers', document.querySelector('.nav-item:nth-child(2)'))">View All</button>
-      </div>
-      <div class="card-body" style="padding:0">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>#</th><th>Customer Name</th><th>Mobile</th><th>Category</th><th>Purchases</th><th>Value</th><th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1</td><td><strong>Suneetha Reddy</strong></td><td>9848012345</td><td>Diamond</td><td>3</td><td>₹4,25,000</td><td><span class="badge badge-green">Active</span></td>
-            </tr>
-            <tr>
-              <td>2</td><td><strong>Nagamani Devi</strong></td><td>9963012345</td><td>Gold</td><td>2</td><td>₹2,80,000</td><td><span class="badge badge-green">Active</span></td>
-            </tr>
-            <tr>
-              <td>3</td><td><strong>Venkata Rao</strong></td><td>7799012345</td><td>Gold + Coins</td><td>4</td><td>₹1,95,000</td><td><span class="badge badge-gold">VIP</span></td>
-            </tr>
-            <tr>
-              <td>4</td><td><strong>Padmaja T</strong></td><td>9030012345</td><td>Silver</td><td>1</td><td>₹45,000</td><td><span class="badge badge-blue">Scheme</span></td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="ch"><div class="ct">Pending Repairs</div></div>
+        <div id="d-rep" style="padding:0"></div>
       </div>
     </div>
   </div>
 
   <!-- ── CUSTOMERS ── -->
-  <div id="page-customers" class="page">
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+  <div id="pg-customers" class="pg">
+    <div class="sr">
+      <div class="sbox"><span>🔍</span><input id="s-cust" placeholder="Search name, mobile, city…" oninput="rCust()"></div>
       <div class="tabs">
-        <div class="tab active">All Customers</div>
-        <div class="tab">Walk-ins</div>
-        <div class="tab">Scheme Members</div>
-        <div class="tab">VIP</div>
-      </div>
-      <div style="display:flex; gap:10px;">
-        <div class="search-bar">
-          <span>🔍</span>
-          <input type="text" placeholder="Search by name, mobile…">
-        </div>
-        <button class="btn btn-gold" onclick="openModal('add-customer-modal')">＋ Add Customer</button>
+        <div class="tab on" onclick="fCust('all',this)">All</div>
+        <div class="tab" onclick="fCust('VIP',this)">VIP</div>
+        <div class="tab" onclick="fCust('Regular',this)">Regular</div>
+        <div class="tab" onclick="fCust('New',this)">New</div>
       </div>
     </div>
+    <div class="card"><div id="cust-wrap" style="padding:0"></div></div>
+  </div>
 
-    <div class="card">
-      <div class="card-body" style="padding:0">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Cust. ID</th>
-              <th>Name</th>
-              <th>Mobile</th>
-              <th>City</th>
-              <th>Occasion</th>
-              <th>Scheme</th>
-              <th>Last Visit</th>
-              <th>Total Spend</th>
-              <th>Tag</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>LJK-0001</td>
-              <td><strong>Suneetha Reddy</strong><br><small style="color:#999">suneetha@gmail.com</small></td>
-              <td>9848012345</td>
-              <td>Kakinada</td>
-              <td>Wedding — Aug 2025</td>
-              <td>Gold SIP</td>
-              <td>02 Jun 2025</td>
-              <td>₹7,45,000</td>
-              <td><span class="badge badge-gold">VIP</span></td>
-              <td><button class="btn btn-outline btn-sm">View</button></td>
-            </tr>
-            <tr>
-              <td>LJK-0002</td>
-              <td><strong>Nagamani Devi</strong><br><small style="color:#999">9963011222</small></td>
-              <td>9963011222</td>
-              <td>Rajahmundry</td>
-              <td>Anniversary</td>
-              <td>None</td>
-              <td>28 May 2025</td>
-              <td>₹2,80,000</td>
-              <td><span class="badge badge-green">Regular</span></td>
-              <td><button class="btn btn-outline btn-sm">View</button></td>
-            </tr>
-            <tr>
-              <td>LJK-0003</td>
-              <td><strong>Venkata Rao</strong></td>
-              <td>7799012345</td>
-              <td>Amalapuram</td>
-              <td>Investment</td>
-              <td>Coin scheme</td>
-              <td>01 Jun 2025</td>
-              <td>₹5,95,000</td>
-              <td><span class="badge badge-gold">VIP</span></td>
-              <td><button class="btn btn-outline btn-sm">View</button></td>
-            </tr>
-            <tr>
-              <td>LJK-0004</td>
-              <td><strong>Padmaja T</strong></td>
-              <td>9030012345</td>
-              <td>Kakinada</td>
-              <td>Birthday Gift</td>
-              <td>Silver scheme</td>
-              <td>15 May 2025</td>
-              <td>₹45,000</td>
-              <td><span class="badge badge-blue">New</span></td>
-              <td><button class="btn btn-outline btn-sm">View</button></td>
-            </tr>
-            <tr>
-              <td>LJK-0005</td>
-              <td><strong>Ramesh Babu</strong></td>
-              <td>9701012345</td>
-              <td>Pithapuram</td>
-              <td>Maturity Claim</td>
-              <td>Gold chit</td>
-              <td>22 Apr 2025</td>
-              <td>₹1,20,000</td>
-              <td><span class="badge badge-red">Pending</span></td>
-              <td><button class="btn btn-outline btn-sm">View</button></td>
-            </tr>
-          </tbody>
-        </table>
+  <!-- ── SALES ── -->
+  <div id="pg-sales" class="pg">
+    <div class="sr">
+      <div class="sbox"><span>🔍</span><input id="s-sale" placeholder="Search customer, invoice, category…" oninput="rSales()"></div>
+      <div class="tabs">
+        <div class="tab on" onclick="fSale('all',this)">All</div>
+        <div class="tab" onclick="fSale('Paid',this)">Paid</div>
+        <div class="tab" onclick="fSale('Partial',this)">Partial</div>
+        <div class="tab" onclick="fSale('Pending',this)">Pending</div>
       </div>
     </div>
+    <div class="card"><div id="sale-wrap" style="padding:0"></div></div>
   </div>
 
   <!-- ── MARKETING ── -->
-  <div id="page-marketing" class="page">
-    <div class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-icon">📱</div>
-        <div class="kpi-label">WhatsApp Reach</div>
-        <div class="kpi-value">4,820</div>
-        <div class="kpi-sub">↑ 680 this month</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon">🎯</div>
-        <div class="kpi-label">Conversion Rate</div>
-        <div class="kpi-value">8.4%</div>
-        <div class="kpi-sub">↑ 1.2% vs May</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon">📅</div>
-        <div class="kpi-label">Events This Month</div>
-        <div class="kpi-value">3</div>
-        <div class="kpi-sub">↑ Upcoming: Gold Mela</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon">💸</div>
-        <div class="kpi-label">Marketing Spend</div>
-        <div class="kpi-value">₹1.2L</div>
-        <div class="kpi-sub">Budget: ₹2.0L</div>
+  <div id="pg-marketing" class="pg">
+    <div class="sr">
+      <div class="sbox"><span>🔍</span><input id="s-mkt" placeholder="Search campaigns…" oninput="rMkt()"></div>
+      <div class="tabs">
+        <div class="tab on" onclick="fMkt('all',this)">All</div>
+        <div class="tab" onclick="fMkt('Active',this)">Active</div>
+        <div class="tab" onclick="fMkt('Planned',this)">Planned</div>
+        <div class="tab" onclick="fMkt('Completed',this)">Completed</div>
       </div>
     </div>
-
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">Active Campaigns</div>
-        <button class="btn btn-gold btn-sm" onclick="openModal('add-campaign-modal')">＋ New Campaign</button>
-      </div>
-      <div class="card-body" style="padding:0">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Campaign</th><th>Channel</th><th>Audience</th><th>Start</th><th>End</th><th>Reach</th><th>Leads</th><th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Akshaya Tritiya Offer</strong></td>
-              <td>WhatsApp + SMS</td>
-              <td>All customers</td>
-              <td>30 Apr</td>
-              <td>15 May</td>
-              <td>1,200</td>
-              <td>96</td>
-              <td><span class="badge badge-grey">Completed</span></td>
-            </tr>
-            <tr>
-              <td><strong>Wedding Season Gold</strong></td>
-              <td>Facebook + Hoarding</td>
-              <td>Age 25–40, Kakinada</td>
-              <td>01 Jun</td>
-              <td>30 Jun</td>
-              <td>3,500</td>
-              <td>48</td>
-              <td><span class="badge badge-green">Active</span></td>
-            </tr>
-            <tr>
-              <td><strong>Diamond Dazzle Fest</strong></td>
-              <td>Instagram + Email</td>
-              <td>VIP customers</td>
-              <td>05 Jun</td>
-              <td>20 Jun</td>
-              <td>420</td>
-              <td>18</td>
-              <td><span class="badge badge-green">Active</span></td>
-            </tr>
-            <tr>
-              <td><strong>Monsoon Coin Scheme</strong></td>
-              <td>WhatsApp</td>
-              <td>Scheme members</td>
-              <td>15 Jun</td>
-              <td>15 Jul</td>
-              <td>—</td>
-              <td>—</td>
-              <td><span class="badge badge-blue">Planned</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="stats-row">
-      <div class="card">
-        <div class="card-header"><div class="card-title">Channel Effectiveness</div></div>
-        <div class="card-body">
-          <table class="data-table">
-            <thead><tr><th>Channel</th><th>Campaigns</th><th>Total Reach</th><th>Avg. Conversion</th></tr></thead>
-            <tbody>
-              <tr><td>WhatsApp Broadcast</td><td>4</td><td>3,200</td><td><span class="badge badge-green">9.8%</span></td></tr>
-              <tr><td>SMS / IVR</td><td>3</td><td>2,800</td><td><span class="badge badge-gold">6.2%</span></td></tr>
-              <tr><td>Facebook Ads</td><td>2</td><td>8,400</td><td><span class="badge badge-gold">4.1%</span></td></tr>
-              <tr><td>In-store Events</td><td>2</td><td>480</td><td><span class="badge badge-green">22.5%</span></td></tr>
-              <tr><td>Referral Program</td><td>1</td><td>310</td><td><span class="badge badge-green">18.7%</span></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header"><div class="card-title">Upcoming Occasions — Next 30 Days</div></div>
-        <div class="card-body">
-          <table class="data-table">
-            <thead><tr><th>Occasion</th><th>Date</th><th>Customers</th><th>Action</th></tr></thead>
-            <tbody>
-              <tr><td>🎂 Birthdays</td><td>June</td><td>24</td><td><button class="btn btn-outline btn-sm">Send Wishes</button></td></tr>
-              <tr><td>💍 Anniversaries</td><td>June</td><td>11</td><td><button class="btn btn-outline btn-sm">Send Offers</button></td></tr>
-              <tr><td>🏆 Scheme Maturity</td><td>20–30 Jun</td><td>8</td><td><button class="btn btn-outline btn-sm">Call List</button></td></tr>
-              <tr><td>🎊 Weddings</td><td>Jul–Aug</td><td>15</td><td><button class="btn btn-outline btn-sm">Visit Plan</button></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── SALES MONITOR ── -->
-  <div id="page-sales" class="page">
-    <div class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-icon">📈</div>
-        <div class="kpi-label">Today's Sales</div>
-        <div class="kpi-value">₹3.8L</div>
-        <div class="kpi-sub">↑ 14 bills raised</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon">🔄</div>
-        <div class="kpi-label">Exchange / Old Gold</div>
-        <div class="kpi-value">₹48,200</div>
-        <div class="kpi-sub">↑ 6 transactions</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon">🔧</div>
-        <div class="kpi-label">Repair Orders</div>
-        <div class="kpi-value">18</div>
-        <div class="kpi-sub">↑ 5 delivered today</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon">🚫</div>
-        <div class="kpi-label">Non-Conversions</div>
-        <div class="kpi-value">31</div>
-        <div class="kpi-sub down">↑ 8 walk-outs today</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">Recent Transactions</div>
-        <div style="display:flex; gap:8px;">
-          <button class="btn btn-outline btn-sm">Export</button>
-          <button class="btn btn-gold btn-sm" onclick="openModal('add-sale-modal')">＋ New Sale</button>
-        </div>
-      </div>
-      <div class="card-body" style="padding:0">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Invoice #</th><th>Date</th><th>Customer</th><th>Category</th><th>Item</th><th>Wt (g)</th><th>Rate/g</th><th>Making</th><th>Total</th><th>Payment</th><th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>LJK-2847</td>
-              <td>05 Jun</td>
-              <td>Suneetha R.</td>
-              <td>Diamond</td>
-              <td>Necklace Set</td>
-              <td>22.4</td>
-              <td>₹6,200</td>
-              <td>₹28,000</td>
-              <td>₹1,80,000</td>
-              <td><span class="badge badge-green">Card</span></td>
-              <td><span class="badge badge-green">Paid</span></td>
-            </tr>
-            <tr>
-              <td>LJK-2846</td>
-              <td>05 Jun</td>
-              <td>Padmaja T.</td>
-              <td>Gold</td>
-              <td>Earrings</td>
-              <td>6.8</td>
-              <td>₹7,100</td>
-              <td>₹3,500</td>
-              <td>₹51,780</td>
-              <td><span class="badge badge-gold">Cash</span></td>
-              <td><span class="badge badge-green">Paid</span></td>
-            </tr>
-            <tr>
-              <td>LJK-2845</td>
-              <td>04 Jun</td>
-              <td>Venkata Rao</td>
-              <td>Coins</td>
-              <td>Gold Coin 10g</td>
-              <td>10.0</td>
-              <td>₹7,050</td>
-              <td>₹500</td>
-              <td>₹71,000</td>
-              <td><span class="badge badge-blue">UPI</span></td>
-              <td><span class="badge badge-green">Paid</span></td>
-            </tr>
-            <tr>
-              <td>LJK-2844</td>
-              <td>04 Jun</td>
-              <td>Walk-in</td>
-              <td>Silver</td>
-              <td>Payal (pair)</td>
-              <td>45.0</td>
-              <td>₹110</td>
-              <td>₹800</td>
-              <td>₹5,750</td>
-              <td><span class="badge badge-gold">Cash</span></td>
-              <td><span class="badge badge-green">Paid</span></td>
-            </tr>
-            <tr>
-              <td>LJK-2843</td>
-              <td>03 Jun</td>
-              <td>Ramesh Babu</td>
-              <td>Gold</td>
-              <td>Bangles (pair)</td>
-              <td>28.6</td>
-              <td>₹7,100</td>
-              <td>₹6,000</td>
-              <td>₹2,09,060</td>
-              <td><span class="badge badge-red">Advance</span></td>
-              <td><span class="badge badge-red">Partial</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <div class="card"><div id="mkt-wrap" style="padding:0"></div></div>
   </div>
 
   <!-- ── SCHEMES ── -->
-  <div id="page-schemes" class="page">
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">Active Schemes & Plans</div>
-        <button class="btn btn-gold btn-sm">＋ New Scheme</button>
-      </div>
-      <div class="card-body" style="padding:0">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Scheme Name</th><th>Type</th><th>Duration</th><th>Monthly Amt</th><th>Enrolled</th><th>Maturities (Jun)</th><th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Swarna Bachat Plan</strong></td>
-              <td>Gold SIP</td>
-              <td>11+1 months</td>
-              <td>₹2,000–₹50,000</td>
-              <td>284</td>
-              <td>18</td>
-              <td><span class="badge badge-green">Active</span></td>
-            </tr>
-            <tr>
-              <td><strong>Diamond Delight</strong></td>
-              <td>Diamond</td>
-              <td>12 months</td>
-              <td>₹5,000+</td>
-              <td>62</td>
-              <td>4</td>
-              <td><span class="badge badge-green">Active</span></td>
-            </tr>
-            <tr>
-              <td><strong>Rathna Coin Scheme</strong></td>
-              <td>Coin</td>
-              <td>6 months</td>
-              <td>₹1,000–₹10,000</td>
-              <td>130</td>
-              <td>22</td>
-              <td><span class="badge badge-green">Active</span></td>
-            </tr>
-            <tr>
-              <td><strong>Silver Shobha</strong></td>
-              <td>Silver</td>
-              <td>12 months</td>
-              <td>₹500+</td>
-              <td>48</td>
-              <td>6</td>
-              <td><span class="badge badge-gold">Closing</span></td>
-            </tr>
-          </tbody>
-        </table>
+  <div id="pg-schemes" class="pg">
+    <div class="sr">
+      <div class="sbox"><span>🔍</span><input id="s-sch" placeholder="Search scheme, customer…" oninput="rSch()"></div>
+      <div class="tabs">
+        <div class="tab on" onclick="fSch('all',this)">All</div>
+        <div class="tab" onclick="fSch('Active',this)">Active</div>
+        <div class="tab" onclick="fSch('Matured',this)">Matured</div>
+        <div class="tab" onclick="fSch('Defaulted',this)">Defaulted</div>
       </div>
     </div>
+    <div class="card"><div id="sch-wrap" style="padding:0"></div></div>
   </div>
 
   <!-- ── AGENTS ── -->
-  <div id="page-agents" class="page">
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">Agent / Staff Performance</div>
-        <button class="btn btn-gold btn-sm">＋ Add Agent</button>
-      </div>
-      <div class="card-body" style="padding:0">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Name</th><th>Role</th><th>Zone</th><th>Customers Enrolled</th><th>Schemes Sold</th><th>Target</th><th>Achieved</th><th>Commission</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Kavitha R.</strong></td>
-              <td>Field Agent</td>
-              <td>Kakinada Urban</td>
-              <td>48</td>
-              <td>62</td>
-              <td>₹5L</td>
-              <td><span class="badge badge-green">₹5.8L</span></td>
-              <td>₹8,700</td>
-            </tr>
-            <tr>
-              <td><strong>Srinivas M.</strong></td>
-              <td>Floor Sales</td>
-              <td>Showroom</td>
-              <td>31</td>
-              <td>28</td>
-              <td>₹8L</td>
-              <td><span class="badge badge-gold">₹6.9L</span></td>
-              <td>₹6,900</td>
-            </tr>
-            <tr>
-              <td><strong>Lakshmi P.</strong></td>
-              <td>Field Agent</td>
-              <td>Pithapuram/Rural</td>
-              <td>22</td>
-              <td>19</td>
-              <td>₹3L</td>
-              <td><span class="badge badge-green">₹3.4L</span></td>
-              <td>₹5,100</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+  <div id="pg-agents" class="pg">
+    <div class="sr">
+      <div class="sbox"><span>🔍</span><input id="s-ag" placeholder="Search agent, mobile, zone…" oninput="rAg()"></div>
     </div>
+    <div class="card"><div id="ag-wrap" style="padding:0"></div></div>
   </div>
 
   <!-- ── FOLLOW-UPS ── -->
-  <div id="page-followups" class="page">
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">Follow-up Tracker</div>
-        <button class="btn btn-gold btn-sm">＋ Schedule Follow-up</button>
-      </div>
-      <div class="card-body" style="padding:0">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Customer</th><th>Mobile</th><th>Purpose</th><th>Due Date</th><th>Assigned To</th><th>Mode</th><th>Priority</th><th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Ramesh Babu</strong></td>
-              <td>9701012345</td>
-              <td>Scheme maturity — collect balance</td>
-              <td class="badge-red" style="color:#C0392B;font-weight:600">03 Jun (Overdue)</td>
-              <td>Kavitha R.</td>
-              <td>📞 Call</td>
-              <td><span class="badge badge-red">High</span></td>
-              <td><span class="badge badge-red">Pending</span></td>
-            </tr>
-            <tr>
-              <td><strong>Suneetha Reddy</strong></td>
-              <td>9848012345</td>
-              <td>Wedding jewellery quote follow-up</td>
-              <td>08 Jun</td>
-              <td>Srinivas M.</td>
-              <td>💬 WhatsApp</td>
-              <td><span class="badge badge-gold">Medium</span></td>
-              <td><span class="badge badge-blue">Scheduled</span></td>
-            </tr>
-            <tr>
-              <td><strong>Padmaja T</strong></td>
-              <td>9030012345</td>
-              <td>Birthday — special offer message</td>
-              <td>12 Jun</td>
-              <td>Auto</td>
-              <td>💬 WhatsApp</td>
-              <td><span class="badge badge-grey">Low</span></td>
-              <td><span class="badge badge-blue">Planned</span></td>
-            </tr>
-            <tr>
-              <td><strong>Nagamani Devi</strong></td>
-              <td>9963012345</td>
-              <td>Upsell — diamond earrings interest noted</td>
-              <td>15 Jun</td>
-              <td>Srinivas M.</td>
-              <td>🏠 Visit</td>
-              <td><span class="badge badge-gold">Medium</span></td>
-              <td><span class="badge badge-blue">Planned</span></td>
-            </tr>
-          </tbody>
-        </table>
+  <div id="pg-followups" class="pg">
+    <div class="sr">
+      <div class="sbox"><span>🔍</span><input id="s-fu" placeholder="Search customer, purpose…" oninput="rFu()"></div>
+      <div class="tabs">
+        <div class="tab on" onclick="fFu('all',this)">All</div>
+        <div class="tab" onclick="fFu('Pending',this)">Pending</div>
+        <div class="tab" onclick="fFu('Completed',this)">Completed</div>
+        <div class="tab" onclick="fFu('Rescheduled',this)">Rescheduled</div>
       </div>
     </div>
+    <div class="card"><div id="fu-wrap" style="padding:0"></div></div>
   </div>
 
-  <!-- ── FIELD REFERENCE ── -->
-  <div id="page-fields" class="page">
-    <p style="color:var(--text-muted); margin-bottom:20px; font-size:13px;">Complete reference of all data fields maintained across modules. Use this as a setup guide for data entry and staff training.</p>
-
-    <div class="fields-grid">
-
-      <div class="fields-module">
-        <div class="fields-module-header">👥 Customer Master</div>
-        <div class="field-item"><div class="field-name">Customer ID <span class="field-req">●</span></div><div class="field-desc">Auto-generated unique code (LJK-XXXX)</div></div>
-        <div class="field-item"><div class="field-name">Full Name <span class="field-req">●</span></div><div class="field-desc">First + Last name</div></div>
-        <div class="field-item"><div class="field-name">Mobile No. <span class="field-req">●</span></div><div class="field-desc">Primary & alternate numbers</div></div>
-        <div class="field-item"><div class="field-name">Email ID</div><div class="field-desc">For digital receipts & campaigns</div></div>
-        <div class="field-item"><div class="field-name">Date of Birth</div><div class="field-desc">For birthday campaigns</div></div>
-        <div class="field-item"><div class="field-name">Anniversary Date</div><div class="field-desc">For anniversary offers</div></div>
-        <div class="field-item"><div class="field-name">Address</div><div class="field-desc">Door no, street, city, pincode</div></div>
-        <div class="field-item"><div class="field-name">ID Proof Type</div><div class="field-desc">Aadhaar / PAN / Voter ID</div></div>
-        <div class="field-item"><div class="field-name">ID Proof No. <span class="field-req">●</span></div><div class="field-desc">Mandatory above ₹2L (KYC)</div></div>
-        <div class="field-item"><div class="field-name">Customer Type</div><div class="field-desc">New / Regular / VIP / Agent</div></div>
-        <div class="field-item"><div class="field-name">Referral Source</div><div class="field-desc">Walk-in / Agent / Social / Reference</div></div>
-        <div class="field-item"><div class="field-name">Referred By</div><div class="field-desc">Name/ID of referrer if any</div></div>
-        <div class="field-item"><div class="field-name">Occupation</div><div class="field-desc">Business / Govt / Private / Housewife</div></div>
-        <div class="field-item"><div class="field-name">Reg. Date</div><div class="field-desc">Date of first registration</div></div>
-        <div class="field-item"><div class="field-name">Assigned Agent</div><div class="field-desc">Field agent responsible for customer</div></div>
-        <div class="field-item"><div class="field-name">WhatsApp Consent</div><div class="field-desc">Yes / No (for broadcast list)</div></div>
-        <div class="field-item"><div class="field-name">Notes / Remarks</div><div class="field-desc">Preferences, sensitivities, custom notes</div></div>
+  <!-- ── REPAIRS ── -->
+  <div id="pg-repairs" class="pg">
+    <div class="sr">
+      <div class="sbox"><span>🔍</span><input id="s-rep" placeholder="Search customer, item, token…" oninput="rRep()"></div>
+      <div class="tabs">
+        <div class="tab on" onclick="fRep('all',this)">All</div>
+        <div class="tab" onclick="fRep('Active',this)">Active</div>
+        <div class="tab" onclick="fRep('Completed',this)">Completed</div>
+        <div class="tab" onclick="fRep('Delivered',this)">Delivered</div>
       </div>
-
-      <div class="fields-module">
-        <div class="fields-module-header">💰 Sales / Invoice</div>
-        <div class="field-item"><div class="field-name">Invoice No. <span class="field-req">●</span></div><div class="field-desc">Unique bill number (auto)</div></div>
-        <div class="field-item"><div class="field-name">Invoice Date <span class="field-req">●</span></div><div class="field-desc">Date of purchase</div></div>
-        <div class="field-item"><div class="field-name">Customer ID <span class="field-req">●</span></div><div class="field-desc">Linked to customer master</div></div>
-        <div class="field-item"><div class="field-name">Salesperson</div><div class="field-desc">Staff member who handled sale</div></div>
-        <div class="field-item"><div class="field-name">Product Category</div><div class="field-desc">Gold / Diamond / Silver / Coins / Platinum</div></div>
-        <div class="field-item"><div class="field-name">Item Description</div><div class="field-desc">Necklace, bangles, ring, earrings etc.</div></div>
-        <div class="field-item"><div class="field-name">Purity (KT / %)</div><div class="field-desc">22KT, 18KT, 916, 999 etc.</div></div>
-        <div class="field-item"><div class="field-name">Gross Weight (g)</div><div class="field-desc">Total weight of ornament</div></div>
-        <div class="field-item"><div class="field-name">Net Weight (g)</div><div class="field-desc">After deducting stones/setting</div></div>
-        <div class="field-item"><div class="field-name">Rate per Gram (₹)</div><div class="field-desc">Daily gold/silver rate applied</div></div>
-        <div class="field-item"><div class="field-name">Making Charges (₹)</div><div class="field-desc">Fixed or % per gram</div></div>
-        <div class="field-item"><div class="field-name">Stone Value (₹)</div><div class="field-desc">Diamond / gemstone charge separately</div></div>
-        <div class="field-item"><div class="field-name">GST Amount (₹)</div><div class="field-desc">3% on gold, 18% on making/diamonds</div></div>
-        <div class="field-item"><div class="field-name">Old Gold Value (₹)</div><div class="field-desc">Exchange value deducted</div></div>
-        <div class="field-item"><div class="field-name">Scheme Benefit (₹)</div><div class="field-desc">Bonus/discount from scheme</div></div>
-        <div class="field-item"><div class="field-name">Total Amount (₹)</div><div class="field-desc">Net payable after all adjustments</div></div>
-        <div class="field-item"><div class="field-name">Payment Mode <span class="field-req">●</span></div><div class="field-desc">Cash / Card / UPI / Cheque / Advance</div></div>
-        <div class="field-item"><div class="field-name">Balance Pending (₹)</div><div class="field-desc">Remaining amount if partial payment</div></div>
-        <div class="field-item"><div class="field-name">Purchase Occasion</div><div class="field-desc">Wedding / Festival / Investment / Gift</div></div>
-        <div class="field-item"><div class="field-name">Hallmark No.</div><div class="field-desc">BIS hallmark certificate number</div></div>
-      </div>
-
-      <div class="fields-module">
-        <div class="fields-module-header">📣 Marketing Activity</div>
-        <div class="field-item"><div class="field-name">Campaign ID</div><div class="field-desc">Unique campaign reference</div></div>
-        <div class="field-item"><div class="field-name">Campaign Name <span class="field-req">●</span></div><div class="field-desc">Descriptive name of the campaign</div></div>
-        <div class="field-item"><div class="field-name">Objective</div><div class="field-desc">Awareness / Lead Gen / Scheme Enroll / Sale</div></div>
-        <div class="field-item"><div class="field-name">Channel <span class="field-req">●</span></div><div class="field-desc">WhatsApp / SMS / FB / Instagram / Hoarding / Event</div></div>
-        <div class="field-item"><div class="field-name">Target Audience</div><div class="field-desc">Segment: VIP / New / Age / Location</div></div>
-        <div class="field-item"><div class="field-name">Start Date</div><div class="field-desc">Campaign launch date</div></div>
-        <div class="field-item"><div class="field-name">End Date</div><div class="field-desc">Campaign close date</div></div>
-        <div class="field-item"><div class="field-name">Budget (₹)</div><div class="field-desc">Allocated marketing budget</div></div>
-        <div class="field-item"><div class="field-name">Actual Spend (₹)</div><div class="field-desc">Actual expenditure incurred</div></div>
-        <div class="field-item"><div class="field-name">Audience Reach</div><div class="field-desc">No. of people reached / messages sent</div></div>
-        <div class="field-item"><div class="field-name">Responses / Inquiries</div><div class="field-desc">Calls / walk-ins attributed to campaign</div></div>
-        <div class="field-item"><div class="field-name">Converted Sales</div><div class="field-desc">Bills generated from this campaign</div></div>
-        <div class="field-item"><div class="field-name">Revenue Generated (₹)</div><div class="field-desc">Total sales attributed to campaign</div></div>
-        <div class="field-item"><div class="field-name">ROI (%)</div><div class="field-desc">Revenue / Spend × 100</div></div>
-        <div class="field-item"><div class="field-name">Creative/Content Ref</div><div class="field-desc">Link or filename of artwork/script</div></div>
-        <div class="field-item"><div class="field-name">Handled By</div><div class="field-desc">Staff / agency responsible</div></div>
-        <div class="field-item"><div class="field-name">Status</div><div class="field-desc">Planned / Active / Completed / Paused</div></div>
-        <div class="field-item"><div class="field-name">Remarks</div><div class="field-desc">Observations, feedback, learnings</div></div>
-      </div>
-
-      <div class="fields-module">
-        <div class="fields-module-header">📋 Scheme / Plan Management</div>
-        <div class="field-item"><div class="field-name">Scheme ID</div><div class="field-desc">Auto-generated scheme number</div></div>
-        <div class="field-item"><div class="field-name">Scheme Name <span class="field-req">●</span></div><div class="field-desc">e.g., Swarna Bachat Plan</div></div>
-        <div class="field-item"><div class="field-name">Scheme Type</div><div class="field-desc">Gold SIP / Coin / Diamond / Silver</div></div>
-        <div class="field-item"><div class="field-name">Customer ID <span class="field-req">●</span></div><div class="field-desc">Linked customer</div></div>
-        <div class="field-item"><div class="field-name">Monthly Amount (₹)</div><div class="field-desc">Fixed installment amount</div></div>
-        <div class="field-item"><div class="field-name">Duration (months)</div><div class="field-desc">Total scheme tenure</div></div>
-        <div class="field-item"><div class="field-name">Start Date <span class="field-req">●</span></div><div class="field-desc">Date of first installment</div></div>
-        <div class="field-item"><div class="field-name">Maturity Date</div><div class="field-desc">Auto-calculated from start + duration</div></div>
-        <div class="field-item"><div class="field-name">Installments Paid</div><div class="field-desc">Count of payments received</div></div>
-        <div class="field-item"><div class="field-name">Installments Pending</div><div class="field-desc">Remaining payments</div></div>
-        <div class="field-item"><div class="field-name">Total Collected (₹)</div><div class="field-desc">Sum of payments received so far</div></div>
-        <div class="field-item"><div class="field-name">Bonus Month Benefit</div><div class="field-desc">Company contribution (extra installment)</div></div>
-        <div class="field-item"><div class="field-name">Enrolled By (Agent)</div><div class="field-desc">Field agent who signed the customer</div></div>
-        <div class="field-item"><div class="field-name">Status</div><div class="field-desc">Active / Matured / Defaulted / Cancelled</div></div>
-        <div class="field-item"><div class="field-name">Redemption Date</div><div class="field-desc">Date customer availed maturity benefit</div></div>
-        <div class="field-item"><div class="field-name">Item Purchased</div><div class="field-desc">What was bought using scheme amount</div></div>
-      </div>
-
-      <div class="fields-module">
-        <div class="fields-module-header">◷ Follow-up & CRM</div>
-        <div class="field-item"><div class="field-name">Follow-up ID</div><div class="field-desc">Auto-generated reference</div></div>
-        <div class="field-item"><div class="field-name">Customer ID <span class="field-req">●</span></div><div class="field-desc">Linked customer</div></div>
-        <div class="field-item"><div class="field-name">Purpose <span class="field-req">●</span></div><div class="field-desc">Scheme renewal / Sale follow-up / Occasion / Feedback</div></div>
-        <div class="field-item"><div class="field-name">Follow-up Mode</div><div class="field-desc">Call / WhatsApp / Visit / SMS / Email</div></div>
-        <div class="field-item"><div class="field-name">Due Date <span class="field-req">●</span></div><div class="field-desc">When to follow up</div></div>
-        <div class="field-item"><div class="field-name">Assigned To</div><div class="field-desc">Staff or agent responsible</div></div>
-        <div class="field-item"><div class="field-name">Priority</div><div class="field-desc">High / Medium / Low</div></div>
-        <div class="field-item"><div class="field-name">Status</div><div class="field-desc">Pending / Completed / Rescheduled / No Response</div></div>
-        <div class="field-item"><div class="field-name">Outcome / Notes</div><div class="field-desc">What happened after follow-up</div></div>
-        <div class="field-item"><div class="field-name">Next Action</div><div class="field-desc">Visit / Quote / Scheme / None</div></div>
-        <div class="field-item"><div class="field-name">Next Follow-up Date</div><div class="field-desc">If rescheduled</div></div>
-      </div>
-
-      <div class="fields-module">
-        <div class="fields-module-header">▣ Agent / Staff</div>
-        <div class="field-item"><div class="field-name">Agent ID</div><div class="field-desc">Unique staff/agent code</div></div>
-        <div class="field-item"><div class="field-name">Full Name <span class="field-req">●</span></div><div class="field-desc">Agent's legal name</div></div>
-        <div class="field-item"><div class="field-name">Mobile No. <span class="field-req">●</span></div><div class="field-desc">Official contact number</div></div>
-        <div class="field-item"><div class="field-name">Role</div><div class="field-desc">Field Agent / Floor Sales / Tele-caller / Manager</div></div>
-        <div class="field-item"><div class="field-name">Zone / Area</div><div class="field-desc">Assigned territory (city/mandal)</div></div>
-        <div class="field-item"><div class="field-name">Date of Joining</div><div class="field-desc">Employment start date</div></div>
-        <div class="field-item"><div class="field-name">Monthly Target (₹)</div><div class="field-desc">Sales or enrolment target</div></div>
-        <div class="field-item"><div class="field-name">Customers Enrolled</div><div class="field-desc">Count of customers registered by agent</div></div>
-        <div class="field-item"><div class="field-name">Schemes Sold</div><div class="field-desc">No. of scheme enrolments</div></div>
-        <div class="field-item"><div class="field-name">Sales Value (₹)</div><div class="field-desc">Total revenue attributed to agent</div></div>
-        <div class="field-item"><div class="field-name">Commission Rate (%)</div><div class="field-desc">Commission % on schemes/sales</div></div>
-        <div class="field-item"><div class="field-name">Commission Earned (₹)</div><div class="field-desc">Calculated monthly commission</div></div>
-        <div class="field-item"><div class="field-name">Status</div><div class="field-desc">Active / Inactive / On Leave</div></div>
-        <div class="field-item"><div class="field-name">Bank Account</div><div class="field-desc">For commission credit</div></div>
-      </div>
-
     </div>
-    <div style="margin-top:12px; padding:14px 18px; background:var(--gold-pale); border-radius:10px; border-left: 3px solid var(--gold); font-size:12px; color:#5A4010;">
-      <strong>● Required fields</strong> are mandatory for system entry. All other fields are recommended for complete tracking. KYC fields (ID Proof) are legally required for transactions above ₹2,00,000 as per PMLA regulations.
+    <div class="card"><div id="rep-wrap" style="padding:0"></div></div>
+  </div>
+
+  <!-- ── EXCHANGE ── -->
+  <div id="pg-exchange" class="pg">
+    <div class="sr">
+      <div class="sbox"><span>🔍</span><input id="s-exc" placeholder="Search customer, type…" oninput="rExc()"></div>
+    </div>
+    <div class="card"><div id="exc-wrap" style="padding:0"></div></div>
+  </div>
+
+  <!-- ── NON-CONVERSIONS ── -->
+  <div id="pg-nonconv" class="pg">
+    <div class="sr">
+      <div class="sbox"><span>🔍</span><input id="s-nc" placeholder="Search customer, reason…" oninput="rNc()"></div>
+      <div class="tabs">
+        <div class="tab on" onclick="fNc('all',this)">All</div>
+        <div class="tab" onclick="fNc('Hot',this)">Hot Lead</div>
+        <div class="tab" onclick="fNc('Warm',this)">Warm</div>
+        <div class="tab" onclick="fNc('Cold',this)">Cold</div>
+      </div>
+    </div>
+    <div class="card"><div id="nc-wrap" style="padding:0"></div></div>
+  </div>
+
+  <!-- ── REPORTS ── -->
+  <div id="pg-reports" class="pg">
+    <div class="two-col">
+      <div class="card">
+        <div class="ch"><div class="ct">Sales Summary</div></div>
+        <div id="rpt-sales" class="cb"></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Customer Summary</div></div>
+        <div id="rpt-cust" class="cb"></div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="ch"><div class="ct">Scheme Summary</div></div>
+        <div id="rpt-sch" class="cb"></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Marketing ROI</div></div>
+        <div id="rpt-mkt" class="cb"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">Export Data</div></div>
+      <div class="cb">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-gold" onclick="exportCSV('customers')">📥 Export Customers</button>
+          <button class="btn btn-gold" onclick="exportCSV('sales')">📥 Export Sales</button>
+          <button class="btn btn-gold" onclick="exportCSV('schemes')">📥 Export Schemes</button>
+          <button class="btn btn-gold" onclick="exportCSV('followups')">📥 Export Follow-ups</button>
+          <button class="btn btn-outline" onclick="clearAllData()">⚠️ Clear All Data</button>
+        </div>
+      </div>
     </div>
   </div>
 
 </main>
 
-<!-- ── MODALS ── -->
+<!-- ══ MODALS ══ -->
 
-<!-- Add Customer Modal -->
-<div class="modal-overlay" id="add-customer-modal">
+<!-- CUSTOMER MODAL -->
+<div class="mo" id="mo-cust">
   <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Register New Customer</div>
-      <button class="modal-close" onclick="closeModal('add-customer-modal')">✕</button>
+    <div class="mh"><div class="mt" id="mt-cust">Add Customer</div><button class="mc" onclick="closeMo('mo-cust')">✕</button></div>
+    <div class="mb">
+      <input type="hidden" id="c-id">
+      <div class="sdiv">Personal Information</div>
+      <div class="fg fg2" style="margin-bottom:12px">
+        <div class="fld"><label>Full Name ●</label><input id="c-name" placeholder="e.g. Suneetha Reddy"></div>
+        <div class="fld"><label>Mobile ●</label><input id="c-mob" placeholder="10-digit mobile" maxlength="10"></div>
+        <div class="fld"><label>Alternate Mobile</label><input id="c-mob2" placeholder="Optional"></div>
+        <div class="fld"><label>Email</label><input id="c-email" placeholder="Optional"></div>
+        <div class="fld"><label>Date of Birth</label><input type="date" id="c-dob"></div>
+        <div class="fld"><label>Anniversary Date</label><input type="date" id="c-ann"></div>
+      </div>
+      <div class="sdiv">Address & KYC</div>
+      <div class="fg fg2" style="margin-bottom:12px">
+        <div class="fld"><label>Address</label><input id="c-addr" placeholder="Door no., street"></div>
+        <div class="fld"><label>City / Town</label><input id="c-city" placeholder="e.g. Kakinada"></div>
+        <div class="fld"><label>Pincode</label><input id="c-pin" placeholder="6-digit"></div>
+        <div class="fld"><label>Occupation</label>
+          <select id="c-occ"><option value="">Select</option><option>Business</option><option>Govt. Employee</option><option>Private Employee</option><option>Housewife</option><option>Farmer</option><option>Professional</option><option>Other</option></select>
+        </div>
+        <div class="fld"><label>ID Proof Type</label>
+          <select id="c-idt"><option value="">Select</option><option>Aadhaar</option><option>PAN Card</option><option>Voter ID</option><option>Passport</option><option>Driving Licence</option></select>
+        </div>
+        <div class="fld"><label>ID Proof Number</label><input id="c-idn" placeholder="Mandatory for ₹2L+ (KYC)"></div>
+      </div>
+      <div class="sdiv">CRM Details</div>
+      <div class="fg fg3" style="margin-bottom:12px">
+        <div class="fld"><label>Customer Type</label>
+          <select id="c-type"><option>New</option><option>Regular</option><option>VIP</option><option>Agent Enrolled</option><option>Walk-in</option></select>
+        </div>
+        <div class="fld"><label>Preferred Category</label>
+          <select id="c-cat"><option value="">Select</option><option>Gold</option><option>Diamond</option><option>Silver</option><option>Coins</option><option>Platinum</option></select>
+        </div>
+        <div class="fld"><label>WhatsApp Consent</label>
+          <select id="c-wa"><option value="Yes">Yes — Add to List</option><option value="No">No</option></select>
+        </div>
+        <div class="fld"><label>Referral Source</label>
+          <select id="c-src"><option value="">Select</option><option>Walk-in</option><option>Agent</option><option>Social Media</option><option>Reference</option><option>Advertisement</option></select>
+        </div>
+        <div class="fld"><label>Referred By</label><input id="c-ref" placeholder="Name / Cust ID"></div>
+        <div class="fld"><label>Assigned Agent</label><input id="c-agt" placeholder="Agent name"></div>
+      </div>
+      <div class="fld"><label>Notes / Preferences</label><textarea id="c-notes" placeholder="Preferences, special notes, sensitivities…"></textarea></div>
     </div>
-    <div class="modal-body">
-      <div class="section-divider">◈ Personal Information</div>
-      <div class="form-grid form-grid-2" style="margin-bottom:16px">
-        <div class="field"><label>Full Name ●</label><input type="text" placeholder="e.g. Suneetha Reddy"></div>
-        <div class="field"><label>Mobile Number ●</label><input type="tel" placeholder="10-digit mobile"></div>
-        <div class="field"><label>Alternate Mobile</label><input type="tel" placeholder="Optional"></div>
-        <div class="field"><label>Email ID</label><input type="email" placeholder="Optional"></div>
-        <div class="field"><label>Date of Birth</label><input type="date"></div>
-        <div class="field"><label>Anniversary Date</label><input type="date"></div>
-      </div>
-
-      <div class="section-divider">◈ Address & Identity</div>
-      <div class="form-grid form-grid-2" style="margin-bottom:16px">
-        <div class="field"><label>Address</label><input type="text" placeholder="Door no., Street"></div>
-        <div class="field"><label>City / Town</label><input type="text" placeholder="e.g. Kakinada"></div>
-        <div class="field"><label>Pincode</label><input type="text" placeholder="6-digit pincode"></div>
-        <div class="field"><label>Occupation</label>
-          <select><option>Select</option><option>Business</option><option>Govt. Employee</option><option>Private Employee</option><option>Housewife</option><option>Farmer</option><option>Other</option></select>
-        </div>
-        <div class="field"><label>ID Proof Type</label>
-          <select><option>Select</option><option>Aadhaar</option><option>PAN Card</option><option>Voter ID</option><option>Passport</option></select>
-        </div>
-        <div class="field"><label>ID Proof Number</label><input type="text" placeholder="For KYC (₹2L+ transactions)"></div>
-      </div>
-
-      <div class="section-divider">◈ CRM Details</div>
-      <div class="form-grid form-grid-3" style="margin-bottom:16px">
-        <div class="field"><label>Customer Type</label>
-          <select><option>Walk-in</option><option>Referral</option><option>Agent Enrolled</option><option>VIP</option></select>
-        </div>
-        <div class="field"><label>Referred By</label><input type="text" placeholder="Name / Customer ID"></div>
-        <div class="field"><label>Assigned Agent</label>
-          <select><option>Select</option><option>Kavitha R.</option><option>Srinivas M.</option><option>Lakshmi P.</option></select>
-        </div>
-        <div class="field"><label>Purchase Occasion</label>
-          <select><option>Select</option><option>Wedding</option><option>Investment</option><option>Gift</option><option>Festival</option><option>Anniversary</option><option>Birthday</option></select>
-        </div>
-        <div class="field"><label>Preferred Category</label>
-          <select><option>Select</option><option>Gold</option><option>Diamond</option><option>Silver</option><option>Coins</option></select>
-        </div>
-        <div class="field"><label>WhatsApp Consent</label>
-          <select><option>Yes — Add to Broadcast</option><option>No — Do Not Contact</option></select>
-        </div>
-      </div>
-
-      <div class="field"><label>Notes / Remarks</label><textarea placeholder="Any preferences, special notes…"></textarea></div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closeModal('add-customer-modal')">Cancel</button>
-      <button class="btn btn-gold">Save Customer</button>
+    <div class="mf">
+      <button class="btn btn-outline" onclick="closeMo('mo-cust')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveCust()">💾 Save Customer</button>
     </div>
   </div>
 </div>
 
-<!-- Add Campaign Modal -->
-<div class="modal-overlay" id="add-campaign-modal">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Create New Campaign</div>
-      <button class="modal-close" onclick="closeModal('add-campaign-modal')">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="form-grid form-grid-2">
-        <div class="field"><label>Campaign Name ●</label><input type="text" placeholder="e.g. Monsoon Gold Fest"></div>
-        <div class="field"><label>Objective</label>
-          <select><option>Awareness</option><option>Lead Generation</option><option>Scheme Enrolment</option><option>Direct Sale</option></select>
+<!-- SALE MODAL -->
+<div class="mo" id="mo-sale">
+  <div class="modal wide">
+    <div class="mh"><div class="mt" id="mt-sale">Record Sale</div><button class="mc" onclick="closeMo('mo-sale')">✕</button></div>
+    <div class="mb">
+      <input type="hidden" id="s-id">
+      <div class="sdiv">Customer & Product</div>
+      <div class="fg fg3" style="margin-bottom:12px">
+        <div class="fld"><label>Customer Name ●</label><input id="s-cust" placeholder="Name or Walk-in"></div>
+        <div class="fld"><label>Customer Mobile</label><input id="s-cmob" placeholder="10-digit"></div>
+        <div class="fld"><label>Salesperson</label><input id="s-sp" placeholder="Staff name"></div>
+        <div class="fld"><label>Category ●</label>
+          <select id="s-cat"><option value="">Select</option><option>Gold Jewellery</option><option>Diamond Jewellery</option><option>Silver Articles</option><option>Coins / Bullion</option><option>Platinum</option></select>
         </div>
-        <div class="field"><label>Channel</label>
-          <select><option>WhatsApp Broadcast</option><option>SMS</option><option>Facebook Ads</option><option>Instagram</option><option>In-store Event</option><option>Newspaper</option><option>Hoarding</option></select>
+        <div class="fld"><label>Item Description ●</label><input id="s-item" placeholder="Necklace, Bangle pair, Ring…"></div>
+        <div class="fld"><label>Purity</label>
+          <select id="s-pur"><option value="">Select</option><option>22KT (916)</option><option>18KT (750)</option><option>14KT</option><option>999 Silver</option><option>925 Silver</option><option>Platinum 950</option></select>
         </div>
-        <div class="field"><label>Target Audience</label>
-          <select><option>All Customers</option><option>VIP Only</option><option>Scheme Members</option><option>New Customers</option><option>Custom Segment</option></select>
+        <div class="fld"><label>Hallmark No.</label><input id="s-hall" placeholder="BIS Hallmark number"></div>
+        <div class="fld"><label>Purchase Occasion</label>
+          <select id="s-occ"><option value="">Select</option><option>Wedding</option><option>Festival</option><option>Gift</option><option>Investment</option><option>Anniversary</option><option>Birthday</option><option>Daily Wear</option></select>
         </div>
-        <div class="field"><label>Start Date</label><input type="date"></div>
-        <div class="field"><label>End Date</label><input type="date"></div>
-        <div class="field"><label>Budget (₹)</label><input type="number" placeholder="Allocated budget"></div>
-        <div class="field"><label>Handled By</label><input type="text" placeholder="Staff name or agency"></div>
+        <div class="fld"><label>Campaign Source</label><input id="s-camp" placeholder="Which campaign (if any)"></div>
       </div>
-      <div class="field" style="margin-top:14px"><label>Campaign Notes</label><textarea placeholder="Offer details, message content summary…"></textarea></div>
+      <div class="sdiv">Weight & Pricing</div>
+      <div class="fg fg4" style="margin-bottom:12px">
+        <div class="fld"><label>Gross Weight (g)</label><input type="number" id="s-gwt" placeholder="0.000" step="0.001" oninput="calcSale()"></div>
+        <div class="fld"><label>Net Weight (g)</label><input type="number" id="s-nwt" placeholder="0.000" step="0.001" oninput="calcSale()"></div>
+        <div class="fld"><label>Rate/gram (₹)</label><input type="number" id="s-rate" placeholder="Today's rate" oninput="calcSale()"></div>
+        <div class="fld"><label>Making Charges (₹)</label><input type="number" id="s-mkg" placeholder="0" oninput="calcSale()"></div>
+        <div class="fld"><label>Stone / Diamond (₹)</label><input type="number" id="s-stone" placeholder="0" oninput="calcSale()"></div>
+        <div class="fld"><label>GST (₹)</label><input type="number" id="s-gst" placeholder="0" oninput="calcSale()"></div>
+        <div class="fld"><label>Old Gold Exchange (₹)</label><input type="number" id="s-exch" placeholder="0" oninput="calcSale()"></div>
+        <div class="fld"><label>Scheme Benefit (₹)</label><input type="number" id="s-sbf" placeholder="0" oninput="calcSale()"></div>
+        <div class="fld"><label>Discount (₹)</label><input type="number" id="s-disc" placeholder="0" oninput="calcSale()"></div>
+        <div class="fld"><label>Total Payable (₹) ●</label><input type="number" id="s-total" placeholder="Auto-calculated"></div>
+        <div class="fld"><label>Amount Paid (₹)</label><input type="number" id="s-paid" placeholder="0" oninput="calcBal()"></div>
+        <div class="fld"><label>Balance Pending (₹)</label><input type="number" id="s-bal" placeholder="0"></div>
+      </div>
+      <div class="sdiv">Payment Details</div>
+      <div class="fg fg3">
+        <div class="fld"><label>Payment Mode ●</label>
+          <select id="s-pmode"><option value="">Select</option><option>Cash</option><option>Card</option><option>UPI</option><option>Cheque</option><option>NEFT/RTGS</option><option>Advance + Balance</option></select>
+        </div>
+        <div class="fld"><label>Cheque/UTR No.</label><input id="s-ref" placeholder="Reference number"></div>
+        <div class="fld"><label>Payment Status</label>
+          <select id="s-pstat"><option>Paid</option><option>Partial</option><option>Pending</option></select>
+        </div>
+      </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closeModal('add-campaign-modal')">Cancel</button>
-      <button class="btn btn-gold">Launch Campaign</button>
+    <div class="mf">
+      <button class="btn btn-outline" onclick="closeMo('mo-sale')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveSale()">💾 Save Sale</button>
     </div>
   </div>
 </div>
 
-<!-- Add Sale Modal -->
-<div class="modal-overlay" id="add-sale-modal">
+<!-- MARKETING MODAL -->
+<div class="mo" id="mo-mkt">
   <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Record New Sale</div>
-      <button class="modal-close" onclick="closeModal('add-sale-modal')">✕</button>
+    <div class="mh"><div class="mt" id="mt-mkt">Add Campaign</div><button class="mc" onclick="closeMo('mo-mkt')">✕</button></div>
+    <div class="mb">
+      <input type="hidden" id="m-id">
+      <div class="fg fg2" style="margin-bottom:12px">
+        <div class="fld"><label>Campaign Name ●</label><input id="m-name" placeholder="e.g. Akshaya Tritiya Offer"></div>
+        <div class="fld"><label>Objective</label>
+          <select id="m-obj"><option value="">Select</option><option>Awareness</option><option>Lead Generation</option><option>Scheme Enrolment</option><option>Direct Sale</option><option>Retention</option></select>
+        </div>
+        <div class="fld"><label>Channel ●</label>
+          <select id="m-ch"><option value="">Select</option><option>WhatsApp Broadcast</option><option>SMS</option><option>Facebook Ads</option><option>Instagram</option><option>In-store Event</option><option>Newspaper</option><option>Hoarding/Banner</option><option>TV/Radio</option><option>Referral</option></select>
+        </div>
+        <div class="fld"><label>Target Audience</label>
+          <select id="m-aud"><option value="">Select</option><option>All Customers</option><option>VIP Only</option><option>Scheme Members</option><option>New Customers</option><option>Walk-ins</option></select>
+        </div>
+        <div class="fld"><label>Start Date</label><input type="date" id="m-sd"></div>
+        <div class="fld"><label>End Date</label><input type="date" id="m-ed"></div>
+        <div class="fld"><label>Budget (₹)</label><input type="number" id="m-bud" placeholder="0"></div>
+        <div class="fld"><label>Actual Spend (₹)</label><input type="number" id="m-sp" placeholder="0"></div>
+        <div class="fld"><label>Audience Reach</label><input type="number" id="m-reach" placeholder="No. reached"></div>
+        <div class="fld"><label>Leads / Inquiries</label><input type="number" id="m-leads" placeholder="0"></div>
+        <div class="fld"><label>Conversions</label><input type="number" id="m-conv" placeholder="0"></div>
+        <div class="fld"><label>Revenue Generated (₹)</label><input type="number" id="m-rev" placeholder="0"></div>
+        <div class="fld"><label>Handled By</label><input id="m-by" placeholder="Staff or agency name"></div>
+        <div class="fld"><label>Status</label>
+          <select id="m-stat"><option>Planned</option><option>Active</option><option>Completed</option><option>Paused</option><option>Cancelled</option></select>
+        </div>
+      </div>
+      <div class="fld"><label>Remarks / Learnings</label><textarea id="m-rem" placeholder="Notes, observations, what worked…"></textarea></div>
     </div>
-    <div class="modal-body">
-      <div class="section-divider">◈ Customer & Item</div>
-      <div class="form-grid form-grid-2" style="margin-bottom:16px">
-        <div class="field"><label>Customer ID / Name ●</label><input type="text" placeholder="Search or enter walk-in"></div>
-        <div class="field"><label>Salesperson</label>
-          <select><option>Srinivas M.</option><option>Kavitha R.</option><option>Lakshmi P.</option></select>
-        </div>
-        <div class="field"><label>Product Category ●</label>
-          <select><option>Gold Jewellery</option><option>Diamond Jewellery</option><option>Silver</option><option>Coins / Bullion</option><option>Platinum</option></select>
-        </div>
-        <div class="field"><label>Item Description</label><input type="text" placeholder="e.g. Necklace, Bangle pair, Ring…"></div>
-        <div class="field"><label>Purity</label>
-          <select><option>22KT (916)</option><option>18KT (750)</option><option>14KT</option><option>999 Silver</option><option>925 Silver</option></select>
-        </div>
-        <div class="field"><label>Hallmark No.</label><input type="text" placeholder="BIS Hallmark number"></div>
-      </div>
-      <div class="section-divider">◈ Weight & Pricing</div>
-      <div class="form-grid form-grid-3" style="margin-bottom:16px">
-        <div class="field"><label>Gross Weight (g)</label><input type="number" placeholder="0.00"></div>
-        <div class="field"><label>Net Weight (g)</label><input type="number" placeholder="0.00"></div>
-        <div class="field"><label>Rate / gram (₹)</label><input type="number" placeholder="Today's rate"></div>
-        <div class="field"><label>Making Charges (₹)</label><input type="number" placeholder="0.00"></div>
-        <div class="field"><label>Stone / Diamond Value (₹)</label><input type="number" placeholder="0.00"></div>
-        <div class="field"><label>GST (₹)</label><input type="number" placeholder="Auto-calculated"></div>
-        <div class="field"><label>Old Gold Exchange (₹)</label><input type="number" placeholder="Deduction amount"></div>
-        <div class="field"><label>Scheme Benefit (₹)</label><input type="number" placeholder="Bonus if applicable"></div>
-        <div class="field"><label>Total Payable (₹)</label><input type="number" placeholder="Net amount"></div>
-      </div>
-      <div class="section-divider">◈ Payment</div>
-      <div class="form-grid form-grid-3">
-        <div class="field"><label>Payment Mode ●</label>
-          <select><option>Cash</option><option>Card</option><option>UPI</option><option>Cheque</option><option>Advance + Balance</option></select>
-        </div>
-        <div class="field"><label>Amount Paid (₹)</label><input type="number" placeholder="0.00"></div>
-        <div class="field"><label>Balance Pending (₹)</label><input type="number" placeholder="0.00"></div>
-        <div class="field"><label>Purchase Occasion</label>
-          <select><option>Wedding</option><option>Festival</option><option>Gift</option><option>Investment</option><option>Anniversary</option><option>Daily Wear</option></select>
-        </div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closeModal('add-sale-modal')">Cancel</button>
-      <button class="btn btn-gold">Save & Print Bill</button>
+    <div class="mf">
+      <button class="btn btn-outline" onclick="closeMo('mo-mkt')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveMkt()">💾 Save Campaign</button>
     </div>
   </div>
 </div>
+
+<!-- SCHEME MODAL -->
+<div class="mo" id="mo-sch">
+  <div class="modal">
+    <div class="mh"><div class="mt" id="mt-sch">Add Scheme</div><button class="mc" onclick="closeMo('mo-sch')">✕</button></div>
+    <div class="mb">
+      <input type="hidden" id="sc-id">
+      <div class="fg fg2" style="margin-bottom:12px">
+        <div class="fld"><label>Scheme Name ●</label><input id="sc-name" placeholder="e.g. Swarna Bachat Plan"></div>
+        <div class="fld"><label>Scheme Type</label>
+          <select id="sc-type"><option value="">Select</option><option>Gold SIP</option><option>Diamond</option><option>Silver</option><option>Coin</option><option>Custom</option></select>
+        </div>
+        <div class="fld"><label>Customer Name ●</label><input id="sc-cust" placeholder="Customer name"></div>
+        <div class="fld"><label>Customer Mobile</label><input id="sc-mob" placeholder="10-digit"></div>
+        <div class="fld"><label>Monthly Amount (₹)</label><input type="number" id="sc-amt" placeholder="0"></div>
+        <div class="fld"><label>Duration (months)</label><input type="number" id="sc-dur" placeholder="e.g. 12"></div>
+        <div class="fld"><label>Start Date</label><input type="date" id="sc-sd"></div>
+        <div class="fld"><label>Maturity Date</label><input type="date" id="sc-md"></div>
+        <div class="fld"><label>Installments Paid</label><input type="number" id="sc-paid" placeholder="0"></div>
+        <div class="fld"><label>Total Collected (₹)</label><input type="number" id="sc-coll" placeholder="0"></div>
+        <div class="fld"><label>Enrolled By (Agent)</label><input id="sc-agt" placeholder="Agent name"></div>
+        <div class="fld"><label>Status</label>
+          <select id="sc-stat"><option>Active</option><option>Matured</option><option>Defaulted</option><option>Cancelled</option></select>
+        </div>
+      </div>
+      <div class="fld"><label>Remarks</label><textarea id="sc-rem" placeholder="Optional notes…"></textarea></div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-outline" onclick="closeMo('mo-sch')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveSch()">💾 Save Scheme</button>
+    </div>
+  </div>
+</div>
+
+<!-- AGENT MODAL -->
+<div class="mo" id="mo-ag">
+  <div class="modal">
+    <div class="mh"><div class="mt" id="mt-ag">Add Agent / Staff</div><button class="mc" onclick="closeMo('mo-ag')">✕</button></div>
+    <div class="mb">
+      <input type="hidden" id="ag-id">
+      <div class="fg fg2" style="margin-bottom:12px">
+        <div class="fld"><label>Full Name ●</label><input id="ag-name" placeholder="Agent full name"></div>
+        <div class="fld"><label>Mobile ●</label><input id="ag-mob" placeholder="10-digit"></div>
+        <div class="fld"><label>Email</label><input id="ag-email" placeholder="Optional"></div>
+        <div class="fld"><label>Role</label>
+          <select id="ag-role"><option value="">Select</option><option>Field Agent</option><option>Floor Sales</option><option>Tele-caller</option><option>Senior Sales</option><option>Manager</option></select>
+        </div>
+        <div class="fld"><label>Zone / Area</label><input id="ag-zone" placeholder="e.g. Kakinada Urban"></div>
+        <div class="fld"><label>Date of Joining</label><input type="date" id="ag-doj"></div>
+        <div class="fld"><label>Monthly Target (₹)</label><input type="number" id="ag-tgt" placeholder="0"></div>
+        <div class="fld"><label>Commission Rate (%)</label><input type="number" id="ag-com" placeholder="e.g. 1.5" step="0.1"></div>
+        <div class="fld"><label>Bank Account No.</label><input id="ag-bank" placeholder="For commission credit"></div>
+        <div class="fld"><label>IFSC Code</label><input id="ag-ifsc" placeholder="Bank IFSC code"></div>
+        <div class="fld"><label>ID Proof Type</label>
+          <select id="ag-idt"><option value="">Select</option><option>Aadhaar</option><option>PAN Card</option></select>
+        </div>
+        <div class="fld"><label>ID Proof Number</label><input id="ag-idn" placeholder="For payroll KYC"></div>
+        <div class="fld"><label>Status</label>
+          <select id="ag-stat"><option>Active</option><option>Inactive</option><option>On Leave</option></select>
+        </div>
+      </div>
+      <div class="fld"><label>Remarks</label><textarea id="ag-rem" placeholder="Notes, performance comments…"></textarea></div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-outline" onclick="closeMo('mo-ag')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveAg()">💾 Save Agent</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOLLOW-UP MODAL -->
+<div class="mo" id="mo-fu">
+  <div class="modal">
+    <div class="mh"><div class="mt" id="mt-fu">Add Follow-up</div><button class="mc" onclick="closeMo('mo-fu')">✕</button></div>
+    <div class="mb">
+      <input type="hidden" id="f-id">
+      <div class="fg fg2" style="margin-bottom:12px">
+        <div class="fld"><label>Customer Name ●</label><input id="f-cust" placeholder="Customer name"></div>
+        <div class="fld"><label>Mobile</label><input id="f-mob" placeholder="10-digit"></div>
+        <div class="fld"><label>Purpose ●</label>
+          <select id="f-purp"><option value="">Select</option><option>Scheme Renewal</option><option>Sale Follow-up</option><option>Birthday Wish</option><option>Anniversary Offer</option><option>Scheme Maturity</option><option>New Product Info</option><option>Feedback</option><option>Payment Collection</option><option>General</option></select>
+        </div>
+        <div class="fld"><label>Follow-up Mode</label>
+          <select id="f-mode"><option value="">Select</option><option>Call</option><option>WhatsApp</option><option>Visit</option><option>SMS</option><option>Email</option></select>
+        </div>
+        <div class="fld"><label>Due Date ●</label><input type="date" id="f-due"></div>
+        <div class="fld"><label>Assigned To</label><input id="f-asgn" placeholder="Staff or agent name"></div>
+        <div class="fld"><label>Priority</label>
+          <select id="f-pri"><option>High</option><option selected>Medium</option><option>Low</option></select>
+        </div>
+        <div class="fld"><label>Status</label>
+          <select id="f-stat"><option>Pending</option><option>Completed</option><option>Rescheduled</option><option>No Response</option></select>
+        </div>
+        <div class="fld"><label>Next Follow-up Date</label><input type="date" id="f-nxt"></div>
+        <div class="fld"><label>Next Action</label>
+          <select id="f-nact"><option value="">Select</option><option>Call Again</option><option>Visit</option><option>Send Offer</option><option>Scheme Enrol</option><option>None</option></select>
+        </div>
+      </div>
+      <div class="fld"><label>Outcome / Notes</label><textarea id="f-notes" placeholder="What was discussed, outcome, next steps…"></textarea></div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-outline" onclick="closeMo('mo-fu')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveFu()">💾 Save Follow-up</button>
+    </div>
+  </div>
+</div>
+
+<!-- REPAIR MODAL -->
+<div class="mo" id="mo-rep">
+  <div class="modal">
+    <div class="mh"><div class="mt" id="mt-rep">Add Repair Order</div><button class="mc" onclick="closeMo('mo-rep')">✕</button></div>
+    <div class="mb">
+      <input type="hidden" id="r-id">
+      <div class="fg fg2" style="margin-bottom:12px">
+        <div class="fld"><label>Customer Name ●</label><input id="r-cust" placeholder="Customer name"></div>
+        <div class="fld"><label>Mobile ●</label><input id="r-mob" placeholder="10-digit"></div>
+        <div class="fld"><label>Item Description ●</label><input id="r-item" placeholder="Necklace, ring, chain…"></div>
+        <div class="fld"><label>Metal Type</label>
+          <select id="r-metal"><option value="">Select</option><option>Gold 22KT</option><option>Gold 18KT</option><option>Silver</option><option>Platinum</option></select>
+        </div>
+        <div class="fld"><label>Weight Received (g)</label><input type="number" id="r-wt" placeholder="0.000" step="0.001"></div>
+        <div class="fld"><label>Repair Type</label>
+          <select id="r-type"><option value="">Select</option><option>Sizing/Cutting</option><option>Rhodium Plating</option><option>Stone Setting</option><option>Soldering/Joining</option><option>Polishing</option><option>Redesign</option><option>Other</option></select>
+        </div>
+        <div class="fld"><label>Work Description</label><input id="r-work" placeholder="What needs to be done"></div>
+        <div class="fld"><label>Received Date ●</label><input type="date" id="r-recv"></div>
+        <div class="fld"><label>Promise Date</label><input type="date" id="r-prom"></div>
+        <div class="fld"><label>Estimated Charges (₹)</label><input type="number" id="r-est" placeholder="0"></div>
+        <div class="fld"><label>Final Charges (₹)</label><input type="number" id="r-final" placeholder="0"></div>
+        <div class="fld"><label>Assigned Artisan</label><input id="r-art" placeholder="Goldsmith name"></div>
+        <div class="fld"><label>Status</label>
+          <select id="r-stat"><option>Active</option><option>Completed</option><option>Delivered</option></select>
+        </div>
+      </div>
+      <div class="fld"><label>Notes</label><textarea id="r-notes" placeholder="Special instructions, condition of item…"></textarea></div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-outline" onclick="closeMo('mo-rep')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveRep()">💾 Save Repair</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXCHANGE MODAL -->
+<div class="mo" id="mo-exc">
+  <div class="modal">
+    <div class="mh"><div class="mt" id="mt-exc">Add Exchange / Old Gold</div><button class="mc" onclick="closeMo('mo-exc')">✕</button></div>
+    <div class="mb">
+      <input type="hidden" id="e-id">
+      <div class="fg fg2">
+        <div class="fld"><label>Customer Name ●</label><input id="e-cust" placeholder="Customer name"></div>
+        <div class="fld"><label>Mobile</label><input id="e-mob" placeholder="10-digit"></div>
+        <div class="fld"><label>Item Type</label>
+          <select id="e-type"><option value="">Select</option><option>Gold Jewellery</option><option>Silver</option><option>Coins / Bullion</option><option>Broken / Scrap Gold</option></select>
+        </div>
+        <div class="fld"><label>Purity</label>
+          <select id="e-pur"><option value="">Select</option><option>22KT</option><option>18KT</option><option>14KT</option><option>Mixed</option></select>
+        </div>
+        <div class="fld"><label>Gross Weight (g)</label><input type="number" id="e-gwt" placeholder="0.000" step="0.001" oninput="calcExc()"></div>
+        <div class="fld"><label>Net Weight (g)</label><input type="number" id="e-nwt" placeholder="0.000" step="0.001" oninput="calcExc()"></div>
+        <div class="fld"><label>Touch (%)</label><input type="number" id="e-touch" placeholder="e.g. 91.6" oninput="calcExc()"></div>
+        <div class="fld"><label>Rate/gram (₹)</label><input type="number" id="e-rate" placeholder="0" oninput="calcExc()"></div>
+        <div class="fld"><label>Exchange Value (₹)</label><input type="number" id="e-val" placeholder="Auto-calculated"></div>
+        <div class="fld"><label>Melting Deduction (%)</label><input type="number" id="e-melt" placeholder="e.g. 2" oninput="calcExc()"></div>
+        <div class="fld"><label>Final Value Paid (₹)</label><input type="number" id="e-final" placeholder="0"></div>
+        <div class="fld"><label>Date ●</label><input type="date" id="e-date"></div>
+        <div class="fld"><label>Linked Invoice No.</label><input id="e-inv" placeholder="If used for new purchase"></div>
+        <div class="fld"><label>Handled By</label><input id="e-by" placeholder="Staff name"></div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-outline" onclick="closeMo('mo-exc')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveExc()">💾 Save Exchange</button>
+    </div>
+  </div>
+</div>
+
+<!-- NON-CONVERSION MODAL -->
+<div class="mo" id="mo-nc">
+  <div class="modal">
+    <div class="mh"><div class="mt" id="mt-nc">Add Non-Conversion / Walk-out</div><button class="mc" onclick="closeMo('mo-nc')">✕</button></div>
+    <div class="mb">
+      <input type="hidden" id="n-id">
+      <div class="fg fg2">
+        <div class="fld"><label>Customer Name</label><input id="n-name" placeholder="Name (or 'Walk-in')"></div>
+        <div class="fld"><label>Mobile</label><input id="n-mob" placeholder="If available"></div>
+        <div class="fld"><label>Date ●</label><input type="date" id="n-date"></div>
+        <div class="fld"><label>Category Interested</label>
+          <select id="n-cat"><option value="">Select</option><option>Gold Jewellery</option><option>Diamond</option><option>Silver</option><option>Coins</option></select>
+        </div>
+        <div class="fld"><label>Item Shown</label><input id="n-item" placeholder="What was shown/discussed"></div>
+        <div class="fld"><label>Budget Range</label><input id="n-bud" placeholder="e.g. ₹50K–₹1L"></div>
+        <div class="fld"><label>Reason for Non-Conversion</label>
+          <select id="n-reas"><option value="">Select</option><option>Price Too High</option><option>Design Not Available</option><option>Will Come Later</option><option>Comparing Elsewhere</option><option>Budget Constraint</option><option>No Specific Reason</option><option>Other</option></select>
+        </div>
+        <div class="fld"><label>Lead Temperature</label>
+          <select id="n-temp"><option>Hot</option><option>Warm</option><option>Cold</option></select>
+        </div>
+        <div class="fld"><label>Staff Handled</label><input id="n-staff" placeholder="Who attended customer"></div>
+        <div class="fld"><label>Follow-up Required</label>
+          <select id="n-fu"><option>Yes</option><option>No</option></select>
+        </div>
+      </div>
+      <div class="fld" style="margin-top:10px"><label>Remarks</label><textarea id="n-rem" placeholder="Customer feedback, what might convert them…"></textarea></div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-outline" onclick="closeMo('mo-nc')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveNc()">💾 Save Record</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW DETAIL MODAL -->
+<div class="mo" id="mo-view">
+  <div class="modal">
+    <div class="mh"><div class="mt" id="mt-view">Details</div><button class="mc" onclick="closeMo('mo-view')">✕</button></div>
+    <div class="mb" id="mb-view"></div>
+    <div class="mf"><button class="btn btn-outline" onclick="closeMo('mo-view')">Close</button></div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE -->
+<div class="conf" id="conf">
+  <div class="conf-box">
+    <h3>Delete Record?</h3>
+    <p>This will permanently remove this entry. This action cannot be undone.</p>
+    <div class="conf-btns">
+      <button class="btn btn-outline" onclick="closeConf()">Cancel</button>
+      <button class="btn btn-danger" onclick="doDelete()">🗑️ Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
 
 <script>
-  // Date display
-  const d = new Date();
-  document.getElementById('topbar-date').textContent =
-    d.toLocaleDateString('en-IN', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+// ─────────────────────────────────────────────
+// DATA LAYER
+// ─────────────────────────────────────────────
+const K={C:'ams_cust',S:'ams_sale',M:'ams_mkt',SC:'ams_sch',AG:'ams_ag',FU:'ams_fu',R:'ams_rep',E:'ams_exc',NC:'ams_nc'};
+const ld=k=>JSON.parse(localStorage.getItem(K[k])||'[]');
+const sv=(k,d)=>localStorage.setItem(K[k],JSON.stringify(d));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+const fmt=n=>n?'₹'+Number(n).toLocaleString('en-IN'):'—';
+const fmtN=n=>n?Number(n).toFixed(3):'—';
+const today=()=>new Date().toISOString().split('T')[0];
 
-  // Navigation
-  const titles = {
-    dashboard: 'Dashboard',
-    customers: 'Customer Management',
-    marketing: 'Marketing Activities',
-    sales: 'Sales Monitor',
-    schemes: 'Schemes & Plans',
-    agents: 'Agent / Staff Management',
-    followups: 'Follow-up Tracker',
-    fields: 'Field Reference Guide'
-  };
+// ─────────────────────────────────────────────
+// UI HELPERS
+// ─────────────────────────────────────────────
+let curPage='dashboard', delCb=null;
+const filts={C:'all',S:'all',M:'all',SC:'all',FU:'all',R:'all',NC:'all'};
 
-  function navigate(page, el) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById('page-' + page).classList.add('active');
-    if (el) el.classList.add('active');
-    document.getElementById('page-title').textContent = titles[page] || page;
-  }
+const pgMap={dashboard:'Dashboard',customers:'Customer Management',sales:'Sales Monitor',
+  marketing:'Marketing Activities',schemes:'Schemes & Plans',agents:'Agents & Staff',
+  followups:'Follow-up Tracker',repairs:'Repair Orders',exchange:'Exchange / Old Gold',
+  nonconv:'Non-Conversions',reports:'Reports & Export'};
 
-  // Modals
-  function openModal(id) {
-    document.getElementById(id).classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
+const addLbl={dashboard:'＋ Add Customer',customers:'＋ Add Customer',sales:'＋ Add Sale',
+  marketing:'＋ Add Campaign',schemes:'＋ Add Scheme',agents:'＋ Add Agent',
+  followups:'＋ Add Follow-up',repairs:'＋ Add Repair',exchange:'＋ Add Exchange',
+  nonconv:'＋ Add Record',reports:'Reports'};
 
-  function closeModal(id) {
-    document.getElementById(id).classList.remove('open');
-    document.body.style.overflow = '';
-  }
+function go(page, el){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nav').forEach(n=>n.classList.remove('on'));
+  document.getElementById('pg-'+page).classList.add('on');
+  if(el) el.classList.add('on');
+  document.getElementById('pg-title').textContent=pgMap[page]||page;
+  document.getElementById('main-add').textContent=addLbl[page]||'＋ Add';
+  document.getElementById('main-add').style.display=page==='reports'?'none':'';
+  curPage=page;
+  renderPage(page);
+}
 
-  // Close modal on overlay click
-  document.querySelectorAll('.modal-overlay').forEach(overlay => {
-    overlay.addEventListener('click', function(e) {
-      if (e.target === this) closeModal(this.id);
-    });
+function mainAdd(){
+  const mo={dashboard:'mo-cust',customers:'mo-cust',sales:'mo-sale',marketing:'mo-mkt',
+    schemes:'mo-sch',agents:'mo-ag',followups:'mo-fu',repairs:'mo-rep',
+    exchange:'mo-exc',nonconv:'mo-nc'};
+  resetMo(curPage);
+  openMo(mo[curPage]||'mo-cust');
+}
+
+function renderPage(p){
+  if(p==='dashboard') rDash();
+  else if(p==='customers') rCust();
+  else if(p==='sales') rSales();
+  else if(p==='marketing') rMkt();
+  else if(p==='schemes') rSch();
+  else if(p==='agents') rAg();
+  else if(p==='followups') rFu();
+  else if(p==='repairs') rRep();
+  else if(p==='exchange') rExc();
+  else if(p==='nonconv') rNc();
+  else if(p==='reports') rReports();
+}
+
+function openMo(id){document.getElementById(id).classList.add('op');document.body.style.overflow='hidden';}
+function closeMo(id){document.getElementById(id).classList.remove('op');document.body.style.overflow='';}
+document.querySelectorAll('.mo').forEach(o=>o.addEventListener('click',function(e){if(e.target===this)closeMo(this.id);}));
+
+function openConf(cb){delCb=cb;document.getElementById('conf').classList.add('op');}
+function closeConf(){document.getElementById('conf').classList.remove('op');delCb=null;}
+function doDelete(){if(delCb)delCb();closeConf();}
+
+function toast(msg,dur=2600){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur);}
+
+function b(txt,cls){return`<span class="b ${cls}">${txt}</span>`;}
+function bStatus(s){
+  const m={Paid:'b-g',Partial:'b-au',Pending:'b-r',Active:'b-g',Matured:'b-b',Defaulted:'b-r',
+    Cancelled:'b-gr',Completed:'b-g',Delivered:'b-gr',Hot:'b-r',Warm:'b-o',Cold:'b-b',
+    Planned:'b-b',Paused:'b-gr',VIP:'b-au',Regular:'b-g',New:'b-b'};
+  return b(s,m[s]||'b-gr');
+}
+
+function empty(msg){return`<div class="empty"><div class="eico">📋</div><p>${msg}</p></div>`;}
+
+function abtn(editFn,delFn,viewFn=''){
+  return`<div class="abtn">
+    ${viewFn?`<button class="btn btn-success btn-xs" onclick="${viewFn}">👁️</button>`:''}
+    <button class="btn btn-edit btn-xs" onclick="${editFn}">✏️</button>
+    <button class="btn btn-danger btn-xs" onclick="${delFn}">🗑️</button>
+  </div>`;
+}
+
+function delRec(k,id){
+  openConf(()=>{
+    sv(k,ld(k).filter(x=>x.id!==id));
+    toast('🗑️ Record deleted successfully');
+    renderPage(curPage);
   });
+}
 
-  // Tab clicks (cosmetic)
-  document.querySelectorAll('.tab').forEach(tab => {
-    tab.addEventListener('click', function() {
-      this.closest('.tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      this.classList.add('active');
-    });
+function gv(id){return(document.getElementById(id)||{}).value||'';}
+function sv2(id,v){const el=document.getElementById(id);if(el)el.value=v||'';}
+
+// ─────────────────────────────────────────────
+// RESET FORMS
+// ─────────────────────────────────────────────
+function resetMo(pg){
+  if(pg==='dashboard'||pg==='customers'){
+    ['c-id','c-name','c-mob','c-mob2','c-email','c-dob','c-ann','c-addr','c-city','c-pin','c-idn','c-ref','c-agt','c-notes'].forEach(i=>sv2(i,''));
+    ['c-occ','c-idt','c-type','c-cat','c-wa','c-src'].forEach(i=>{const e=document.getElementById(i);if(e)e.selectedIndex=0;});
+    document.getElementById('mt-cust').textContent='Add Customer';
+  } else if(pg==='sales'){
+    ['s-id','s-cust','s-cmob','s-sp','s-item','s-hall','s-camp','s-gwt','s-nwt','s-rate','s-mkg','s-stone','s-gst','s-exch','s-sbf','s-disc','s-total','s-paid','s-bal','s-ref'].forEach(i=>sv2(i,''));
+    ['s-cat','s-pur','s-occ','s-pmode','s-pstat'].forEach(i=>{const e=document.getElementById(i);if(e)e.selectedIndex=0;});
+    document.getElementById('mt-sale').textContent='Record Sale';
+  } else if(pg==='marketing'){
+    ['m-id','m-name','m-bud','m-sp','m-reach','m-leads','m-conv','m-rev','m-by','m-rem'].forEach(i=>sv2(i,''));
+    ['m-obj','m-ch','m-aud','m-stat'].forEach(i=>{const e=document.getElementById(i);if(e)e.selectedIndex=0;});
+    sv2('m-sd','');sv2('m-ed','');
+    document.getElementById('mt-mkt').textContent='Add Campaign';
+  } else if(pg==='schemes'){
+    ['sc-id','sc-name','sc-cust','sc-mob','sc-amt','sc-dur','sc-sd','sc-md','sc-paid','sc-coll','sc-agt','sc-rem'].forEach(i=>sv2(i,''));
+    document.getElementById('mt-sch').textContent='Add Scheme';
+  } else if(pg==='agents'){
+    ['ag-id','ag-name','ag-mob','ag-email','ag-zone','ag-doj','ag-tgt','ag-com','ag-bank','ag-ifsc','ag-idn','ag-rem'].forEach(i=>sv2(i,''));
+    document.getElementById('mt-ag').textContent='Add Agent / Staff';
+  } else if(pg==='followups'){
+    ['f-id','f-cust','f-mob','f-asgn','f-nxt','f-notes'].forEach(i=>sv2(i,''));
+    ['f-purp','f-mode','f-pri','f-stat','f-nact'].forEach(i=>{const e=document.getElementById(i);if(e)e.selectedIndex=0;});
+    sv2('f-due','');
+    document.getElementById('mt-fu').textContent='Add Follow-up';
+  } else if(pg==='repairs'){
+    ['r-id','r-cust','r-mob','r-item','r-wt','r-work','r-recv','r-prom','r-est','r-final','r-art','r-notes'].forEach(i=>sv2(i,''));
+    document.getElementById('mt-rep').textContent='Add Repair Order';
+  } else if(pg==='exchange'){
+    ['e-id','e-cust','e-mob','e-gwt','e-nwt','e-touch','e-rate','e-val','e-melt','e-final','e-inv','e-by'].forEach(i=>sv2(i,''));
+    sv2('e-date','');
+    document.getElementById('mt-exc').textContent='Add Exchange / Old Gold';
+  } else if(pg==='nonconv'){
+    ['n-id','n-name','n-mob','n-item','n-bud','n-staff','n-rem'].forEach(i=>sv2(i,''));
+    sv2('n-date',today());
+    document.getElementById('mt-nc').textContent='Add Non-Conversion / Walk-out';
+  }
+}
+
+// ─────────────────────────────────────────────
+// DASHBOARD
+// ─────────────────────────────────────────────
+function rDash(){
+  const custs=ld('C'), sales=ld('S'), schemes=ld('SC'), fus=ld('FU'), reps=ld('R'), mkts=ld('M');
+  document.getElementById('k-cust').textContent=custs.length;
+  document.getElementById('k-cust-s').textContent=custs.filter(c=>c.type==='VIP').length+' VIP customers';
+  const totalSales=sales.reduce((a,s)=>a+Number(s.total||0),0);
+  document.getElementById('k-sales').textContent=fmt(totalSales);
+  document.getElementById('k-sales-s').textContent=sales.length+' transactions';
+  const activeSchemes=schemes.filter(s=>s.stat==='Active');
+  document.getElementById('k-schemes').textContent=activeSchemes.length;
+  document.getElementById('k-schemes-s').textContent='of '+schemes.length+' total schemes';
+  const pendFu=fus.filter(f=>f.stat==='Pending');
+  document.getElementById('k-fu').textContent=pendFu.length;
+  document.getElementById('k-fu-s').textContent='of '+fus.length+' total';
+  const pendRep=reps.filter(r=>r.stat==='Active');
+  document.getElementById('k-rep').textContent=pendRep.length;
+  const activeCamp=mkts.filter(m=>m.stat==='Active');
+  document.getElementById('k-camp').textContent=activeCamp.length;
+
+  // Recent customers
+  const rc=custs.slice(-5).reverse();
+  document.getElementById('d-cust').innerHTML=rc.length?`<table class="tbl">
+    <thead><tr><th>Name</th><th>Mobile</th><th>Type</th><th>City</th></tr></thead>
+    <tbody>${rc.map(c=>`<tr><td><strong>${c.name}</strong></td><td>${c.mob}</td><td>${bStatus(c.type||'New')}</td><td>${c.city||'—'}</td></tr>`).join('')}</tbody>
+  </table>`:empty('No customers yet');
+
+  // Recent sales
+  const rs=sales.slice(-5).reverse();
+  document.getElementById('d-sales').innerHTML=rs.length?`<table class="tbl">
+    <thead><tr><th>Customer</th><th>Item</th><th>Total</th><th>Status</th></tr></thead>
+    <tbody>${rs.map(s=>`<tr><td>${s.cust}</td><td>${s.item||s.cat||'—'}</td><td><strong>${fmt(s.total)}</strong></td><td>${bStatus(s.pstat||'Paid')}</td></tr>`).join('')}</tbody>
+  </table>`:empty('No sales yet');
+
+  // Upcoming follow-ups
+  const upcoming=fus.filter(f=>f.stat==='Pending').slice(0,5);
+  document.getElementById('d-fu').innerHTML=upcoming.length?`<table class="tbl">
+    <thead><tr><th>Customer</th><th>Purpose</th><th>Due</th><th>Priority</th></tr></thead>
+    <tbody>${upcoming.map(f=>`<tr><td>${f.cust}</td><td>${f.purp||'—'}</td><td>${f.due||'—'}</td><td>${bStatus(f.pri||'Medium')}</td></tr>`).join('')}</tbody>
+  </table>`:empty('No pending follow-ups');
+
+  // Pending repairs
+  document.getElementById('d-rep').innerHTML=pendRep.length?`<table class="tbl">
+    <thead><tr><th>Customer</th><th>Item</th><th>Promise</th><th>Status</th></tr></thead>
+    <tbody>${pendRep.slice(0,5).map(r=>`<tr><td>${r.cust}</td><td>${r.item}</td><td>${r.prom||'—'}</td><td>${bStatus(r.stat)}</td></tr>`).join('')}</tbody>
+  </table>`:empty('No pending repairs');
+}
+
+// ─────────────────────────────────────────────
+// CUSTOMERS
+// ─────────────────────────────────────────────
+let custFilt='all';
+function fCust(f,el){custFilt=f;document.querySelectorAll('#pg-customers .tab').forEach(t=>t.classList.remove('on'));if(el)el.classList.add('on');rCust();}
+function rCust(){
+  const q=gv('s-cust').toLowerCase();
+  let d=ld('C');
+  if(custFilt!=='all') d=d.filter(c=>c.type===custFilt);
+  if(q) d=d.filter(c=>(c.name+c.mob+c.city+'').toLowerCase().includes(q));
+  const w=document.getElementById('cust-wrap');
+  if(!d.length){w.innerHTML=empty('No customers found. Click "+ Add Customer" to begin.');return;}
+  w.innerHTML=`<table class="tbl">
+    <thead><tr><th>Name</th><th>Mobile</th><th>City</th><th>Type</th><th>Category</th><th>DOB</th><th>Anniversary</th><th>WhatsApp</th><th>Agent</th><th>KYC</th><th>Actions</th></tr></thead>
+    <tbody>${d.slice().reverse().map(c=>`<tr>
+      <td><strong>${c.name}</strong>${c.email?`<br><small style="color:#999">${c.email}</small>`:''}</td>
+      <td>${c.mob}${c.mob2?`<br><small>${c.mob2}</small>`:''}</td>
+      <td>${c.city||'—'}</td>
+      <td>${bStatus(c.type||'New')}</td>
+      <td>${c.cat?b(c.cat,'b-au'):'—'}</td>
+      <td>${c.dob||'—'}</td>
+      <td>${c.ann||'—'}</td>
+      <td>${c.wa==='Yes'?b('✓ Yes','b-g'):b('✗ No','b-gr')}</td>
+      <td>${c.agt||'—'}</td>
+      <td>${c.idn?b('KYC ✓','b-g'):b('Pending','b-r')}</td>
+      <td>${abtn(`editCust('${c.id}')`,`delRec('C','${c.id}')`,`viewRec('C','${c.id}')`)}</td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+function editCust(id){
+  const c=ld('C').find(x=>x.id===id);if(!c)return;
+  document.getElementById('mt-cust').textContent='Edit Customer';
+  sv2('c-id',c.id);sv2('c-name',c.name);sv2('c-mob',c.mob);sv2('c-mob2',c.mob2);sv2('c-email',c.email);sv2('c-dob',c.dob);sv2('c-ann',c.ann);sv2('c-addr',c.addr);sv2('c-city',c.city);sv2('c-pin',c.pin);sv2('c-occ',c.occ);sv2('c-idt',c.idt);sv2('c-idn',c.idn);sv2('c-type',c.type);sv2('c-cat',c.cat);sv2('c-wa',c.wa);sv2('c-src',c.src);sv2('c-ref',c.ref);sv2('c-agt',c.agt);sv2('c-notes',c.notes);
+  openMo('mo-cust');
+}
+function saveCust(){
+  const name=gv('c-name').trim(), mob=gv('c-mob').trim();
+  if(!name||!mob){toast('⚠️ Name and Mobile are required');return;}
+  const id=gv('c-id')||uid();
+  const rec={id,name,mob,mob2:gv('c-mob2'),email:gv('c-email'),dob:gv('c-dob'),ann:gv('c-ann'),addr:gv('c-addr'),city:gv('c-city'),pin:gv('c-pin'),occ:gv('c-occ'),idt:gv('c-idt'),idn:gv('c-idn'),type:gv('c-type'),cat:gv('c-cat'),wa:gv('c-wa'),src:gv('c-src'),ref:gv('c-ref'),agt:gv('c-agt'),notes:gv('c-notes'),date:today()};
+  let d=ld('C'); const i=d.findIndex(x=>x.id===id);
+  if(i>=0) d[i]=rec; else d.push(rec);
+  sv('C',d); closeMo('mo-cust'); toast(i>=0?'✅ Customer updated!':'✅ Customer added!'); renderPage(curPage);
+}
+
+// ─────────────────────────────────────────────
+// SALES
+// ─────────────────────────────────────────────
+let saleFilt='all';
+function fSale(f,el){saleFilt=f;document.querySelectorAll('#pg-sales .tab').forEach(t=>t.classList.remove('on'));if(el)el.classList.add('on');rSales();}
+function calcSale(){
+  const nwt=Number(gv('s-nwt'))||0, rate=Number(gv('s-rate'))||0;
+  const mkg=Number(gv('s-mkg'))||0, stone=Number(gv('s-stone'))||0;
+  const gst=Number(gv('s-gst'))||0, exch=Number(gv('s-exch'))||0;
+  const sbf=Number(gv('s-sbf'))||0, disc=Number(gv('s-disc'))||0;
+  const total=(nwt*rate)+mkg+stone+gst-exch-sbf-disc;
+  sv2('s-total',total>0?total.toFixed(2):'');
+  calcBal();
+}
+function calcBal(){
+  const total=Number(gv('s-total'))||0, paid=Number(gv('s-paid'))||0;
+  sv2('s-bal',Math.max(0,total-paid).toFixed(2));
+}
+function calcExc(){
+  const nwt=Number(gv('e-nwt'))||0, rate=Number(gv('e-rate'))||0;
+  const touch=Number(gv('e-touch'))||100, melt=Number(gv('e-melt'))||0;
+  const val=nwt*(touch/100)*rate;
+  const finalVal=val*(1-melt/100);
+  sv2('e-val',val.toFixed(2));
+  sv2('e-final',finalVal.toFixed(2));
+}
+function rSales(){
+  const q=gv('s-sale').toLowerCase();
+  let d=ld('S');
+  if(saleFilt!=='all') d=d.filter(s=>s.pstat===saleFilt);
+  if(q) d=d.filter(s=>(s.cust+s.invno+s.cat+'').toLowerCase().includes(q));
+  const w=document.getElementById('sale-wrap');
+  if(!d.length){w.innerHTML=empty('No sales recorded. Click "+ Add Sale" to begin.');return;}
+  w.innerHTML=`<table class="tbl">
+    <thead><tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Category</th><th>Item</th><th>Net Wt</th><th>Total</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>${d.slice().reverse().map(s=>`<tr>
+      <td><strong>${s.invno}</strong></td>
+      <td>${s.date||'—'}</td>
+      <td>${s.cust}<br><small style="color:#999">${s.cmob||''}</small></td>
+      <td>${s.cat?b(s.cat,'b-au'):'—'}</td>
+      <td>${s.item||'—'}${s.pur?`<br><small>${s.pur}</small>`:''}</td>
+      <td>${s.nwt?s.nwt+'g':'—'}</td>
+      <td><strong>${fmt(s.total)}</strong>${s.bal&&Number(s.bal)>0?`<br><small style="color:var(--danger)">Bal: ${fmt(s.bal)}</small>`:''}</td>
+      <td>${s.pmode?b(s.pmode,'b-b'):'—'}</td>
+      <td>${bStatus(s.pstat||'Paid')}</td>
+      <td>${abtn(`editSale('${s.id}')`,`delRec('S','${s.id}')`,`viewRec('S','${s.id}')`)}</td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+function editSale(id){
+  const s=ld('S').find(x=>x.id===id);if(!s)return;
+  document.getElementById('mt-sale').textContent='Edit Sale';
+  sv2('s-id',s.id);sv2('s-cust',s.cust);sv2('s-cmob',s.cmob);sv2('s-sp',s.sp);sv2('s-cat',s.cat);sv2('s-item',s.item);sv2('s-pur',s.pur);sv2('s-hall',s.hall);sv2('s-occ',s.occ);sv2('s-camp',s.camp);sv2('s-gwt',s.gwt);sv2('s-nwt',s.nwt);sv2('s-rate',s.rate);sv2('s-mkg',s.mkg);sv2('s-stone',s.stone);sv2('s-gst',s.gst);sv2('s-exch',s.exch);sv2('s-sbf',s.sbf);sv2('s-disc',s.disc);sv2('s-total',s.total);sv2('s-paid',s.paid);sv2('s-bal',s.bal);sv2('s-pmode',s.pmode);sv2('s-ref',s.ref);sv2('s-pstat',s.pstat);
+  openMo('mo-sale');
+}
+function saveSale(){
+  const cust=gv('s-cust').trim(), total=gv('s-total');
+  if(!cust){toast('⚠️ Customer name is required');return;}
+  const id=gv('s-id')||uid();
+  const invno=gv('s-id')?ld('S').find(x=>x.id===id)?.invno||('LJK-'+id.slice(-6).toUpperCase()):('LJK-'+id.slice(-6).toUpperCase());
+  const rec={id,invno,cust,cmob:gv('s-cmob'),sp:gv('s-sp'),cat:gv('s-cat'),item:gv('s-item'),pur:gv('s-pur'),hall:gv('s-hall'),occ:gv('s-occ'),camp:gv('s-camp'),gwt:gv('s-gwt'),nwt:gv('s-nwt'),rate:gv('s-rate'),mkg:gv('s-mkg'),stone:gv('s-stone'),gst:gv('s-gst'),exch:gv('s-exch'),sbf:gv('s-sbf'),disc:gv('s-disc'),total,paid:gv('s-paid'),bal:gv('s-bal'),pmode:gv('s-pmode'),ref:gv('s-ref'),pstat:gv('s-pstat'),date:today()};
+  let d=ld('S'); const i=d.findIndex(x=>x.id===id);
+  if(i>=0) d[i]=rec; else d.push(rec);
+  sv('S',d); closeMo('mo-sale'); toast(i>=0?'✅ Sale updated!':'✅ Sale recorded!'); renderPage(curPage);
+}
+
+// ─────────────────────────────────────────────
+// MARKETING
+// ─────────────────────────────────────────────
+let mktFilt='all';
+function fMkt(f,el){mktFilt=f;document.querySelectorAll('#pg-marketing .tab').forEach(t=>t.classList.remove('on'));if(el)el.classList.add('on');rMkt();}
+function rMkt(){
+  const q=gv('s-mkt').toLowerCase();
+  let d=ld('M');
+  if(mktFilt!=='all') d=d.filter(m=>m.stat===mktFilt);
+  if(q) d=d.filter(m=>m.name.toLowerCase().includes(q));
+  const w=document.getElementById('mkt-wrap');
+  if(!d.length){w.innerHTML=empty('No campaigns yet. Click "+ Add Campaign" to begin.');return;}
+  w.innerHTML=`<table class="tbl">
+    <thead><tr><th>Campaign</th><th>Channel</th><th>Audience</th><th>Dates</th><th>Budget</th><th>Reach</th><th>Leads</th><th>Conv.</th><th>Revenue</th><th>ROI</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>${d.slice().reverse().map(m=>{
+      const roi=m.sp&&m.rev?((Number(m.rev)-Number(m.sp))/Number(m.sp)*100).toFixed(1)+'%':'—';
+      return`<tr>
+        <td><strong>${m.name}</strong>${m.obj?`<br><small style="color:#999">${m.obj}</small>`:''}</td>
+        <td>${m.ch||'—'}</td><td>${m.aud||'—'}</td>
+        <td>${m.sd||''}${m.ed?' → '+m.ed:''}</td>
+        <td>${fmt(m.bud)}</td>
+        <td>${m.reach||'—'}</td><td>${m.leads||'—'}</td><td>${m.conv||'—'}</td>
+        <td>${fmt(m.rev)}</td>
+        <td>${roi!=='—'?b(roi,Number(roi)>0?'b-g':'b-r'):roi}</td>
+        <td>${bStatus(m.stat||'Planned')}</td>
+        <td>${abtn(`editMkt('${m.id}')`,`delRec('M','${m.id}')`)}</td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+function editMkt(id){
+  const m=ld('M').find(x=>x.id===id);if(!m)return;
+  document.getElementById('mt-mkt').textContent='Edit Campaign';
+  sv2('m-id',m.id);sv2('m-name',m.name);sv2('m-obj',m.obj);sv2('m-ch',m.ch);sv2('m-aud',m.aud);sv2('m-sd',m.sd);sv2('m-ed',m.ed);sv2('m-bud',m.bud);sv2('m-sp',m.sp);sv2('m-reach',m.reach);sv2('m-leads',m.leads);sv2('m-conv',m.conv);sv2('m-rev',m.rev);sv2('m-by',m.by);sv2('m-stat',m.stat);sv2('m-rem',m.rem);
+  openMo('mo-mkt');
+}
+function saveMkt(){
+  const name=gv('m-name').trim();
+  if(!name){toast('⚠️ Campaign name is required');return;}
+  const id=gv('m-id')||uid();
+  const rec={id,name,obj:gv('m-obj'),ch:gv('m-ch'),aud:gv('m-aud'),sd:gv('m-sd'),ed:gv('m-ed'),bud:gv('m-bud'),sp:gv('m-sp'),reach:gv('m-reach'),leads:gv('m-leads'),conv:gv('m-conv'),rev:gv('m-rev'),by:gv('m-by'),stat:gv('m-stat'),rem:gv('m-rem'),date:today()};
+  let d=ld('M'); const i=d.findIndex(x=>x.id===id);
+  if(i>=0) d[i]=rec; else d.push(rec);
+  sv('M',d); closeMo('mo-mkt'); toast(i>=0?'✅ Campaign updated!':'✅ Campaign added!'); renderPage(curPage);
+}
+
+// ─────────────────────────────────────────────
+// SCHEMES
+// ─────────────────────────────────────────────
+let schFilt='all';
+function fSch(f,el){schFilt=f;document.querySelectorAll('#pg-schemes .tab').forEach(t=>t.classList.remove('on'));if(el)el.classList.add('on');rSch();}
+function rSch(){
+  const q=gv('s-sch').toLowerCase();
+  let d=ld('SC');
+  if(schFilt!=='all') d=d.filter(s=>s.stat===schFilt);
+  if(q) d=d.filter(s=>(s.name+s.cust+'').toLowerCase().includes(q));
+  const w=document.getElementById('sch-wrap');
+  if(!d.length){w.innerHTML=empty('No schemes yet. Click "+ Add Scheme" to begin.');return;}
+  w.innerHTML=`<table class="tbl">
+    <thead><tr><th>Scheme</th><th>Type</th><th>Customer</th><th>Monthly</th><th>Duration</th><th>Start</th><th>Maturity</th><th>Paid</th><th>Collected</th><th>Agent</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>${d.slice().reverse().map(s=>`<tr>
+      <td><strong>${s.name}</strong></td>
+      <td>${s.type?b(s.type,'b-au'):'—'}</td>
+      <td>${s.cust}<br><small>${s.mob||''}</small></td>
+      <td>${fmt(s.amt)}</td>
+      <td>${s.dur?s.dur+' mo':'—'}</td>
+      <td>${s.sd||'—'}</td>
+      <td>${s.md||'—'}</td>
+      <td>${s.paid||0} / ${s.dur||'?'}</td>
+      <td>${fmt(s.coll)}</td>
+      <td>${s.agt||'—'}</td>
+      <td>${bStatus(s.stat||'Active')}</td>
+      <td>${abtn(`editSch('${s.id}')`,`delRec('SC','${s.id}')`)}</td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+function editSch(id){
+  const s=ld('SC').find(x=>x.id===id);if(!s)return;
+  document.getElementById('mt-sch').textContent='Edit Scheme';
+  sv2('sc-id',s.id);sv2('sc-name',s.name);sv2('sc-type',s.type);sv2('sc-cust',s.cust);sv2('sc-mob',s.mob);sv2('sc-amt',s.amt);sv2('sc-dur',s.dur);sv2('sc-sd',s.sd);sv2('sc-md',s.md);sv2('sc-paid',s.paid);sv2('sc-coll',s.coll);sv2('sc-agt',s.agt);sv2('sc-stat',s.stat);sv2('sc-rem',s.rem);
+  openMo('mo-sch');
+}
+function saveSch(){
+  const name=gv('sc-name').trim(), cust=gv('sc-cust').trim();
+  if(!name||!cust){toast('⚠️ Scheme name and Customer are required');return;}
+  const id=gv('sc-id')||uid();
+  const rec={id,name,type:gv('sc-type'),cust,mob:gv('sc-mob'),amt:gv('sc-amt'),dur:gv('sc-dur'),sd:gv('sc-sd'),md:gv('sc-md'),paid:gv('sc-paid'),coll:gv('sc-coll'),agt:gv('sc-agt'),stat:gv('sc-stat'),rem:gv('sc-rem'),date:today()};
+  let d=ld('SC'); const i=d.findIndex(x=>x.id===id);
+  if(i>=0) d[i]=rec; else d.push(rec);
+  sv('SC',d); closeMo('mo-sch'); toast(i>=0?'✅ Scheme updated!':'✅ Scheme added!'); renderPage(curPage);
+}
+
+// ─────────────────────────────────────────────
+// AGENTS
+// ─────────────────────────────────────────────
+function rAg(){
+  const q=gv('s-ag').toLowerCase();
+  let d=ld('AG');
+  if(q) d=d.filter(a=>(a.name+a.mob+a.zone+'').toLowerCase().includes(q));
+  const w=document.getElementById('ag-wrap');
+  if(!d.length){w.innerHTML=empty('No agents yet. Click "+ Add Agent" to begin.');return;}
+  w.innerHTML=`<table class="tbl">
+    <thead><tr><th>Name</th><th>Mobile</th><th>Role</th><th>Zone</th><th>Joining</th><th>Target</th><th>Commission</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>${d.slice().reverse().map(a=>`<tr>
+      <td><strong>${a.name}</strong>${a.email?`<br><small>${a.email}</small>`:''}</td>
+      <td>${a.mob}</td>
+      <td>${a.role?b(a.role,'b-b'):'—'}</td>
+      <td>${a.zone||'—'}</td>
+      <td>${a.doj||'—'}</td>
+      <td>${fmt(a.tgt)}</td>
+      <td>${a.com?a.com+'%':'—'}</td>
+      <td>${bStatus(a.stat||'Active')}</td>
+      <td>${abtn(`editAg('${a.id}')`,`delRec('AG','${a.id}')`,`viewRec('AG','${a.id}')`)}</td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+function editAg(id){
+  const a=ld('AG').find(x=>x.id===id);if(!a)return;
+  document.getElementById('mt-ag').textContent='Edit Agent / Staff';
+  sv2('ag-id',a.id);sv2('ag-name',a.name);sv2('ag-mob',a.mob);sv2('ag-email',a.email);sv2('ag-role',a.role);sv2('ag-zone',a.zone);sv2('ag-doj',a.doj);sv2('ag-tgt',a.tgt);sv2('ag-com',a.com);sv2('ag-bank',a.bank);sv2('ag-ifsc',a.ifsc);sv2('ag-idt',a.idt);sv2('ag-idn',a.idn);sv2('ag-stat',a.stat);sv2('ag-rem',a.rem);
+  openMo('mo-ag');
+}
+function saveAg(){
+  const name=gv('ag-name').trim(), mob=gv('ag-mob').trim();
+  if(!name||!mob){toast('⚠️ Name and Mobile are required');return;}
+  const id=gv('ag-id')||uid();
+  const rec={id,name,mob,email:gv('ag-email'),role:gv('ag-role'),zone:gv('ag-zone'),doj:gv('ag-doj'),tgt:gv('ag-tgt'),com:gv('ag-com'),bank:gv('ag-bank'),ifsc:gv('ag-ifsc'),idt:gv('ag-idt'),idn:gv('ag-idn'),stat:gv('ag-stat'),rem:gv('ag-rem'),date:today()};
+  let d=ld('AG'); const i=d.findIndex(x=>x.id===id);
+  if(i>=0) d[i]=rec; else d.push(rec);
+  sv('AG',d); closeMo('mo-ag'); toast(i>=0?'✅ Agent updated!':'✅ Agent added!'); renderPage(curPage);
+}
+
+// ─────────────────────────────────────────────
+// FOLLOW-UPS
+// ─────────────────────────────────────────────
+let fuFilt='all';
+function fFu(f,el){fuFilt=f;document.querySelectorAll('#pg-followups .tab').forEach(t=>t.classList.remove('on'));if(el)el.classList.add('on');rFu();}
+function rFu(){
+  const q=gv('s-fu').toLowerCase();
+  let d=ld('FU');
+  if(fuFilt!=='all') d=d.filter(f=>f.stat===fuFilt);
+  if(q) d=d.filter(f=>(f.cust+f.purp+'').toLowerCase().includes(q));
+  const w=document.getElementById('fu-wrap');
+  if(!d.length){w.innerHTML=empty('No follow-ups yet. Click "+ Add Follow-up" to begin.');return;}
+  const tod=today();
+  w.innerHTML=`<table class="tbl">
+    <thead><tr><th>Customer</th><th>Mobile</th><th>Purpose</th><th>Mode</th><th>Due Date</th><th>Assigned</th><th>Priority</th><th>Status</th><th>Next</th><th>Actions</th></tr></thead>
+    <tbody>${d.slice().reverse().map(f=>{
+      const overdue=f.stat==='Pending'&&f.due&&f.due<tod;
+      return`<tr style="${overdue?'background:#FFF5F5':''}" >
+        <td><strong>${f.cust}</strong></td><td>${f.mob||'—'}</td>
+        <td>${f.purp||'—'}</td><td>${f.mode||'—'}</td>
+        <td style="${overdue?'color:var(--danger);font-weight:600':''}">${f.due||'—'}${overdue?' ⚠️':''}</td>
+        <td>${f.asgn||'—'}</td>
+        <td>${bStatus(f.pri||'Medium')}</td>
+        <td>${bStatus(f.stat||'Pending')}</td>
+        <td>${f.nxt||'—'}</td>
+        <td>${abtn(`editFu('${f.id}')`,`delRec('FU','${f.id}')`)}</td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+function editFu(id){
+  const f=ld('FU').find(x=>x.id===id);if(!f)return;
+  document.getElementById('mt-fu').textContent='Edit Follow-up';
+  sv2('f-id',f.id);sv2('f-cust',f.cust);sv2('f-mob',f.mob);sv2('f-purp',f.purp);sv2('f-mode',f.mode);sv2('f-due',f.due);sv2('f-asgn',f.asgn);sv2('f-pri',f.pri);sv2('f-stat',f.stat);sv2('f-nxt',f.nxt);sv2('f-nact',f.nact);sv2('f-notes',f.notes);
+  openMo('mo-fu');
+}
+function saveFu(){
+  const cust=gv('f-cust').trim();
+  if(!cust){toast('⚠️ Customer name is required');return;}
+  const id=gv('f-id')||uid();
+  const rec={id,cust,mob:gv('f-mob'),purp:gv('f-purp'),mode:gv('f-mode'),due:gv('f-due'),asgn:gv('f-asgn'),pri:gv('f-pri'),stat:gv('f-stat'),nxt:gv('f-nxt'),nact:gv('f-nact'),notes:gv('f-notes'),date:today()};
+  let d=ld('FU'); const i=d.findIndex(x=>x.id===id);
+  if(i>=0) d[i]=rec; else d.push(rec);
+  sv('FU',d); closeMo('mo-fu'); toast(i>=0?'✅ Follow-up updated!':'✅ Follow-up added!'); renderPage(curPage);
+}
+
+// ─────────────────────────────────────────────
+// REPAIRS
+// ─────────────────────────────────────────────
+let repFilt='all';
+function fRep(f,el){repFilt=f;document.querySelectorAll('#pg-repairs .tab').forEach(t=>t.classList.remove('on'));if(el)el.classList.add('on');rRep();}
+function rRep(){
+  const q=gv('s-rep').toLowerCase();
+  let d=ld('R');
+  if(repFilt!=='all') d=d.filter(r=>r.stat===repFilt);
+  if(q) d=d.filter(r=>(r.cust+r.item+r.id+'').toLowerCase().includes(q));
+  const w=document.getElementById('rep-wrap');
+  if(!d.length){w.innerHTML=empty('No repair orders yet. Click "+ Add Repair" to begin.');return;}
+  w.innerHTML=`<table class="tbl">
+    <thead><tr><th>Token</th><th>Customer</th><th>Mobile</th><th>Item</th><th>Type</th><th>Wt(g)</th><th>Received</th><th>Promise</th><th>Est. ₹</th><th>Final ₹</th><th>Artisan</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>${d.slice().reverse().map(r=>`<tr>
+      <td><strong>${r.token||r.id.slice(-5).toUpperCase()}</strong></td>
+      <td>${r.cust}</td><td>${r.mob||'—'}</td>
+      <td><strong>${r.item}</strong>${r.metal?`<br><small>${r.metal}</small>`:''}</td>
+      <td>${r.type||'—'}</td>
+      <td>${r.wt||'—'}</td>
+      <td>${r.recv||'—'}</td>
+      <td>${r.prom||'—'}</td>
+      <td>${fmt(r.est)}</td>
+      <td>${fmt(r.final)}</td>
+      <td>${r.art||'—'}</td>
+      <td>${bStatus(r.stat||'Active')}</td>
+      <td>${abtn(`editRep('${r.id}')`,`delRec('R','${r.id}')`)}</td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+function editRep(id){
+  const r=ld('R').find(x=>x.id===id);if(!r)return;
+  document.getElementById('mt-rep').textContent='Edit Repair Order';
+  sv2('r-id',r.id);sv2('r-cust',r.cust);sv2('r-mob',r.mob);sv2('r-item',r.item);sv2('r-metal',r.metal);sv2('r-wt',r.wt);sv2('r-type',r.type);sv2('r-work',r.work);sv2('r-recv',r.recv);sv2('r-prom',r.prom);sv2('r-est',r.est);sv2('r-final',r.final);sv2('r-art',r.art);sv2('r-stat',r.stat);sv2('r-notes',r.notes);
+  openMo('mo-rep');
+}
+function saveRep(){
+  const cust=gv('r-cust').trim(), item=gv('r-item').trim();
+  if(!cust||!item){toast('⚠️ Customer and Item are required');return;}
+  const id=gv('r-id')||uid();
+  const token='REP-'+id.slice(-5).toUpperCase();
+  const rec={id,token,cust,mob:gv('r-mob'),item,metal:gv('r-metal'),wt:gv('r-wt'),type:gv('r-type'),work:gv('r-work'),recv:gv('r-recv'),prom:gv('r-prom'),est:gv('r-est'),final:gv('r-final'),art:gv('r-art'),stat:gv('r-stat'),notes:gv('r-notes'),date:today()};
+  let d=ld('R'); const i=d.findIndex(x=>x.id===id);
+  if(i>=0) d[i]=rec; else d.push(rec);
+  sv('R',d); closeMo('mo-rep'); toast(i>=0?'✅ Repair updated!':'✅ Repair order added!'); renderPage(curPage);
+}
+
+// ─────────────────────────────────────────────
+// EXCHANGE
+// ─────────────────────────────────────────────
+function rExc(){
+  const q=gv('s-exc').toLowerCase();
+  let d=ld('E');
+  if(q) d=d.filter(e=>(e.cust+e.type+'').toLowerCase().includes(q));
+  const w=document.getElementById('exc-wrap');
+  if(!d.length){w.innerHTML=empty('No exchange records yet. Click "+ Add Exchange" to begin.');return;}
+  w.innerHTML=`<table class="tbl">
+    <thead><tr><th>Date</th><th>Customer</th><th>Item Type</th><th>Purity</th><th>Gross Wt</th><th>Net Wt</th><th>Touch%</th><th>Rate/g</th><th>Exchange Val.</th><th>Melt%</th><th>Final Paid</th><th>Invoice</th><th>Actions</th></tr></thead>
+    <tbody>${d.slice().reverse().map(e=>`<tr>
+      <td>${e.date||'—'}</td>
+      <td><strong>${e.cust}</strong><br><small>${e.mob||''}</small></td>
+      <td>${e.type||'—'}</td>
+      <td>${e.pur||'—'}</td>
+      <td>${e.gwt?e.gwt+'g':'—'}</td>
+      <td>${e.nwt?e.nwt+'g':'—'}</td>
+      <td>${e.touch||'—'}</td>
+      <td>${fmt(e.rate)}</td>
+      <td><strong>${fmt(e.val)}</strong></td>
+      <td>${e.melt||0}%</td>
+      <td><strong>${fmt(e.final)}</strong></td>
+      <td>${e.inv||'—'}</td>
+      <td>${abtn(`editExc('${e.id}')`,`delRec('E','${e.id}')`)}</td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+function editExc(id){
+  const e=ld('E').find(x=>x.id===id);if(!e)return;
+  document.getElementById('mt-exc').textContent='Edit Exchange';
+  sv2('e-id',e.id);sv2('e-cust',e.cust);sv2('e-mob',e.mob);sv2('e-type',e.type);sv2('e-pur',e.pur);sv2('e-gwt',e.gwt);sv2('e-nwt',e.nwt);sv2('e-touch',e.touch);sv2('e-rate',e.rate);sv2('e-val',e.val);sv2('e-melt',e.melt);sv2('e-final',e.final);sv2('e-date',e.date);sv2('e-inv',e.inv);sv2('e-by',e.by);
+  openMo('mo-exc');
+}
+function saveExc(){
+  const cust=gv('e-cust').trim();
+  if(!cust){toast('⚠️ Customer name is required');return;}
+  const id=gv('e-id')||uid();
+  const rec={id,cust,mob:gv('e-mob'),type:gv('e-type'),pur:gv('e-pur'),gwt:gv('e-gwt'),nwt:gv('e-nwt'),touch:gv('e-touch'),rate:gv('e-rate'),val:gv('e-val'),melt:gv('e-melt'),final:gv('e-final'),date:gv('e-date')||today(),inv:gv('e-inv'),by:gv('e-by')};
+  let d=ld('E'); const i=d.findIndex(x=>x.id===id);
+  if(i>=0) d[i]=rec; else d.push(rec);
+  sv('E',d); closeMo('mo-exc'); toast(i>=0?'✅ Exchange updated!':'✅ Exchange recorded!'); renderPage(curPage);
+}
+
+// ─────────────────────────────────────────────
+// NON-CONVERSIONS
+// ─────────────────────────────────────────────
+let ncFilt='all';
+function fNc(f,el){ncFilt=f;document.querySelectorAll('#pg-nonconv .tab').forEach(t=>t.classList.remove('on'));if(el)el.classList.add('on');rNc();}
+function rNc(){
+  const q=gv('s-nc').toLowerCase();
+  let d=ld('NC');
+  if(ncFilt!=='all') d=d.filter(n=>n.temp===ncFilt);
+  if(q) d=d.filter(n=>(n.name+n.reas+'').toLowerCase().includes(q));
+  const w=document.getElementById('nc-wrap');
+  if(!d.length){w.innerHTML=empty('No non-conversion records. Click "+ Add Record" to begin.');return;}
+  const counts={};d.forEach(n=>counts[n.reas]=(counts[n.reas]||0)+1);
+  w.innerHTML=`<table class="tbl">
+    <thead><tr><th>Date</th><th>Customer</th><th>Mobile</th><th>Category</th><th>Item Shown</th><th>Budget</th><th>Reason</th><th>Lead Temp</th><th>Follow-up</th><th>Staff</th><th>Actions</th></tr></thead>
+    <tbody>${d.slice().reverse().map(n=>`<tr>
+      <td>${n.date||'—'}</td>
+      <td>${n.name||'Walk-in'}</td>
+      <td>${n.mob||'—'}</td>
+      <td>${n.cat||'—'}</td>
+      <td>${n.item||'—'}</td>
+      <td>${n.bud||'—'}</td>
+      <td>${n.reas||'—'}</td>
+      <td>${bStatus(n.temp||'Cold')}</td>
+      <td>${n.fu==='Yes'?b('Yes','b-r'):b('No','b-gr')}</td>
+      <td>${n.staff||'—'}</td>
+      <td>${abtn(`editNc('${n.id}')`,`delRec('NC','${n.id}')`)}</td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+function editNc(id){
+  const n=ld('NC').find(x=>x.id===id);if(!n)return;
+  document.getElementById('mt-nc').textContent='Edit Non-Conversion';
+  sv2('n-id',n.id);sv2('n-name',n.name);sv2('n-mob',n.mob);sv2('n-date',n.date);sv2('n-cat',n.cat);sv2('n-item',n.item);sv2('n-bud',n.bud);sv2('n-reas',n.reas);sv2('n-temp',n.temp);sv2('n-staff',n.staff);sv2('n-fu',n.fu);sv2('n-rem',n.rem);
+  openMo('mo-nc');
+}
+function saveNc(){
+  const id=gv('n-id')||uid();
+  const rec={id,name:gv('n-name'),mob:gv('n-mob'),date:gv('n-date')||today(),cat:gv('n-cat'),item:gv('n-item'),bud:gv('n-bud'),reas:gv('n-reas'),temp:gv('n-temp'),staff:gv('n-staff'),fu:gv('n-fu'),rem:gv('n-rem')};
+  let d=ld('NC'); const i=d.findIndex(x=>x.id===id);
+  if(i>=0) d[i]=rec; else d.push(rec);
+  sv('NC',d); closeMo('mo-nc'); toast(i>=0?'✅ Record updated!':'✅ Walk-out recorded!'); renderPage(curPage);
+}
+
+// ─────────────────────────────────────────────
+// REPORTS
+// ─────────────────────────────────────────────
+function rReports(){
+  const sales=ld('S'), custs=ld('C'), schs=ld('SC'), mkts=ld('M');
+
+  // Sales summary
+  const totalSales=sales.reduce((a,s)=>a+Number(s.total||0),0);
+  const paid=sales.filter(s=>s.pstat==='Paid').length;
+  const partial=sales.filter(s=>s.pstat==='Partial').length;
+  const catBreak={};sales.forEach(s=>{catBreak[s.cat]=(catBreak[s.cat]||0)+Number(s.total||0);});
+  document.getElementById('rpt-sales').innerHTML=`
+    <div class="detail-grid">
+      <div class="detail-item"><div class="detail-lbl">Total Sales Value</div><div class="detail-val">${fmt(totalSales)}</div></div>
+      <div class="detail-item"><div class="detail-lbl">Total Transactions</div><div class="detail-val">${sales.length}</div></div>
+      <div class="detail-item"><div class="detail-lbl">Fully Paid</div><div class="detail-val">${paid}</div></div>
+      <div class="detail-item"><div class="detail-lbl">Partial / Pending</div><div class="detail-val">${partial+sales.filter(s=>s.pstat==='Pending').length}</div></div>
+    </div>
+    <div style="margin-top:12px">
+      ${Object.entries(catBreak).map(([cat,val])=>`
+        <div style="margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span>${cat||'Uncategorised'}</span><span>${fmt(val)}</span></div>
+          <div class="prog"><div class="prog-f" style="width:${totalSales?Math.min(100,(val/totalSales*100)).toFixed(1):0}%"></div></div>
+        </div>`).join('')}
+    </div>`;
+
+  // Customer summary
+  const vip=custs.filter(c=>c.type==='VIP').length;
+  const reg=custs.filter(c=>c.type==='Regular').length;
+  const wa=custs.filter(c=>c.wa==='Yes').length;
+  document.getElementById('rpt-cust').innerHTML=`
+    <div class="detail-grid">
+      <div class="detail-item"><div class="detail-lbl">Total Customers</div><div class="detail-val">${custs.length}</div></div>
+      <div class="detail-item"><div class="detail-lbl">VIP Customers</div><div class="detail-val">${vip}</div></div>
+      <div class="detail-item"><div class="detail-lbl">Regular Customers</div><div class="detail-val">${reg}</div></div>
+      <div class="detail-item"><div class="detail-lbl">WhatsApp Consent</div><div class="detail-val">${wa} / ${custs.length}</div></div>
+      <div class="detail-item"><div class="detail-lbl">KYC Completed</div><div class="detail-val">${custs.filter(c=>c.idn).length}</div></div>
+      <div class="detail-item"><div class="detail-lbl">Non-Conversions</div><div class="detail-val">${ld('NC').length}</div></div>
+    </div>`;
+
+  // Scheme summary
+  const active=schs.filter(s=>s.stat==='Active').length;
+  const matured=schs.filter(s=>s.stat==='Matured').length;
+  const totalColl=schs.reduce((a,s)=>a+Number(s.coll||0),0);
+  document.getElementById('rpt-sch').innerHTML=`
+    <div class="detail-grid">
+      <div class="detail-item"><div class="detail-lbl">Total Schemes</div><div class="detail-val">${schs.length}</div></div>
+      <div class="detail-item"><div class="detail-lbl">Active</div><div class="detail-val">${active}</div></div>
+      <div class="detail-item"><div class="detail-lbl">Matured</div><div class="detail-val">${matured}</div></div>
+      <div class="detail-item"><div class="detail-lbl">Total Collected</div><div class="detail-val">${fmt(totalColl)}</div></div>
+      <div class="detail-item"><div class="detail-lbl">Repairs</div><div class="detail-val">${ld('R').length}</div></div>
+      <div class="detail-item"><div class="detail-lbl">Exchange Records</div><div class="detail-val">${ld('E').length}</div></div>
+    </div>`;
+
+  // Marketing ROI
+  const totalBud=mkts.reduce((a,m)=>a+Number(m.bud||0),0);
+  const totalRev=mkts.reduce((a,m)=>a+Number(m.rev||0),0);
+  const totalSpend=mkts.reduce((a,m)=>a+Number(m.sp||0),0);
+  const roi=totalSpend?((totalRev-totalSpend)/totalSpend*100).toFixed(1):'—';
+  document.getElementById('rpt-mkt').innerHTML=`
+    <div class="detail-grid">
+      <div class="detail-item"><div class="detail-lbl">Total Campaigns</div><div class="detail-val">${mkts.length}</div></div>
+      <div class="detail-item"><div class="detail-lbl">Total Budget</div><div class="detail-val">${fmt(totalBud)}</div></div>
+      <div class="detail-item"><div class="detail-lbl">Total Spent</div><div class="detail-val">${fmt(totalSpend)}</div></div>
+      <div class="detail-item"><div class="detail-lbl">Revenue Generated</div><div class="detail-val">${fmt(totalRev)}</div></div>
+      <div class="detail-item"><div class="detail-lbl">Overall ROI</div><div class="detail-val">${roi!=='—'?roi+'%':roi}</div></div>
+      <div class="detail-item"><div class="detail-lbl">Active Campaigns</div><div class="detail-val">${mkts.filter(m=>m.stat==='Active').length}</div></div>
+    </div>`;
+}
+
+// ─────────────────────────────────────────────
+// VIEW DETAIL
+// ─────────────────────────────────────────────
+function viewRec(k,id){
+  const d=ld(k).find(x=>x.id===id);if(!d)return;
+  const rows=Object.entries(d).filter(([key])=>key!=='id').map(([key,val])=>`
+    <div class="detail-item">
+      <div class="detail-lbl">${key.replace(/_/g,' ')}</div>
+      <div class="detail-val">${val||'—'}</div>
+    </div>`).join('');
+  document.getElementById('mt-view').textContent=k==='C'?d.name:k==='S'?d.invno:d.name||d.cust||'Detail';
+  document.getElementById('mb-view').innerHTML=`<div class="detail-grid">${rows}</div>`;
+  openMo('mo-view');
+}
+
+// ─────────────────────────────────────────────
+// EXPORT CSV
+// ─────────────────────────────────────────────
+function exportCSV(module){
+  const keyMap={customers:'C',sales:'S',schemes:'SC',followups:'FU'};
+  const d=ld(keyMap[module]||module);
+  if(!d.length){toast('⚠️ No data to export');return;}
+  const cols=Object.keys(d[0]);
+  const csv=[cols.join(','),...d.map(r=>cols.map(c=>{const v=r[c]||'';return`"${String(v).replace(/"/g,'""')}"`}).join(','))].join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download=`lalithaa_${module}_${today()}.csv`;
+  a.click();
+  toast('✅ '+module+' exported as CSV!');
+}
+
+function clearAllData(){
+  openConf(()=>{
+    Object.values(K).forEach(k=>localStorage.removeItem(k));
+    toast('⚠️ All data cleared');
+    renderPage(curPage);
   });
+}
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+document.getElementById('tb-date').textContent=new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+rDash();
 </script>
-
 </body>
 </html>
