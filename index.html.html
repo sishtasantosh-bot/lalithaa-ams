@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lalithaa Jewels — Agency Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9962A;
+    --gold-light: #E8C96A;
+    --gold-pale: #F5E9C8;
+    --onyx: #0E0E0E;
+    --charcoal: #1C1C1E;
+    --graphite: #2C2C2E;
+    --mist: #F0EDE8;
+    --cream: #FAF8F4;
+    --text: #1C1C1E;
+    --text-muted: #6B6B6B;
+    --border: rgba(201,150,42,0.2);
+    --card: #FFFFFF;
+    --danger: #C0392B;
+    --success: #1A7A4A;
+    --info: #1A5276;
+    --sidebar-w: 240px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--onyx);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    height: 100vh;
+    position: fixed;
+    left: 0; top: 0;
+    z-index: 100;
+    overflow-y: auto;
+  }
+
+  .sidebar-logo {
+    padding: 28px 20px 20px;
+    border-bottom: 1px solid rgba(201,150,42,0.25);
+  }
+
+  .sidebar-logo .brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--gold-light);
+    letter-spacing: 1px;
+    line-height: 1.2;
+  }
+
+  .sidebar-logo .subtitle {
+    font-size: 9px;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .nav-section {
+    padding: 18px 12px 6px;
+  }
+
+  .nav-label {
+    font-size: 9px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+    padding: 0 8px;
+    margin-bottom: 6px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: rgba(255,255,255,0.55);
+    font-size: 13px;
+    font-weight: 400;
+    transition: all 0.18s;
+    margin-bottom: 2px;
+  }
+
+  .nav-item:hover { background: rgba(201,150,42,0.12); color: var(--gold-light); }
+
+  .nav-item.active {
+    background: linear-gradient(135deg, rgba(201,150,42,0.25), rgba(201,150,42,0.1));
+    color: var(--gold-light);
+    font-weight: 500;
+    border-left: 2px solid var(--gold);
+  }
+
+  .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 16px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .user-chip {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.05);
+  }
+
+  .user-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), #8B6914);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600; color: white;
+  }
+
+  .user-info .name { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.8); }
+  .user-info .role { font-size: 10px; color: rgba(255,255,255,0.35); }
+
+  /* ── MAIN ── */
+  .main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .topbar {
+    background: white;
+    border-bottom: 1px solid rgba(0,0,0,0.07);
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 50;
+  }
+
+  .topbar-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--onyx);
+    letter-spacing: 0.3px;
+  }
+
+  .topbar-right {
+    display: flex; align-items: center; gap: 14px;
+  }
+
+  .topbar-date {
+    font-size: 12px; color: var(--text-muted);
+  }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.18s;
+  }
+
+  .btn-gold {
+    background: linear-gradient(135deg, var(--gold), #A07820);
+    color: white;
+    box-shadow: 0 2px 8px rgba(201,150,42,0.35);
+  }
+
+  .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(201,150,42,0.45); }
+
+  .btn-outline {
+    background: white; color: var(--gold);
+    border: 1.5px solid var(--gold);
+  }
+
+  .btn-outline:hover { background: var(--gold-pale); }
+
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+  /* ── PAGE CONTENT ── */
+  .page { display: none; padding: 28px; }
+  .page.active { display: block; }
+
+  /* ── KPI CARDS ── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .kpi-card {
+    background: white;
+    border-radius: 14px;
+    padding: 20px;
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  }
+
+  .kpi-label { font-size: 11px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .kpi-value { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 600; color: var(--onyx); line-height: 1; }
+  .kpi-sub { font-size: 11px; color: var(--success); margin-top: 6px; }
+  .kpi-sub.down { color: var(--danger); }
+  .kpi-icon { position: absolute; right: 16px; top: 16px; font-size: 28px; opacity: 0.12; }
+
+  /* ── SECTION CARD ── */
+  .card {
+    background: white;
+    border-radius: 14px;
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--onyx);
+  }
+
+  .card-body { padding: 20px; }
+
+  /* ── TABLE ── */
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table th {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    font-weight: 500;
+    background: rgba(245,233,200,0.3);
+  }
+
+  .data-table td {
+    padding: 11px 14px;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+    vertical-align: middle;
+  }
+
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: rgba(245,233,200,0.2); }
+
+  .badge {
+    display: inline-flex; align-items: center;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  .badge-green { background: #E8F5EE; color: var(--success); }
+  .badge-gold { background: var(--gold-pale); color: #7A5A10; }
+  .badge-blue { background: #E8F0FA; color: var(--info); }
+  .badge-red { background: #FDECEA; color: var(--danger); }
+  .badge-grey { background: #F0F0F0; color: #666; }
+
+  /* ── FORM ── */
+  .form-grid { display: grid; gap: 14px; }
+  .form-grid-2 { grid-template-columns: 1fr 1fr; }
+  .form-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label { font-size: 11px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; }
+
+  .field input, .field select, .field textarea {
+    padding: 9px 12px;
+    border: 1.5px solid rgba(0,0,0,0.1);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    background: white;
+    outline: none;
+    transition: border-color 0.18s;
+  }
+
+  .field input:focus, .field select:focus, .field textarea:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201,150,42,0.1);
+  }
+
+  .field textarea { resize: vertical; min-height: 80px; }
+
+  .section-divider {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gold);
+    padding: 6px 0 10px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── FIELDS REFERENCE ── */
+  .fields-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+
+  .fields-module {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.05);
+    overflow: hidden;
+  }
+
+  .fields-module-header {
+    padding: 12px 16px;
+    background: linear-gradient(135deg, var(--onyx), var(--graphite));
+    color: var(--gold-light);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .field-item {
+    padding: 8px 16px;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  .field-item:last-child { border-bottom: none; }
+  .field-name { font-weight: 500; color: var(--text); min-width: 130px; flex-shrink: 0; }
+  .field-desc { color: var(--text-muted); font-size: 11px; }
+  .field-req { color: var(--gold); font-size: 10px; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-bar {
+    height: 6px;
+    background: rgba(0,0,0,0.06);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    transition: width 0.5s ease;
+  }
+
+  /* ── STATS ROW ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  /* ── ACTIVITY FEED ── */
+  .activity-item {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+  }
+
+  .activity-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--gold);
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+
+  .activity-text { font-size: 13px; color: var(--text); }
+  .activity-time { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  /* ── TAB SYSTEM ── */
+  .tabs { display: flex; gap: 4px; margin-bottom: 20px; padding: 4px; background: rgba(0,0,0,0.04); border-radius: 10px; width: fit-content; }
+
+  .tab {
+    padding: 7px 16px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.15s;
+  }
+
+  .tab.active { background: white; color: var(--gold); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+
+  /* ── SEARCH BAR ── */
+  .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 14px;
+    background: white;
+    border: 1.5px solid rgba(0,0,0,0.1);
+    border-radius: 8px;
+    width: 260px;
+  }
+
+  .search-bar input {
+    border: none; outline: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    width: 100%;
+  }
+
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: white;
+    border-radius: 16px;
+    width: 680px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  }
+
+  .modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(0,0,0,0.07);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; background: white; z-index: 1;
+  }
+
+  .modal-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px; font-weight: 600; color: var(--onyx);
+  }
+
+  .modal-close {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0,0,0,0.06);
+    cursor: pointer;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .modal-body { padding: 24px; }
+  .modal-footer { padding: 16px 24px; border-top: 1px solid rgba(0,0,0,0.07); display: flex; gap: 10px; justify-content: flex-end; }
+
+  .ornament {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--gold-light);
+    opacity: 0.4;
+    font-size: 14px;
+    letter-spacing: 4px;
+  }
+
+  @media (max-width: 1100px) {
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+    .fields-grid { grid-template-columns: 1fr 1fr; }
+    .form-grid-3 { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="brand">Lalithaa Jewels</div>
+    <div class="subtitle">Agency Management System</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Main</div>
+    <div class="nav-item active" onclick="navigate('dashboard', this)">
+      <span class="icon">◈</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="navigate('customers', this)">
+      <span class="icon">◉</span> Customers
+    </div>
+    <div class="nav-item" onclick="navigate('marketing', this)">
+      <span class="icon">◇</span> Marketing
+    </div>
+    <div class="nav-item" onclick="navigate('sales', this)">
+      <span class="icon">◆</span> Sales Monitor
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Operations</div>
+    <div class="nav-item" onclick="navigate('schemes', this)">
+      <span class="icon">◎</span> Schemes & Plans
+    </div>
+    <div class="nav-item" onclick="navigate('agents', this)">
+      <span class="icon">▣</span> Agents / Staff
+    </div>
+    <div class="nav-item" onclick="navigate('followups', this)">
+      <span class="icon">◷</span> Follow-ups
+    </div>
+    <div class="nav-item" onclick="navigate('fields', this)">
+      <span class="icon">☰</span> Field Reference
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="user-avatar">SM</div>
+      <div class="user-info">
+        <div class="name">Santosh</div>
+        <div class="role">Showroom Manager</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN AREA -->
+<main class="main">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-title" id="page-title">Dashboard</div>
+    <div class="topbar-right">
+      <div class="topbar-date" id="topbar-date"></div>
+      <button class="btn btn-gold" onclick="openModal('add-customer-modal')">＋ Add Customer</button>
+    </div>
+  </div>
+
+  <!-- ── DASHBOARD ── -->
+  <div id="page-dashboard" class="page active">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon">👥</div>
+        <div class="kpi-label">Total Customers</div>
+        <div class="kpi-value">1,284</div>
+        <div class="kpi-sub">↑ 38 this month</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">💰</div>
+        <div class="kpi-label">Monthly Sales</div>
+        <div class="kpi-value">₹84.6L</div>
+        <div class="kpi-sub">↑ 12% vs last month</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">📣</div>
+        <div class="kpi-label">Active Campaigns</div>
+        <div class="kpi-value">7</div>
+        <div class="kpi-sub">↑ 2 launched this week</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">📋</div>
+        <div class="kpi-label">Pending Follow-ups</div>
+        <div class="kpi-value">43</div>
+        <div class="kpi-sub down">↑ 8 overdue</div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Sales vs Target — June 2025</div>
+          <span class="badge badge-gold">FY 2025–26</span>
+        </div>
+        <div class="card-body">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Target (₹L)</th>
+                <th>Achieved (₹L)</th>
+                <th>Progress</th>
+                <th>%</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Gold Jewellery</td>
+                <td>60.0</td>
+                <td>52.4</td>
+                <td><div class="progress-bar"><div class="progress-fill" style="width:87%"></div></div></td>
+                <td><span class="badge badge-gold">87%</span></td>
+              </tr>
+              <tr>
+                <td>Diamond Jewellery</td>
+                <td>20.0</td>
+                <td>19.1</td>
+                <td><div class="progress-bar"><div class="progress-fill" style="width:95%"></div></div></td>
+                <td><span class="badge badge-green">95%</span></td>
+              </tr>
+              <tr>
+                <td>Silver Articles</td>
+                <td>8.0</td>
+                <td>6.2</td>
+                <td><div class="progress-bar"><div class="progress-fill" style="width:77%"></div></div></td>
+                <td><span class="badge badge-grey">77%</span></td>
+              </tr>
+              <tr>
+                <td>Coins & Bullion</td>
+                <td>12.0</td>
+                <td>6.9</td>
+                <td><div class="progress-bar"><div class="progress-fill" style="width:57%" style="background:#C0392B"></div></div></td>
+                <td><span class="badge badge-red">57%</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Recent Activity</div>
+        </div>
+        <div class="card-body">
+          <div class="activity-item">
+            <div class="activity-dot"></div>
+            <div>
+              <div class="activity-text">New customer <strong>Priya Lakshmi</strong> registered — Gold scheme ₹5,000/m</div>
+              <div class="activity-time">Today, 10:32 AM</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot" style="background:#1A7A4A"></div>
+            <div>
+              <div class="activity-text">Invoice <strong>#LJK-2847</strong> raised — Diamond necklace set ₹1.8L</div>
+              <div class="activity-time">Today, 9:15 AM</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot" style="background:#1A5276"></div>
+            <div>
+              <div class="activity-text">WhatsApp campaign <strong>"Akshaya Tritiya Offer"</strong> sent to 450 customers</div>
+              <div class="activity-time">Yesterday, 6:00 PM</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot" style="background:#C0392B"></div>
+            <div>
+              <div class="activity-text">Follow-up overdue for <strong>Ramesh Babu</strong> — scheme maturity</div>
+              <div class="activity-time">Yesterday, 5:00 PM</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot"></div>
+            <div>
+              <div class="activity-text">Agent <strong>Kavitha</strong> enrolled 3 new scheme customers</div>
+              <div class="activity-time">June 4, 3:45 PM</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Top Customers This Month</div>
+        <button class="btn btn-outline btn-sm" onclick="navigate('customers', document.querySelector('.nav-item:nth-child(2)'))">View All</button>
+      </div>
+      <div class="card-body" style="padding:0">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th><th>Customer Name</th><th>Mobile</th><th>Category</th><th>Purchases</th><th>Value</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td><td><strong>Suneetha Reddy</strong></td><td>9848012345</td><td>Diamond</td><td>3</td><td>₹4,25,000</td><td><span class="badge badge-green">Active</span></td>
+            </tr>
+            <tr>
+              <td>2</td><td><strong>Nagamani Devi</strong></td><td>9963012345</td><td>Gold</td><td>2</td><td>₹2,80,000</td><td><span class="badge badge-green">Active</span></td>
+            </tr>
+            <tr>
+              <td>3</td><td><strong>Venkata Rao</strong></td><td>7799012345</td><td>Gold + Coins</td><td>4</td><td>₹1,95,000</td><td><span class="badge badge-gold">VIP</span></td>
+            </tr>
+            <tr>
+              <td>4</td><td><strong>Padmaja T</strong></td><td>9030012345</td><td>Silver</td><td>1</td><td>₹45,000</td><td><span class="badge badge-blue">Scheme</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CUSTOMERS ── -->
+  <div id="page-customers" class="page">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+      <div class="tabs">
+        <div class="tab active">All Customers</div>
+        <div class="tab">Walk-ins</div>
+        <div class="tab">Scheme Members</div>
+        <div class="tab">VIP</div>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <div class="search-bar">
+          <span>🔍</span>
+          <input type="text" placeholder="Search by name, mobile…">
+        </div>
+        <button class="btn btn-gold" onclick="openModal('add-customer-modal')">＋ Add Customer</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body" style="padding:0">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Cust. ID</th>
+              <th>Name</th>
+              <th>Mobile</th>
+              <th>City</th>
+              <th>Occasion</th>
+              <th>Scheme</th>
+              <th>Last Visit</th>
+              <th>Total Spend</th>
+              <th>Tag</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>LJK-0001</td>
+              <td><strong>Suneetha Reddy</strong><br><small style="color:#999">suneetha@gmail.com</small></td>
+              <td>9848012345</td>
+              <td>Kakinada</td>
+              <td>Wedding — Aug 2025</td>
+              <td>Gold SIP</td>
+              <td>02 Jun 2025</td>
+              <td>₹7,45,000</td>
+              <td><span class="badge badge-gold">VIP</span></td>
+              <td><button class="btn btn-outline btn-sm">View</button></td>
+            </tr>
+            <tr>
+              <td>LJK-0002</td>
+              <td><strong>Nagamani Devi</strong><br><small style="color:#999">9963011222</small></td>
+              <td>9963011222</td>
+              <td>Rajahmundry</td>
+              <td>Anniversary</td>
+              <td>None</td>
+              <td>28 May 2025</td>
+              <td>₹2,80,000</td>
+              <td><span class="badge badge-green">Regular</span></td>
+              <td><button class="btn btn-outline btn-sm">View</button></td>
+            </tr>
+            <tr>
+              <td>LJK-0003</td>
+              <td><strong>Venkata Rao</strong></td>
+              <td>7799012345</td>
+              <td>Amalapuram</td>
+              <td>Investment</td>
+              <td>Coin scheme</td>
+              <td>01 Jun 2025</td>
+              <td>₹5,95,000</td>
+              <td><span class="badge badge-gold">VIP</span></td>
+              <td><button class="btn btn-outline btn-sm">View</button></td>
+            </tr>
+            <tr>
+              <td>LJK-0004</td>
+              <td><strong>Padmaja T</strong></td>
+              <td>9030012345</td>
+              <td>Kakinada</td>
+              <td>Birthday Gift</td>
+              <td>Silver scheme</td>
+              <td>15 May 2025</td>
+              <td>₹45,000</td>
+              <td><span class="badge badge-blue">New</span></td>
+              <td><button class="btn btn-outline btn-sm">View</button></td>
+            </tr>
+            <tr>
+              <td>LJK-0005</td>
+              <td><strong>Ramesh Babu</strong></td>
+              <td>9701012345</td>
+              <td>Pithapuram</td>
+              <td>Maturity Claim</td>
+              <td>Gold chit</td>
+              <td>22 Apr 2025</td>
+              <td>₹1,20,000</td>
+              <td><span class="badge badge-red">Pending</span></td>
+              <td><button class="btn btn-outline btn-sm">View</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MARKETING ── -->
+  <div id="page-marketing" class="page">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon">📱</div>
+        <div class="kpi-label">WhatsApp Reach</div>
+        <div class="kpi-value">4,820</div>
+        <div class="kpi-sub">↑ 680 this month</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">🎯</div>
+        <div class="kpi-label">Conversion Rate</div>
+        <div class="kpi-value">8.4%</div>
+        <div class="kpi-sub">↑ 1.2% vs May</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">📅</div>
+        <div class="kpi-label">Events This Month</div>
+        <div class="kpi-value">3</div>
+        <div class="kpi-sub">↑ Upcoming: Gold Mela</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">💸</div>
+        <div class="kpi-label">Marketing Spend</div>
+        <div class="kpi-value">₹1.2L</div>
+        <div class="kpi-sub">Budget: ₹2.0L</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Active Campaigns</div>
+        <button class="btn btn-gold btn-sm" onclick="openModal('add-campaign-modal')">＋ New Campaign</button>
+      </div>
+      <div class="card-body" style="padding:0">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Campaign</th><th>Channel</th><th>Audience</th><th>Start</th><th>End</th><th>Reach</th><th>Leads</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Akshaya Tritiya Offer</strong></td>
+              <td>WhatsApp + SMS</td>
+              <td>All customers</td>
+              <td>30 Apr</td>
+              <td>15 May</td>
+              <td>1,200</td>
+              <td>96</td>
+              <td><span class="badge badge-grey">Completed</span></td>
+            </tr>
+            <tr>
+              <td><strong>Wedding Season Gold</strong></td>
+              <td>Facebook + Hoarding</td>
+              <td>Age 25–40, Kakinada</td>
+              <td>01 Jun</td>
+              <td>30 Jun</td>
+              <td>3,500</td>
+              <td>48</td>
+              <td><span class="badge badge-green">Active</span></td>
+            </tr>
+            <tr>
+              <td><strong>Diamond Dazzle Fest</strong></td>
+              <td>Instagram + Email</td>
+              <td>VIP customers</td>
+              <td>05 Jun</td>
+              <td>20 Jun</td>
+              <td>420</td>
+              <td>18</td>
+              <td><span class="badge badge-green">Active</span></td>
+            </tr>
+            <tr>
+              <td><strong>Monsoon Coin Scheme</strong></td>
+              <td>WhatsApp</td>
+              <td>Scheme members</td>
+              <td>15 Jun</td>
+              <td>15 Jul</td>
+              <td>—</td>
+              <td>—</td>
+              <td><span class="badge badge-blue">Planned</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Channel Effectiveness</div></div>
+        <div class="card-body">
+          <table class="data-table">
+            <thead><tr><th>Channel</th><th>Campaigns</th><th>Total Reach</th><th>Avg. Conversion</th></tr></thead>
+            <tbody>
+              <tr><td>WhatsApp Broadcast</td><td>4</td><td>3,200</td><td><span class="badge badge-green">9.8%</span></td></tr>
+              <tr><td>SMS / IVR</td><td>3</td><td>2,800</td><td><span class="badge badge-gold">6.2%</span></td></tr>
+              <tr><td>Facebook Ads</td><td>2</td><td>8,400</td><td><span class="badge badge-gold">4.1%</span></td></tr>
+              <tr><td>In-store Events</td><td>2</td><td>480</td><td><span class="badge badge-green">22.5%</span></td></tr>
+              <tr><td>Referral Program</td><td>1</td><td>310</td><td><span class="badge badge-green">18.7%</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">Upcoming Occasions — Next 30 Days</div></div>
+        <div class="card-body">
+          <table class="data-table">
+            <thead><tr><th>Occasion</th><th>Date</th><th>Customers</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td>🎂 Birthdays</td><td>June</td><td>24</td><td><button class="btn btn-outline btn-sm">Send Wishes</button></td></tr>
+              <tr><td>💍 Anniversaries</td><td>June</td><td>11</td><td><button class="btn btn-outline btn-sm">Send Offers</button></td></tr>
+              <tr><td>🏆 Scheme Maturity</td><td>20–30 Jun</td><td>8</td><td><button class="btn btn-outline btn-sm">Call List</button></td></tr>
+              <tr><td>🎊 Weddings</td><td>Jul–Aug</td><td>15</td><td><button class="btn btn-outline btn-sm">Visit Plan</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SALES MONITOR ── -->
+  <div id="page-sales" class="page">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon">📈</div>
+        <div class="kpi-label">Today's Sales</div>
+        <div class="kpi-value">₹3.8L</div>
+        <div class="kpi-sub">↑ 14 bills raised</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">🔄</div>
+        <div class="kpi-label">Exchange / Old Gold</div>
+        <div class="kpi-value">₹48,200</div>
+        <div class="kpi-sub">↑ 6 transactions</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">🔧</div>
+        <div class="kpi-label">Repair Orders</div>
+        <div class="kpi-value">18</div>
+        <div class="kpi-sub">↑ 5 delivered today</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">🚫</div>
+        <div class="kpi-label">Non-Conversions</div>
+        <div class="kpi-value">31</div>
+        <div class="kpi-sub down">↑ 8 walk-outs today</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Recent Transactions</div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-outline btn-sm">Export</button>
+          <button class="btn btn-gold btn-sm" onclick="openModal('add-sale-modal')">＋ New Sale</button>
+        </div>
+      </div>
+      <div class="card-body" style="padding:0">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Invoice #</th><th>Date</th><th>Customer</th><th>Category</th><th>Item</th><th>Wt (g)</th><th>Rate/g</th><th>Making</th><th>Total</th><th>Payment</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>LJK-2847</td>
+              <td>05 Jun</td>
+              <td>Suneetha R.</td>
+              <td>Diamond</td>
+              <td>Necklace Set</td>
+              <td>22.4</td>
+              <td>₹6,200</td>
+              <td>₹28,000</td>
+              <td>₹1,80,000</td>
+              <td><span class="badge badge-green">Card</span></td>
+              <td><span class="badge badge-green">Paid</span></td>
+            </tr>
+            <tr>
+              <td>LJK-2846</td>
+              <td>05 Jun</td>
+              <td>Padmaja T.</td>
+              <td>Gold</td>
+              <td>Earrings</td>
+              <td>6.8</td>
+              <td>₹7,100</td>
+              <td>₹3,500</td>
+              <td>₹51,780</td>
+              <td><span class="badge badge-gold">Cash</span></td>
+              <td><span class="badge badge-green">Paid</span></td>
+            </tr>
+            <tr>
+              <td>LJK-2845</td>
+              <td>04 Jun</td>
+              <td>Venkata Rao</td>
+              <td>Coins</td>
+              <td>Gold Coin 10g</td>
+              <td>10.0</td>
+              <td>₹7,050</td>
+              <td>₹500</td>
+              <td>₹71,000</td>
+              <td><span class="badge badge-blue">UPI</span></td>
+              <td><span class="badge badge-green">Paid</span></td>
+            </tr>
+            <tr>
+              <td>LJK-2844</td>
+              <td>04 Jun</td>
+              <td>Walk-in</td>
+              <td>Silver</td>
+              <td>Payal (pair)</td>
+              <td>45.0</td>
+              <td>₹110</td>
+              <td>₹800</td>
+              <td>₹5,750</td>
+              <td><span class="badge badge-gold">Cash</span></td>
+              <td><span class="badge badge-green">Paid</span></td>
+            </tr>
+            <tr>
+              <td>LJK-2843</td>
+              <td>03 Jun</td>
+              <td>Ramesh Babu</td>
+              <td>Gold</td>
+              <td>Bangles (pair)</td>
+              <td>28.6</td>
+              <td>₹7,100</td>
+              <td>₹6,000</td>
+              <td>₹2,09,060</td>
+              <td><span class="badge badge-red">Advance</span></td>
+              <td><span class="badge badge-red">Partial</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCHEMES ── -->
+  <div id="page-schemes" class="page">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Active Schemes & Plans</div>
+        <button class="btn btn-gold btn-sm">＋ New Scheme</button>
+      </div>
+      <div class="card-body" style="padding:0">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Scheme Name</th><th>Type</th><th>Duration</th><th>Monthly Amt</th><th>Enrolled</th><th>Maturities (Jun)</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Swarna Bachat Plan</strong></td>
+              <td>Gold SIP</td>
+              <td>11+1 months</td>
+              <td>₹2,000–₹50,000</td>
+              <td>284</td>
+              <td>18</td>
+              <td><span class="badge badge-green">Active</span></td>
+            </tr>
+            <tr>
+              <td><strong>Diamond Delight</strong></td>
+              <td>Diamond</td>
+              <td>12 months</td>
+              <td>₹5,000+</td>
+              <td>62</td>
+              <td>4</td>
+              <td><span class="badge badge-green">Active</span></td>
+            </tr>
+            <tr>
+              <td><strong>Rathna Coin Scheme</strong></td>
+              <td>Coin</td>
+              <td>6 months</td>
+              <td>₹1,000–₹10,000</td>
+              <td>130</td>
+              <td>22</td>
+              <td><span class="badge badge-green">Active</span></td>
+            </tr>
+            <tr>
+              <td><strong>Silver Shobha</strong></td>
+              <td>Silver</td>
+              <td>12 months</td>
+              <td>₹500+</td>
+              <td>48</td>
+              <td>6</td>
+              <td><span class="badge badge-gold">Closing</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── AGENTS ── -->
+  <div id="page-agents" class="page">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Agent / Staff Performance</div>
+        <button class="btn btn-gold btn-sm">＋ Add Agent</button>
+      </div>
+      <div class="card-body" style="padding:0">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Name</th><th>Role</th><th>Zone</th><th>Customers Enrolled</th><th>Schemes Sold</th><th>Target</th><th>Achieved</th><th>Commission</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Kavitha R.</strong></td>
+              <td>Field Agent</td>
+              <td>Kakinada Urban</td>
+              <td>48</td>
+              <td>62</td>
+              <td>₹5L</td>
+              <td><span class="badge badge-green">₹5.8L</span></td>
+              <td>₹8,700</td>
+            </tr>
+            <tr>
+              <td><strong>Srinivas M.</strong></td>
+              <td>Floor Sales</td>
+              <td>Showroom</td>
+              <td>31</td>
+              <td>28</td>
+              <td>₹8L</td>
+              <td><span class="badge badge-gold">₹6.9L</span></td>
+              <td>₹6,900</td>
+            </tr>
+            <tr>
+              <td><strong>Lakshmi P.</strong></td>
+              <td>Field Agent</td>
+              <td>Pithapuram/Rural</td>
+              <td>22</td>
+              <td>19</td>
+              <td>₹3L</td>
+              <td><span class="badge badge-green">₹3.4L</span></td>
+              <td>₹5,100</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FOLLOW-UPS ── -->
+  <div id="page-followups" class="page">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Follow-up Tracker</div>
+        <button class="btn btn-gold btn-sm">＋ Schedule Follow-up</button>
+      </div>
+      <div class="card-body" style="padding:0">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Customer</th><th>Mobile</th><th>Purpose</th><th>Due Date</th><th>Assigned To</th><th>Mode</th><th>Priority</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Ramesh Babu</strong></td>
+              <td>9701012345</td>
+              <td>Scheme maturity — collect balance</td>
+              <td class="badge-red" style="color:#C0392B;font-weight:600">03 Jun (Overdue)</td>
+              <td>Kavitha R.</td>
+              <td>📞 Call</td>
+              <td><span class="badge badge-red">High</span></td>
+              <td><span class="badge badge-red">Pending</span></td>
+            </tr>
+            <tr>
+              <td><strong>Suneetha Reddy</strong></td>
+              <td>9848012345</td>
+              <td>Wedding jewellery quote follow-up</td>
+              <td>08 Jun</td>
+              <td>Srinivas M.</td>
+              <td>💬 WhatsApp</td>
+              <td><span class="badge badge-gold">Medium</span></td>
+              <td><span class="badge badge-blue">Scheduled</span></td>
+            </tr>
+            <tr>
+              <td><strong>Padmaja T</strong></td>
+              <td>9030012345</td>
+              <td>Birthday — special offer message</td>
+              <td>12 Jun</td>
+              <td>Auto</td>
+              <td>💬 WhatsApp</td>
+              <td><span class="badge badge-grey">Low</span></td>
+              <td><span class="badge badge-blue">Planned</span></td>
+            </tr>
+            <tr>
+              <td><strong>Nagamani Devi</strong></td>
+              <td>9963012345</td>
+              <td>Upsell — diamond earrings interest noted</td>
+              <td>15 Jun</td>
+              <td>Srinivas M.</td>
+              <td>🏠 Visit</td>
+              <td><span class="badge badge-gold">Medium</span></td>
+              <td><span class="badge badge-blue">Planned</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FIELD REFERENCE ── -->
+  <div id="page-fields" class="page">
+    <p style="color:var(--text-muted); margin-bottom:20px; font-size:13px;">Complete reference of all data fields maintained across modules. Use this as a setup guide for data entry and staff training.</p>
+
+    <div class="fields-grid">
+
+      <div class="fields-module">
+        <div class="fields-module-header">👥 Customer Master</div>
+        <div class="field-item"><div class="field-name">Customer ID <span class="field-req">●</span></div><div class="field-desc">Auto-generated unique code (LJK-XXXX)</div></div>
+        <div class="field-item"><div class="field-name">Full Name <span class="field-req">●</span></div><div class="field-desc">First + Last name</div></div>
+        <div class="field-item"><div class="field-name">Mobile No. <span class="field-req">●</span></div><div class="field-desc">Primary & alternate numbers</div></div>
+        <div class="field-item"><div class="field-name">Email ID</div><div class="field-desc">For digital receipts & campaigns</div></div>
+        <div class="field-item"><div class="field-name">Date of Birth</div><div class="field-desc">For birthday campaigns</div></div>
+        <div class="field-item"><div class="field-name">Anniversary Date</div><div class="field-desc">For anniversary offers</div></div>
+        <div class="field-item"><div class="field-name">Address</div><div class="field-desc">Door no, street, city, pincode</div></div>
+        <div class="field-item"><div class="field-name">ID Proof Type</div><div class="field-desc">Aadhaar / PAN / Voter ID</div></div>
+        <div class="field-item"><div class="field-name">ID Proof No. <span class="field-req">●</span></div><div class="field-desc">Mandatory above ₹2L (KYC)</div></div>
+        <div class="field-item"><div class="field-name">Customer Type</div><div class="field-desc">New / Regular / VIP / Agent</div></div>
+        <div class="field-item"><div class="field-name">Referral Source</div><div class="field-desc">Walk-in / Agent / Social / Reference</div></div>
+        <div class="field-item"><div class="field-name">Referred By</div><div class="field-desc">Name/ID of referrer if any</div></div>
+        <div class="field-item"><div class="field-name">Occupation</div><div class="field-desc">Business / Govt / Private / Housewife</div></div>
+        <div class="field-item"><div class="field-name">Reg. Date</div><div class="field-desc">Date of first registration</div></div>
+        <div class="field-item"><div class="field-name">Assigned Agent</div><div class="field-desc">Field agent responsible for customer</div></div>
+        <div class="field-item"><div class="field-name">WhatsApp Consent</div><div class="field-desc">Yes / No (for broadcast list)</div></div>
+        <div class="field-item"><div class="field-name">Notes / Remarks</div><div class="field-desc">Preferences, sensitivities, custom notes</div></div>
+      </div>
+
+      <div class="fields-module">
+        <div class="fields-module-header">💰 Sales / Invoice</div>
+        <div class="field-item"><div class="field-name">Invoice No. <span class="field-req">●</span></div><div class="field-desc">Unique bill number (auto)</div></div>
+        <div class="field-item"><div class="field-name">Invoice Date <span class="field-req">●</span></div><div class="field-desc">Date of purchase</div></div>
+        <div class="field-item"><div class="field-name">Customer ID <span class="field-req">●</span></div><div class="field-desc">Linked to customer master</div></div>
+        <div class="field-item"><div class="field-name">Salesperson</div><div class="field-desc">Staff member who handled sale</div></div>
+        <div class="field-item"><div class="field-name">Product Category</div><div class="field-desc">Gold / Diamond / Silver / Coins / Platinum</div></div>
+        <div class="field-item"><div class="field-name">Item Description</div><div class="field-desc">Necklace, bangles, ring, earrings etc.</div></div>
+        <div class="field-item"><div class="field-name">Purity (KT / %)</div><div class="field-desc">22KT, 18KT, 916, 999 etc.</div></div>
+        <div class="field-item"><div class="field-name">Gross Weight (g)</div><div class="field-desc">Total weight of ornament</div></div>
+        <div class="field-item"><div class="field-name">Net Weight (g)</div><div class="field-desc">After deducting stones/setting</div></div>
+        <div class="field-item"><div class="field-name">Rate per Gram (₹)</div><div class="field-desc">Daily gold/silver rate applied</div></div>
+        <div class="field-item"><div class="field-name">Making Charges (₹)</div><div class="field-desc">Fixed or % per gram</div></div>
+        <div class="field-item"><div class="field-name">Stone Value (₹)</div><div class="field-desc">Diamond / gemstone charge separately</div></div>
+        <div class="field-item"><div class="field-name">GST Amount (₹)</div><div class="field-desc">3% on gold, 18% on making/diamonds</div></div>
+        <div class="field-item"><div class="field-name">Old Gold Value (₹)</div><div class="field-desc">Exchange value deducted</div></div>
+        <div class="field-item"><div class="field-name">Scheme Benefit (₹)</div><div class="field-desc">Bonus/discount from scheme</div></div>
+        <div class="field-item"><div class="field-name">Total Amount (₹)</div><div class="field-desc">Net payable after all adjustments</div></div>
+        <div class="field-item"><div class="field-name">Payment Mode <span class="field-req">●</span></div><div class="field-desc">Cash / Card / UPI / Cheque / Advance</div></div>
+        <div class="field-item"><div class="field-name">Balance Pending (₹)</div><div class="field-desc">Remaining amount if partial payment</div></div>
+        <div class="field-item"><div class="field-name">Purchase Occasion</div><div class="field-desc">Wedding / Festival / Investment / Gift</div></div>
+        <div class="field-item"><div class="field-name">Hallmark No.</div><div class="field-desc">BIS hallmark certificate number</div></div>
+      </div>
+
+      <div class="fields-module">
+        <div class="fields-module-header">📣 Marketing Activity</div>
+        <div class="field-item"><div class="field-name">Campaign ID</div><div class="field-desc">Unique campaign reference</div></div>
+        <div class="field-item"><div class="field-name">Campaign Name <span class="field-req">●</span></div><div class="field-desc">Descriptive name of the campaign</div></div>
+        <div class="field-item"><div class="field-name">Objective</div><div class="field-desc">Awareness / Lead Gen / Scheme Enroll / Sale</div></div>
+        <div class="field-item"><div class="field-name">Channel <span class="field-req">●</span></div><div class="field-desc">WhatsApp / SMS / FB / Instagram / Hoarding / Event</div></div>
+        <div class="field-item"><div class="field-name">Target Audience</div><div class="field-desc">Segment: VIP / New / Age / Location</div></div>
+        <div class="field-item"><div class="field-name">Start Date</div><div class="field-desc">Campaign launch date</div></div>
+        <div class="field-item"><div class="field-name">End Date</div><div class="field-desc">Campaign close date</div></div>
+        <div class="field-item"><div class="field-name">Budget (₹)</div><div class="field-desc">Allocated marketing budget</div></div>
+        <div class="field-item"><div class="field-name">Actual Spend (₹)</div><div class="field-desc">Actual expenditure incurred</div></div>
+        <div class="field-item"><div class="field-name">Audience Reach</div><div class="field-desc">No. of people reached / messages sent</div></div>
+        <div class="field-item"><div class="field-name">Responses / Inquiries</div><div class="field-desc">Calls / walk-ins attributed to campaign</div></div>
+        <div class="field-item"><div class="field-name">Converted Sales</div><div class="field-desc">Bills generated from this campaign</div></div>
+        <div class="field-item"><div class="field-name">Revenue Generated (₹)</div><div class="field-desc">Total sales attributed to campaign</div></div>
+        <div class="field-item"><div class="field-name">ROI (%)</div><div class="field-desc">Revenue / Spend × 100</div></div>
+        <div class="field-item"><div class="field-name">Creative/Content Ref</div><div class="field-desc">Link or filename of artwork/script</div></div>
+        <div class="field-item"><div class="field-name">Handled By</div><div class="field-desc">Staff / agency responsible</div></div>
+        <div class="field-item"><div class="field-name">Status</div><div class="field-desc">Planned / Active / Completed / Paused</div></div>
+        <div class="field-item"><div class="field-name">Remarks</div><div class="field-desc">Observations, feedback, learnings</div></div>
+      </div>
+
+      <div class="fields-module">
+        <div class="fields-module-header">📋 Scheme / Plan Management</div>
+        <div class="field-item"><div class="field-name">Scheme ID</div><div class="field-desc">Auto-generated scheme number</div></div>
+        <div class="field-item"><div class="field-name">Scheme Name <span class="field-req">●</span></div><div class="field-desc">e.g., Swarna Bachat Plan</div></div>
+        <div class="field-item"><div class="field-name">Scheme Type</div><div class="field-desc">Gold SIP / Coin / Diamond / Silver</div></div>
+        <div class="field-item"><div class="field-name">Customer ID <span class="field-req">●</span></div><div class="field-desc">Linked customer</div></div>
+        <div class="field-item"><div class="field-name">Monthly Amount (₹)</div><div class="field-desc">Fixed installment amount</div></div>
+        <div class="field-item"><div class="field-name">Duration (months)</div><div class="field-desc">Total scheme tenure</div></div>
+        <div class="field-item"><div class="field-name">Start Date <span class="field-req">●</span></div><div class="field-desc">Date of first installment</div></div>
+        <div class="field-item"><div class="field-name">Maturity Date</div><div class="field-desc">Auto-calculated from start + duration</div></div>
+        <div class="field-item"><div class="field-name">Installments Paid</div><div class="field-desc">Count of payments received</div></div>
+        <div class="field-item"><div class="field-name">Installments Pending</div><div class="field-desc">Remaining payments</div></div>
+        <div class="field-item"><div class="field-name">Total Collected (₹)</div><div class="field-desc">Sum of payments received so far</div></div>
+        <div class="field-item"><div class="field-name">Bonus Month Benefit</div><div class="field-desc">Company contribution (extra installment)</div></div>
+        <div class="field-item"><div class="field-name">Enrolled By (Agent)</div><div class="field-desc">Field agent who signed the customer</div></div>
+        <div class="field-item"><div class="field-name">Status</div><div class="field-desc">Active / Matured / Defaulted / Cancelled</div></div>
+        <div class="field-item"><div class="field-name">Redemption Date</div><div class="field-desc">Date customer availed maturity benefit</div></div>
+        <div class="field-item"><div class="field-name">Item Purchased</div><div class="field-desc">What was bought using scheme amount</div></div>
+      </div>
+
+      <div class="fields-module">
+        <div class="fields-module-header">◷ Follow-up & CRM</div>
+        <div class="field-item"><div class="field-name">Follow-up ID</div><div class="field-desc">Auto-generated reference</div></div>
+        <div class="field-item"><div class="field-name">Customer ID <span class="field-req">●</span></div><div class="field-desc">Linked customer</div></div>
+        <div class="field-item"><div class="field-name">Purpose <span class="field-req">●</span></div><div class="field-desc">Scheme renewal / Sale follow-up / Occasion / Feedback</div></div>
+        <div class="field-item"><div class="field-name">Follow-up Mode</div><div class="field-desc">Call / WhatsApp / Visit / SMS / Email</div></div>
+        <div class="field-item"><div class="field-name">Due Date <span class="field-req">●</span></div><div class="field-desc">When to follow up</div></div>
+        <div class="field-item"><div class="field-name">Assigned To</div><div class="field-desc">Staff or agent responsible</div></div>
+        <div class="field-item"><div class="field-name">Priority</div><div class="field-desc">High / Medium / Low</div></div>
+        <div class="field-item"><div class="field-name">Status</div><div class="field-desc">Pending / Completed / Rescheduled / No Response</div></div>
+        <div class="field-item"><div class="field-name">Outcome / Notes</div><div class="field-desc">What happened after follow-up</div></div>
+        <div class="field-item"><div class="field-name">Next Action</div><div class="field-desc">Visit / Quote / Scheme / None</div></div>
+        <div class="field-item"><div class="field-name">Next Follow-up Date</div><div class="field-desc">If rescheduled</div></div>
+      </div>
+
+      <div class="fields-module">
+        <div class="fields-module-header">▣ Agent / Staff</div>
+        <div class="field-item"><div class="field-name">Agent ID</div><div class="field-desc">Unique staff/agent code</div></div>
+        <div class="field-item"><div class="field-name">Full Name <span class="field-req">●</span></div><div class="field-desc">Agent's legal name</div></div>
+        <div class="field-item"><div class="field-name">Mobile No. <span class="field-req">●</span></div><div class="field-desc">Official contact number</div></div>
+        <div class="field-item"><div class="field-name">Role</div><div class="field-desc">Field Agent / Floor Sales / Tele-caller / Manager</div></div>
+        <div class="field-item"><div class="field-name">Zone / Area</div><div class="field-desc">Assigned territory (city/mandal)</div></div>
+        <div class="field-item"><div class="field-name">Date of Joining</div><div class="field-desc">Employment start date</div></div>
+        <div class="field-item"><div class="field-name">Monthly Target (₹)</div><div class="field-desc">Sales or enrolment target</div></div>
+        <div class="field-item"><div class="field-name">Customers Enrolled</div><div class="field-desc">Count of customers registered by agent</div></div>
+        <div class="field-item"><div class="field-name">Schemes Sold</div><div class="field-desc">No. of scheme enrolments</div></div>
+        <div class="field-item"><div class="field-name">Sales Value (₹)</div><div class="field-desc">Total revenue attributed to agent</div></div>
+        <div class="field-item"><div class="field-name">Commission Rate (%)</div><div class="field-desc">Commission % on schemes/sales</div></div>
+        <div class="field-item"><div class="field-name">Commission Earned (₹)</div><div class="field-desc">Calculated monthly commission</div></div>
+        <div class="field-item"><div class="field-name">Status</div><div class="field-desc">Active / Inactive / On Leave</div></div>
+        <div class="field-item"><div class="field-name">Bank Account</div><div class="field-desc">For commission credit</div></div>
+      </div>
+
+    </div>
+    <div style="margin-top:12px; padding:14px 18px; background:var(--gold-pale); border-radius:10px; border-left: 3px solid var(--gold); font-size:12px; color:#5A4010;">
+      <strong>● Required fields</strong> are mandatory for system entry. All other fields are recommended for complete tracking. KYC fields (ID Proof) are legally required for transactions above ₹2,00,000 as per PMLA regulations.
+    </div>
+  </div>
+
+</main>
+
+<!-- ── MODALS ── -->
+
+<!-- Add Customer Modal -->
+<div class="modal-overlay" id="add-customer-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Register New Customer</div>
+      <button class="modal-close" onclick="closeModal('add-customer-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="section-divider">◈ Personal Information</div>
+      <div class="form-grid form-grid-2" style="margin-bottom:16px">
+        <div class="field"><label>Full Name ●</label><input type="text" placeholder="e.g. Suneetha Reddy"></div>
+        <div class="field"><label>Mobile Number ●</label><input type="tel" placeholder="10-digit mobile"></div>
+        <div class="field"><label>Alternate Mobile</label><input type="tel" placeholder="Optional"></div>
+        <div class="field"><label>Email ID</label><input type="email" placeholder="Optional"></div>
+        <div class="field"><label>Date of Birth</label><input type="date"></div>
+        <div class="field"><label>Anniversary Date</label><input type="date"></div>
+      </div>
+
+      <div class="section-divider">◈ Address & Identity</div>
+      <div class="form-grid form-grid-2" style="margin-bottom:16px">
+        <div class="field"><label>Address</label><input type="text" placeholder="Door no., Street"></div>
+        <div class="field"><label>City / Town</label><input type="text" placeholder="e.g. Kakinada"></div>
+        <div class="field"><label>Pincode</label><input type="text" placeholder="6-digit pincode"></div>
+        <div class="field"><label>Occupation</label>
+          <select><option>Select</option><option>Business</option><option>Govt. Employee</option><option>Private Employee</option><option>Housewife</option><option>Farmer</option><option>Other</option></select>
+        </div>
+        <div class="field"><label>ID Proof Type</label>
+          <select><option>Select</option><option>Aadhaar</option><option>PAN Card</option><option>Voter ID</option><option>Passport</option></select>
+        </div>
+        <div class="field"><label>ID Proof Number</label><input type="text" placeholder="For KYC (₹2L+ transactions)"></div>
+      </div>
+
+      <div class="section-divider">◈ CRM Details</div>
+      <div class="form-grid form-grid-3" style="margin-bottom:16px">
+        <div class="field"><label>Customer Type</label>
+          <select><option>Walk-in</option><option>Referral</option><option>Agent Enrolled</option><option>VIP</option></select>
+        </div>
+        <div class="field"><label>Referred By</label><input type="text" placeholder="Name / Customer ID"></div>
+        <div class="field"><label>Assigned Agent</label>
+          <select><option>Select</option><option>Kavitha R.</option><option>Srinivas M.</option><option>Lakshmi P.</option></select>
+        </div>
+        <div class="field"><label>Purchase Occasion</label>
+          <select><option>Select</option><option>Wedding</option><option>Investment</option><option>Gift</option><option>Festival</option><option>Anniversary</option><option>Birthday</option></select>
+        </div>
+        <div class="field"><label>Preferred Category</label>
+          <select><option>Select</option><option>Gold</option><option>Diamond</option><option>Silver</option><option>Coins</option></select>
+        </div>
+        <div class="field"><label>WhatsApp Consent</label>
+          <select><option>Yes — Add to Broadcast</option><option>No — Do Not Contact</option></select>
+        </div>
+      </div>
+
+      <div class="field"><label>Notes / Remarks</label><textarea placeholder="Any preferences, special notes…"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('add-customer-modal')">Cancel</button>
+      <button class="btn btn-gold">Save Customer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Campaign Modal -->
+<div class="modal-overlay" id="add-campaign-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Create New Campaign</div>
+      <button class="modal-close" onclick="closeModal('add-campaign-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid form-grid-2">
+        <div class="field"><label>Campaign Name ●</label><input type="text" placeholder="e.g. Monsoon Gold Fest"></div>
+        <div class="field"><label>Objective</label>
+          <select><option>Awareness</option><option>Lead Generation</option><option>Scheme Enrolment</option><option>Direct Sale</option></select>
+        </div>
+        <div class="field"><label>Channel</label>
+          <select><option>WhatsApp Broadcast</option><option>SMS</option><option>Facebook Ads</option><option>Instagram</option><option>In-store Event</option><option>Newspaper</option><option>Hoarding</option></select>
+        </div>
+        <div class="field"><label>Target Audience</label>
+          <select><option>All Customers</option><option>VIP Only</option><option>Scheme Members</option><option>New Customers</option><option>Custom Segment</option></select>
+        </div>
+        <div class="field"><label>Start Date</label><input type="date"></div>
+        <div class="field"><label>End Date</label><input type="date"></div>
+        <div class="field"><label>Budget (₹)</label><input type="number" placeholder="Allocated budget"></div>
+        <div class="field"><label>Handled By</label><input type="text" placeholder="Staff name or agency"></div>
+      </div>
+      <div class="field" style="margin-top:14px"><label>Campaign Notes</label><textarea placeholder="Offer details, message content summary…"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('add-campaign-modal')">Cancel</button>
+      <button class="btn btn-gold">Launch Campaign</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Sale Modal -->
+<div class="modal-overlay" id="add-sale-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Record New Sale</div>
+      <button class="modal-close" onclick="closeModal('add-sale-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="section-divider">◈ Customer & Item</div>
+      <div class="form-grid form-grid-2" style="margin-bottom:16px">
+        <div class="field"><label>Customer ID / Name ●</label><input type="text" placeholder="Search or enter walk-in"></div>
+        <div class="field"><label>Salesperson</label>
+          <select><option>Srinivas M.</option><option>Kavitha R.</option><option>Lakshmi P.</option></select>
+        </div>
+        <div class="field"><label>Product Category ●</label>
+          <select><option>Gold Jewellery</option><option>Diamond Jewellery</option><option>Silver</option><option>Coins / Bullion</option><option>Platinum</option></select>
+        </div>
+        <div class="field"><label>Item Description</label><input type="text" placeholder="e.g. Necklace, Bangle pair, Ring…"></div>
+        <div class="field"><label>Purity</label>
+          <select><option>22KT (916)</option><option>18KT (750)</option><option>14KT</option><option>999 Silver</option><option>925 Silver</option></select>
+        </div>
+        <div class="field"><label>Hallmark No.</label><input type="text" placeholder="BIS Hallmark number"></div>
+      </div>
+      <div class="section-divider">◈ Weight & Pricing</div>
+      <div class="form-grid form-grid-3" style="margin-bottom:16px">
+        <div class="field"><label>Gross Weight (g)</label><input type="number" placeholder="0.00"></div>
+        <div class="field"><label>Net Weight (g)</label><input type="number" placeholder="0.00"></div>
+        <div class="field"><label>Rate / gram (₹)</label><input type="number" placeholder="Today's rate"></div>
+        <div class="field"><label>Making Charges (₹)</label><input type="number" placeholder="0.00"></div>
+        <div class="field"><label>Stone / Diamond Value (₹)</label><input type="number" placeholder="0.00"></div>
+        <div class="field"><label>GST (₹)</label><input type="number" placeholder="Auto-calculated"></div>
+        <div class="field"><label>Old Gold Exchange (₹)</label><input type="number" placeholder="Deduction amount"></div>
+        <div class="field"><label>Scheme Benefit (₹)</label><input type="number" placeholder="Bonus if applicable"></div>
+        <div class="field"><label>Total Payable (₹)</label><input type="number" placeholder="Net amount"></div>
+      </div>
+      <div class="section-divider">◈ Payment</div>
+      <div class="form-grid form-grid-3">
+        <div class="field"><label>Payment Mode ●</label>
+          <select><option>Cash</option><option>Card</option><option>UPI</option><option>Cheque</option><option>Advance + Balance</option></select>
+        </div>
+        <div class="field"><label>Amount Paid (₹)</label><input type="number" placeholder="0.00"></div>
+        <div class="field"><label>Balance Pending (₹)</label><input type="number" placeholder="0.00"></div>
+        <div class="field"><label>Purchase Occasion</label>
+          <select><option>Wedding</option><option>Festival</option><option>Gift</option><option>Investment</option><option>Anniversary</option><option>Daily Wear</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('add-sale-modal')">Cancel</button>
+      <button class="btn btn-gold">Save & Print Bill</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Date display
+  const d = new Date();
+  document.getElementById('topbar-date').textContent =
+    d.toLocaleDateString('en-IN', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+
+  // Navigation
+  const titles = {
+    dashboard: 'Dashboard',
+    customers: 'Customer Management',
+    marketing: 'Marketing Activities',
+    sales: 'Sales Monitor',
+    schemes: 'Schemes & Plans',
+    agents: 'Agent / Staff Management',
+    followups: 'Follow-up Tracker',
+    fields: 'Field Reference Guide'
+  };
+
+  function navigate(page, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    if (el) el.classList.add('active');
+    document.getElementById('page-title').textContent = titles[page] || page;
+  }
+
+  // Modals
+  function openModal(id) {
+    document.getElementById(id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // Close modal on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) {
+      if (e.target === this) closeModal(this.id);
+    });
+  });
+
+  // Tab clicks (cosmetic)
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      this.closest('.tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>
