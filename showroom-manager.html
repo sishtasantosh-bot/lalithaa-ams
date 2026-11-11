@@ -146,7 +146,7 @@ let uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 function defaults(){
  const T=(title,block,freq,day)=>({id:uid(),title,block,freq,day:day??null});
  return {
-  settings:{branch:'Lalithaa Jewellery Mart – Kakinada',manager:'',weeklyOff:2,targetDays:'all',
+  settings:{branch:'Lalithaa Jewellery Mart – Kakinada',manager:'',map:{gold:'Gold',diamond:'Dia Cts',silver:'Silver',scheme:'New Chit Amount',prebook:'Total Collection Amount'},weeklyOff:2,targetDays:'all',
    targets:{gold:1500,diamond:1.33,silver:5000,scheme:2200000,prebook:18200000}},
   tasks:[
    T('Gate opening with security – dual custody, keys log','opening','daily'),
@@ -411,8 +411,9 @@ function monthDays(ds){
 function vSales(){
  const sd=S.sales[DAY]||{},T=S.settings.targets;
  let h='<button class="btn full" style="margin-bottom:12px;background:var(--gold)" onclick="go(\'report\')">📊 Month-end report – '+parseD(DAY).toLocaleString('en-IN',{month:'long',year:'numeric'})+'</button>';
- h+='<div class="card"><h2>Entry for '+fmtD(DAY)+'</h2><div class="g2">'+SF.map(f=>'<div><label>'+f[1]+'</label><input type="number" inputmode="decimal" step="any" id="s_'+f[0]+'" value="'+(sd[f[0]]??'')+'"></div>').join('')+'</div>'+
+ h+='<div class="card"><h2>Entry for '+fmtD(DAY)+'</h2><button class="btn sec full" style="margin-bottom:6px" onclick="document.getElementById(\'ocrIn\').click()">📷 Fill from sale report image</button><input type="file" id="ocrIn" accept="image/*" class="hidden" onchange="ocrStart(this)"><div class="g2">'+SF.map(f=>'<div><label>'+f[1]+'</label><input type="number" inputmode="decimal" step="any" id="s_'+f[0]+'" value="'+(sd[f[0]]??'')+'"></div>').join('')+'</div>'+
  '<button class="btn full" style="margin-top:12px" onclick="saveSales()">Save day sales</button></div>';
+ if(sd.detail)h+='<div class="card"><h2>Full report – '+fmtD(DAY)+' <small>from image</small></h2>'+Object.entries(sd.detail).map(([k,x])=>'<div class="srow"><span>'+esc(k)+'</span><b>'+(+x).toLocaleString('en-IN')+'</b></div>').join('')+'<button class="btn sm sec" style="margin-top:8px" onclick="ocrReview(\''+DAY+'\',Object.entries(S.sales[DAY].detail).map(([l,v])=>({label:l,value:String(v),flag:false})))">Edit full report</button></div>';
  const days=monthDays(DAY),tot={};SF.forEach(f=>tot[f[0]]=0);
  const upto=days.filter(x=>x<=DAY);
  Object.keys(S.sales).forEach(k=>{if(k.slice(0,7)===DAY.slice(0,7))SF.forEach(f=>tot[f[0]]+=+S.sales[k][f[0]]||0)});
@@ -430,8 +431,89 @@ function vSales(){
  h+='<div class="card"><h2>Daily register</h2>'+(rows.length?rows.map(k=>{const s=S.sales[k];return '<div class="srow" onclick="setDay(\''+k+'\')"><span>'+fmtD(k)+'</span><span class="small">G '+(+s.gold||0)+' g · D '+(+s.diamond||0)+' ct · S '+(+s.silver||0)+' g</span></div>'}).join(''):'<div class="empty">No entries this month yet.</div>')+'</div>';
  return h;
 }
-function saveSales(){const o={};SF.forEach(f=>{const x=v('s_'+f[0]);if(x!=='')o[f[0]]=+x});S.sales[DAY]=o;save();render();toast('Sales saved for '+fmtD(DAY))}
+function saveSales(){const o={};SF.forEach(f=>{const x=v('s_'+f[0]);if(x!=='')o[f[0]]=+x});if(S.sales[DAY]&&S.sales[DAY].detail)o.detail=S.sales[DAY].detail;S.sales[DAY]=o;save();render();toast('Sales saved for '+fmtD(DAY))}
 
+
+
+/* ===== Read sale report image (OCR) ===== */
+const RLABELS=['Gold','G.Amt','Coin','C.Amt','MK','OG','OG Amt','FG','FG Amt','Dia Cts','Dia.Amt','Ruby','Chipa','Geti','Polki','Antik','Temp','Blr','Platinum','Bombay','Calcutta','Cutting Chain','Holo Chain','MCC','MCB','Bombay Bangles CJ','Casting MMF','H.H.Chain','H.H.Necklace','Chain','Silver','Silver Coin','Old Silver','New Member Chit','New Chit Amount','Close Member Chit','Total Collection Weight','Total Collection Amount','Closing Weight','Closing Amount'];
+function getMap(){return S.settings.map||{gold:'Gold',diamond:'Dia Cts',silver:'Silver',scheme:'New Chit Amount',prebook:'Total Collection Amount'}}
+function normL(x){return String(x).toLowerCase().replace(/[^a-z0-9]/g,'')}
+function lev(a,b){const m=a.length,n=b.length,d=[];for(let i=0;i<=m;i++){d[i]=[i]}for(let j=1;j<=n;j++)d[0][j]=j;for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[m][n]}
+function matchLabel(t){const n=normL(t);if(!n)return null;let best=null,bs=0;for(const L of RLABELS){const l=normL(L);const sc=1-lev(n,l)/Math.max(n.length,l.length);if(sc>bs){bs=sc;best=L}}return bs>=0.55?best:null}
+function loadTess(){return new Promise((res,rej)=>{if(window.Tesseract)return res();const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';sc.onload=res;sc.onerror=()=>rej(new Error('Could not load the reader. Check internet.'));document.head.appendChild(sc)})}
+function ocrProg(t){openModal('<h3>Reading report…</h3><div class="small" id="ocrMsg">'+t+'</div><div class="bar" style="margin-top:12px"><i id="ocrBar" style="width:5%"></i></div><div class="small" style="margin-top:10px">First time takes longer (downloads the reader). Keep internet on.</div>')}
+function ocrStep(t,p){const m=document.getElementById('ocrMsg'),b=document.getElementById('ocrBar');if(m)m.textContent=t;if(b)b.style.width=Math.round(p)+'%'}
+function groupsOf(x){const g=[];for(const v of x){if(g.length&&v-g[g.length-1][1]<=3)g[g.length-1][1]=v;else g.push([v,v])}return g}
+function cellCanvas(src,x0,y0,x1,y1){const w=Math.max(1,x1-x0),h=Math.max(1,y1-y0),sc=3,pad=20,c=document.createElement('canvas');c.width=w*sc+pad*2;c.height=h*sc+pad*2;const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.imageSmoothingEnabled=true;g.drawImage(src,x0,y0,w,h,pad,pad,w*sc,h*sc);
+ const id=g.getImageData(0,0,c.width,c.height),d=id.data;for(let i=0;i<d.length;i+=4){const y=0.3*d[i]+0.59*d[i+1]+0.11*d[i+2],v=y<150?0:255;d[i]=d[i+1]=d[i+2]=v}g.putImageData(id,0,0);return c}
+function inkRatio(src,x0,y0,x1,y1){const w=x1-x0,h=y1-y0;if(w<2||h<2)return 0;const d=src.getContext('2d').getImageData(x0,y0,w,h).data;let k=0;for(let i=0;i<d.length;i+=4)if(d[i]+d[i+1]+d[i+2]<330)k++;return k/(w*h)}
+function cleanNum(t){t=String(t||'').replace(/[^0-9.]/g,'').replace(/^\.+|\.+$/g,'');const p=t.split('.');if(p.length>2)t=p[0]+'.'+p.slice(1).join('');return t}
+async function ocrStart(inp){
+ const f=inp.files[0];inp.value='';if(!f)return;
+ ocrProg('Loading image…');
+ try{
+  const img=await new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=rej;im.src=URL.createObjectURL(f)});
+  let W=img.naturalWidth,H=img.naturalHeight,k=1;if(W>1400){k=1400/W}else if(W<300){k=2}
+  W=Math.round(W*k);H=Math.round(H*k);
+  const cv=document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d');g.drawImage(img,0,0,W,H);
+  const d=g.getImageData(0,0,W,H).data,dk=(x,y)=>{const i=(y*W+x)*4;return d[i]+d[i+1]+d[i+2]<330};
+  const rows=[],cols=[];
+  for(let y=0;y<H;y++){let c=0;for(let x=0;x<W;x++)if(dk(x,y))c++;if(c/W>0.6)rows.push(y)}
+  for(let x=0;x<W;x++){let c=0;for(let y=0;y<H;y++)if(dk(x,y))c++;if(c/H>0.6)cols.push(x)}
+  const R=groupsOf(rows),C=groupsOf(cols);
+  ocrStep('Starting reader…',10);await loadTess();
+  const worker=await Tesseract.createWorker('eng');
+  let items=[],date=null;
+  if(R.length>=6&&C.length>=1){
+   const vx0=C.length>=2?C[C.length-2][1]+2:C[0][1]+2,vx1=C.length>=2?C[C.length-1][0]-1:W-1;
+   const lx0=C.length>=3?C[C.length-3][1]+2:(C.length>=2?0:0),lx1=vx0-3;
+   const cells=[];if(R[0][0]>8)cells.push({y0:0,y1:R[0][0]-1,head:true});
+   for(let i=0;i<R.length-1;i++){const y0=R[i][1]+2,y1=R[i+1][0]-1;if(y1-y0>5)cells.push({y0,y1})}
+   if(H-R[R.length-1][1]>8)cells.push({y0:R[R.length-1][1]+2,y1:H-1});
+   await worker.setParameters({tessedit_pageseg_mode:'7'});
+   let n=0;
+   for(const c of cells){
+    n++;ocrStep('Reading line '+n+' of '+cells.length+'…',10+85*n/cells.length);
+    const lt=(await worker.recognize(cellCanvas(cv,lx0,c.y0,lx1,c.y1))).data.text.trim();
+    const vt=(await worker.recognize(cellCanvas(cv,vx0,c.y0,vx1,c.y1))).data.text.trim();
+    const dm=(lt+' '+vt).match(/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/);
+    if(dm&&!date){let yy=+dm[3];if(yy<100)yy+=2000;date=yy+'-'+pad(+dm[2])+'-'+pad(+dm[1]);continue}
+    if(c.head)continue;
+    let val=cleanNum(vt),flag=false;
+    if(val===''){flag=inkRatio(cv,vx0,c.y0,vx1,c.y1)>0.01;val=flag?'':'0';if(!flag)val='0'}
+    items.push({raw:lt,label:matchLabel(lt),value:val,flag:flag||val===''});
+   }
+   // fall back to template order when labels unreadable but count matches
+   if(items.length===RLABELS.length)items.forEach((it,i)=>{if(!it.label)it.label=RLABELS[i]});
+  }else{
+   await worker.setParameters({tessedit_pageseg_mode:'6'});ocrStep('Reading whole image…',40);
+   const t=(await worker.recognize(cv)).data.text;
+   const dm=t.match(/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/);if(dm){let yy=+dm[3];if(yy<100)yy+=2000;date=yy+'-'+pad(+dm[2])+'-'+pad(+dm[1])}
+   t.split('\n').forEach(line=>{const m=line.match(/^(.*?)[\s|:\]\[]*([0-9][0-9.,]*)\s*\]?\s*$/);if(!m)return;const lab=matchLabel(m[1]);if(lab)items.push({raw:m[1],label:lab,value:cleanNum(m[2]),flag:false})});
+  }
+  await worker.terminate();
+  const seen=new Set(),out=[];items.forEach((it,i)=>{const lab=it.label||('Line '+(i+1)+(it.raw?' ('+it.raw+')':''));if(seen.has(lab))return;seen.add(lab);out.push({label:lab,value:it.value,flag:it.flag||!it.label})});
+  if(!out.length){closeModal();return toast('Could not read this image. Try a clearer screenshot.')}
+  ocrReview(date&&/^\d{4}-\d{2}-\d{2}$/.test(date)?date:DAY,out);
+ }catch(e){closeModal();toast(e.message||'Could not read the image')}
+}
+let OCRD=[];
+function ocrReview(date,items){
+ OCRD=items;const M=getMap(),mapped=Object.values(M);
+ let h='<h3>Check & save</h3><div class="small">Please check the numbers against your report. Yellow boxes need a look. Highlighted lines fill your sales figures.</div>'+
+ '<label>Report date</label><input type="date" id="oc_d" value="'+date+'">'+
+ '<div class="g2" style="margin-top:6px">'+items.map((it,i)=>'<div><label style="'+(mapped.includes(it.label)?'color:var(--pri);font-weight:700':'')+'">'+esc(it.label)+'</label><input inputmode="decimal" id="oc_'+i+'" value="'+esc(it.value)+'" style="'+(it.flag?'background:#fff6cc;border-color:var(--warn)':'')+'"></div>').join('')+'</div>'+
+ '<div class="row" style="margin-top:14px"><button class="btn" onclick="ocrSave()">Save to sales</button><button class="btn sec" onclick="closeModal()">Cancel</button></div>';
+ openModal(h);
+}
+function ocrSave(){
+ const date=v('oc_d');if(!date)return toast('Choose the report date');
+ const det={};OCRD.forEach((it,i)=>{const x=cleanNum(v('oc_'+i));det[it.label]=x===''?0:+x});
+ const o=Object.assign({},S.sales[date]||{});o.detail=det;const M=getMap();
+ Object.keys(M).forEach(k=>{if(M[k]&&det[M[k]]!==undefined)o[k]=det[M[k]]});
+ S.sales[date]=o;save();closeModal();DAY=date;render();toast('Saved sales for '+fmtD(date));
+}
 
 /* ===== Month-end report ===== */
 function monthData(ds){
@@ -479,6 +561,9 @@ function vReport(){
  const cp=R.chk.all?Math.round(R.chk.done/R.chk.all*100):0;
  h+='<b style="color:var(--pri)">'+(R.staff.length?6:5)+'. Operations</b><div style="font-size:13px;margin:6px 0 12px;line-height:1.6">• Daily checklist compliance: '+cp+'% ('+R.chk.done+' of '+R.chk.all+' activities)<br>• Follow-ups raised this month: '+R.raised.length+' · Closed: '+R.closed.length+' · Still open: '+R.open.length+
  R.open.slice(0,8).map(i=>'<br>&nbsp;&nbsp;– '+esc(i.title)+' ('+esc(i.cat)+', '+diffDays(i.raised,todayStr())+' days, '+esc(i.status)+')').join('')+'</div>';
+ const dk=[];R.rows.forEach(r=>{if(r.s.detail)Object.keys(r.s.detail).forEach(k=>{if(!dk.includes(k))dk.push(k)})});
+ if(dk.length){const last={},sum={};R.rows.forEach(r=>{if(!r.s.detail)return;dk.forEach(k=>{const x=r.s.detail[k];if(x===undefined)return;sum[k]=(sum[k]||0)+(+x||0);last[k]={v:+x||0,d:r.date}})});
+  h+='<b style="color:var(--pri)">Item-wise monthly totals (from report images)</b><div class="rt" style="margin:6px 0 12px"><table><tr><th>Item</th><th>Month total</th></tr>'+dk.map(k=>{const isC=/^closing/i.test(k);return '<tr><td>'+esc(k)+(isC?' <span class="small">(as on '+parseD(last[k].d).getDate()+')</span>':'')+'</td><td>'+(isC?last[k].v:sum[k]).toLocaleString('en-IN',{maximumFractionDigits:3})+'</td></tr>'}).join('')+'</table></div>';}
  h+='<b style="color:var(--pri)">Manager remarks</b><textarea style="margin-top:6px" placeholder="Reasons for shortfall, action plan for next month, support needed from HO…" oninput="S.remarks[\''+R.mk+'\']=this.value;save()">'+esc(S.remarks[R.mk]||'')+'</textarea>';
  h+='<div style="margin-top:24px;font-size:13px">Regards,<br>'+esc(S.settings.manager||'')+(S.settings.manager?'<br>':'')+'Showroom Manager<br>'+esc(S.settings.branch)+'</div></div>';
  return h;
@@ -505,6 +590,8 @@ function monthCSV(){
  c+=['TOTAL','',R.tot.gold,R.tot.diamond,R.tot.silver,R.tot.scheme,R.tot.prebook,R.tot.footfall,R.tot.conv,''].map(q).join(',')+'\n';
  if(R.staff.length){c+='\nStaff attendance\nStaff,Present,Half day,Leave,Absent,Week off,Att %\n';R.staff.forEach(x=>c+=[x.name,x.c.P,x.c.H,x.c.L,x.c.A,x.c.W,x.pct??''].map(q).join(',')+'\n')}
  c+='\nFollow-ups open\nIssue,Type,Raised,Status\n';R.open.forEach(i=>c+=[i.title,i.cat,i.raised,i.status].map(q).join(',')+'\n');
+ const dk=[];R.rows.forEach(r=>{if(r.s.detail)Object.keys(r.s.detail).forEach(k=>{if(!dk.includes(k))dk.push(k)})});
+ if(dk.length){c+='\nItem-wise day report\n'+['Date'].concat(dk).map(q).join(',')+'\n';R.rows.forEach(r=>{if(r.s.detail)c+=[r.date].concat(dk.map(k=>r.s.detail[k]??'')).map(q).join(',')+'\n'})}
  const rm=(S.remarks||{})[R.mk];if(rm)c+='\nRemarks\n'+q(rm)+'\n';
  dl('Monthly-Report-'+R.mk+'.csv','\ufeff'+c,'text/csv');toast('Report downloaded – open in Excel / Sheets');
 }
@@ -570,6 +657,7 @@ function vMore(){
  '<div class="g2"><div><label>Gold target / day (g)</label><input type="number" step="any" id="se_g" value="'+S.settings.targets.gold+'"></div><div><label>Diamond / day (ct)</label><input type="number" step="any" id="se_d" value="'+S.settings.targets.diamond+'"></div>'+
  '<div><label>Silver / day (g)</label><input type="number" step="any" id="se_s" value="'+S.settings.targets.silver+'"></div><div><label>Monthly Scheme / month (₹)</label><input type="number" step="any" id="se_sc" value="'+S.settings.targets.scheme+'"></div>'+
  '<div><label>Pre-Booking / month (₹)</label><input type="number" step="any" id="se_pb" value="'+S.settings.targets.prebook+'"></div></div>'+
+ '<label style="margin-top:14px"><b>Image reading – which report line fills each figure</b></label><div class="g2">'+[['gold','Gold (g)'],['diamond','Diamond (ct)'],['silver','Silver (g)'],['scheme','Monthly Scheme (₹)'],['prebook','Pre-Booking (₹)']].map(([k,l])=>'<div><label>'+l+'</label><select id="mp_'+k+'">'+opts([['','– none –']].concat(RLABELS.map(x=>[x,x])),getMap()[k])+'</select></div>').join('')+'</div>'+
  '<div class="row" style="margin-top:12px"><button class="btn" onclick="saveSet()">Save settings</button><button class="btn sec" onclick="editTasks()">Edit daily checklist</button></div></div>';
  h+='<div class="card"><h2>💾 Backup</h2><div class="small" style="margin-bottom:8px">Data stays on this phone. Take a backup every week, or before clearing browser data.</div><div class="row"><button class="btn sm" onclick="backup()">Download backup</button><button class="btn sm sec" onclick="document.getElementById(\'imp\').click()">Restore backup</button><button class="btn sm sec" onclick="salesCSV()">Sales to Excel (CSV)</button></div><input type="file" id="imp" accept=".json" class="hidden" onchange="restore(this)">'+
  '<button class="btn sm rd" style="margin-top:12px" onclick="resetAll()">Reset everything</button></div>';
@@ -601,6 +689,7 @@ function copyTxt(id){const t=document.getElementById(id).textContent;(navigator.
 function shareTxt(id){const t=document.getElementById(id).textContent;if(navigator.share)navigator.share({text:t}).catch(()=>{});else window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank')}
 function saveSet(){
  S.settings.branch=v('se_b')||S.settings.branch;S.settings.manager=v('se_m');S.settings.weeklyOff=+v('se_w');S.settings.targetDays=v('se_td');
+ S.settings.map={};['gold','diamond','silver','scheme','prebook'].forEach(k=>S.settings.map[k]=v('mp_'+k));
  S.settings.targets={gold:+v('se_g')||0,diamond:+v('se_d')||0,silver:+v('se_s')||0,scheme:+v('se_sc')||0,prebook:+v('se_pb')||0};
  save();render();toast('Settings saved');
 }
