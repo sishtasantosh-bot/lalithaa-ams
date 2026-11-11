@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#7a1f2b">
+<title>Showroom Manager</title>
+<style>
+:root{--pri:#7a1f2b;--pri2:#a33445;--gold:#c9a227;--bg:#f6f3ee;--card:#fff;--txt:#222;--mut:#777;--ok:#2e7d32;--warn:#e08a00;--bad:#c62828;--bd:#e5ded3}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--txt);font-size:15px;padding-bottom:78px}
+header{background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;padding:14px 16px 12px;position:sticky;top:0;z-index:20}
+header h1{margin:0;font-size:18px;font-weight:700}
+header .sub{font-size:12px;opacity:.85;margin-top:2px}
+.datebar{display:flex;align-items:center;gap:8px;margin-top:10px}
+.datebar button{background:rgba(255,255,255,.18);border:0;color:#fff;border-radius:8px;padding:6px 12px;font-size:16px}
+.datebar input{flex:1;border:0;border-radius:8px;padding:6px 8px;font-size:14px;background:#fff;color:#222}
+main{padding:12px}
+.card{background:var(--card);border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.06);border:1px solid var(--bd)}
+.card h2{margin:0 0 10px;font-size:16px;color:var(--pri);display:flex;justify-content:space-between;align-items:center}
+.card h2 small{font-weight:400;color:var(--mut);font-size:12px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.stat{background:#fff;border-radius:12px;padding:12px;border:1px solid var(--bd)}
+.stat .n{font-size:22px;font-weight:700}
+.stat .l{font-size:12px;color:var(--mut)}
+.bar{height:8px;background:#eee;border-radius:6px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--ok);border-radius:6px}
+.task{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px dashed var(--bd)}
+.task:last-child{border-bottom:0}
+.task input[type=checkbox]{width:22px;height:22px;accent-color:var(--ok);flex:none;margin-top:1px}
+.task .t{flex:1}
+.task.done .t{text-decoration:line-through;color:var(--mut)}
+.tag{display:inline-block;font-size:11px;padding:2px 7px;border-radius:10px;background:#f1e9dc;color:#6b5320;margin-left:4px;vertical-align:middle}
+.tag.high{background:#fde2e2;color:var(--bad)}.tag.med{background:#fff1d6;color:#9a5d00}.tag.low{background:#e3f1e4;color:var(--ok)}
+.tag.over{background:var(--bad);color:#fff}
+.btn{background:var(--pri);color:#fff;border:0;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:600}
+.btn.sec{background:#fff;color:var(--pri);border:1px solid var(--pri)}
+.btn.sm{padding:6px 10px;font-size:12px;border-radius:8px}
+.btn.gr{background:var(--ok)}.btn.rd{background:var(--bad)}
+.btn.full{width:100%}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:8px}
+.chip{flex:none;border:1px solid var(--bd);background:#fff;border-radius:18px;padding:6px 12px;font-size:13px}
+.chip.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.item{padding:10px 0;border-bottom:1px solid var(--bd)}
+.item:last-child{border-bottom:0}
+.item .ttl{font-weight:600}
+.item .meta{font-size:12px;color:var(--mut);margin:3px 0 7px}
+.item .acts{display:flex;gap:6px;flex-wrap:wrap}
+.empty{color:var(--mut);font-size:13px;text-align:center;padding:10px}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--bd);display:flex;z-index:30}
+nav button{flex:1;border:0;background:none;padding:8px 0 10px;font-size:11px;color:var(--mut)}
+nav button .ic{display:block;font-size:20px;margin-bottom:2px}
+nav button.on{color:var(--pri);font-weight:700}
+.fab{position:fixed;right:16px;bottom:86px;width:54px;height:54px;border-radius:50%;background:var(--gold);color:#fff;border:0;font-size:28px;box-shadow:0 3px 10px rgba(0,0,0,.25);z-index:25}
+label{display:block;font-size:12px;color:var(--mut);margin:8px 0 3px}
+input,select,textarea{width:100%;padding:10px;border:1px solid #d6cdbf;border-radius:10px;font-size:15px;background:#fff;font-family:inherit}
+textarea{min-height:70px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;z-index:50}
+.modal.show{display:flex}
+.sheet{background:#fff;width:100%;max-height:90vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px}
+.sheet h3{margin:0 0 6px;color:var(--pri)}
+.alertbox{position:fixed;top:10px;left:10px;right:10px;background:#fff8e1;border:2px solid var(--warn);border-radius:14px;padding:12px;z-index:60;display:none;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+.alertbox.show{display:block}
+.banner{background:#fff1d6;border:1px solid #f0d08a;color:#7a4b00;border-radius:12px;padding:10px;font-size:13px;margin-bottom:12px}
+.att{display:flex;gap:4px}
+.att button{border:1px solid var(--bd);background:#fff;border-radius:8px;padding:6px 8px;font-size:12px;min-width:34px}
+.att button.on.P{background:var(--ok);color:#fff}.att button.on.A{background:var(--bad);color:#fff}.att button.on.L{background:var(--warn);color:#fff}.att button.on.H{background:#5c6bc0;color:#fff}.att button.on.W{background:#888;color:#fff}
+.srow{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--bd);gap:8px}
+.srow:last-child{border-bottom:0}
+.tgt{margin-bottom:12px}
+.tgt .top{display:flex;justify-content:space-between;font-size:13px}
+.tgt .top b{font-size:14px}
+.tgt .hint{font-size:11px;color:var(--mut);margin-top:3px}
+pre.rep{white-space:pre-wrap;background:#faf7f2;border:1px solid var(--bd);border-radius:10px;padding:10px;font-size:13px;font-family:inherit}
+.hidden{display:none}
+.blockhead{font-size:13px;font-weight:700;color:var(--pri);margin:6px 0 2px;display:flex;justify-content:space-between}
+.small{font-size:12px;color:var(--mut)}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="hTitle">Showroom Manager</h1>
+  <div class="sub" id="hSub"></div>
+  <div class="datebar">
+    <button onclick="shiftDay(-1)">‹</button>
+    <input type="date" id="dateSel" onchange="setDay(this.value)">
+    <button onclick="shiftDay(1)">›</button>
+    <button onclick="setDay(todayStr())" style="font-size:12px">Today</button>
+  </div>
+</header>
+
+<div class="alertbox" id="alertBox">
+  <b>⏰ Reminder</b>
+  <div id="alertText" style="margin:6px 0 10px;font-size:15px"></div>
+  <div class="row">
+    <button class="btn gr sm" onclick="alertDone()">Done</button>
+    <button class="btn sec sm" onclick="alertSnooze(15)">Snooze 15 min</button>
+    <button class="btn sec sm" onclick="alertSnooze(60)">1 hour</button>
+    <button class="btn sec sm" onclick="closeAlert()">Close</button>
+  </div>
+</div>
+
+<main id="main"></main>
+
+<button class="fab" id="fab" onclick="fabAction()">+</button>
+
+<nav>
+  <button data-tab="today" class="on" onclick="go('today')"><span class="ic">✅</span>Today</button>
+  <button data-tab="rem" onclick="go('rem')"><span class="ic">⏰</span>Reminders</button>
+  <button data-tab="iss" onclick="go('iss')"><span class="ic">🛠️</span>Follow-ups</button>
+  <button data-tab="sales" onclick="go('sales')"><span class="ic">📈</span>Sales</button>
+  <button data-tab="staff" onclick="go('staff')"><span class="ic">👥</span>Staff</button>
+  <button data-tab="more" onclick="go('more')"><span class="ic">☰</span>More</button>
+</nav>
+
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="sheet" id="sheet"></div></div>
+
+<script>
+/* ===== Storage ===== */
+const KEY='smApp_v1';
+const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const BLOCKS=[
+ {id:'opening',name:'🌅 Opening (9:00 – 9:30)'},
+ {id:'meeting',name:'📣 Morning Meeting (9:30 – 10:00)'},
+ {id:'midday',name:'☀️ Mid-day (10:00 – 4:00)'},
+ {id:'evening',name:'🌆 Evening Peak (4:00 – 8:00)'},
+ {id:'closing',name:'🌙 Closing (8:00 – 10:00)'}
+];
+const REM_CATS=['Head Office','Sales / Targets','Staff / HR','Stock','Scheme','Customer','Vendor','Maintenance','Audit','Meeting','Personal','Other'];
+const ISS_CATS=['Electrical','UPS / Inverter','AC','Lift','Fire Alarm','CCTV / Security','Network / Systems','Pest Control','Plumbing / Drainage','Signboard / Lighting','Housekeeping','Stock / Tag Issue','Vendor Pending','Customer Complaint','Staff / HR','Other'];
+let uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+function defaults(){
+ const T=(title,block,freq,day)=>({id:uid(),title,block,freq,day:day??null});
+ return {
+  settings:{branch:'Lalithaa Jewellery Mart – Kakinada',manager:'',weeklyOff:2,targetDays:'all',
+   targets:{gold:1500,diamond:1.33,silver:5000,scheme:2200000,prebook:18200000}},
+  tasks:[
+   T('Gate opening with security – dual custody, keys log','opening','daily'),
+   T('Check CCTV, alarm, lights, AC, UPS all working','opening','daily'),
+   T('Opening stock tally / tray count at all counters','opening','daily'),
+   T('Staff attendance & grooming check','opening','daily'),
+   T('Showroom cleaning & display ready before customers','opening','daily'),
+   T('Morning meeting – targets, schemes, key instructions','meeting','daily'),
+   T('Share yesterday sales & today target with team','meeting','daily'),
+   T('Floor walk – customer service & counter coverage','midday','daily'),
+   T('Check walk-in & non-conversion entries','midday','daily'),
+   T('Follow up pending vendor / maintenance issues','midday','daily'),
+   T('Reply head office emails & approvals','midday','daily'),
+   T('Lunch break rotation – no counter left empty','midday','daily'),
+   T('Peak hour floor supervision','evening','daily'),
+   T('Scheme enrolment push – review count','evening','daily'),
+   T('Pending orders / repairs / deliveries follow-up','evening','daily'),
+   T('Daily sales report sent to head office','closing','daily'),
+   T('Closing stock tally / tray count','closing','daily'),
+   T('Cash & petty cash verification','closing','daily'),
+   T('Strong room locked, keys handed over','closing','daily'),
+   T('Alarm set, lights / AC off, security handover','closing','daily'),
+   T('Counter shuffling plan for next week','midday','weekly',3),
+   T('Aged stock review','midday','weekly',4),
+   T('Staff target vs achievement review','evening','weekly',6),
+   T('Safety walk – fire extinguishers, exits clear','opening','weekly',0),
+   T('Fire alarm & extinguisher check','opening','monthly',1),
+   T('Pest control done / scheduled','midday','monthly',5),
+   T('AC / UPS / DG service follow-up','midday','monthly',10),
+   T('Aged & damaged stock report','midday','monthly',15),
+   T('Staff performance review','evening','monthly',25),
+   T('Monthly sales report & next month target plan','closing','monthly',31)
+  ],
+  done:{},reminders:[],issues:[],sales:{},
+  staff:[],att:{},alerted:{}
+ };
+}
+let S;
+try{S=JSON.parse(localStorage.getItem(KEY))||defaults()}catch(e){S=defaults()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('Could not save – storage blocked')}}
+
+/* ===== Dates ===== */
+function pad(n){return String(n).padStart(2,'0')}
+function dstr(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+function todayStr(){return dstr(new Date())}
+function parseD(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)}
+function fmtD(s){const d=parseD(s);return d.getDate()+' '+d.toLocaleString('en-IN',{month:'short'})+' '+d.getFullYear()+', '+DAYS[d.getDay()].slice(0,3)}
+function fmtT(t){if(!t)return'';let [h,m]=t.split(':').map(Number);const ap=h>=12?'PM':'AM';h=h%12||12;return h+':'+pad(m)+' '+ap}
+function daysIn(y,m){return new Date(y,m+1,0).getDate()}
+function addDays(s,n){const d=parseD(s);d.setDate(d.getDate()+n);return dstr(d)}
+function diffDays(a,b){return Math.round((parseD(b)-parseD(a))/864e5)}
+function inr(n){n=Number(n)||0;if(n>=1e7)return'₹'+(n/1e7).toFixed(2)+' Cr';if(n>=1e5)return'₹'+(n/1e5).toFixed(2)+' L';return'₹'+n.toLocaleString('en-IN')}
+function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+let DAY=todayStr(),TAB='today',remFilter='today',issFilter='open';
+
+function setDay(v){if(!v)return;DAY=v;render()}
+function shiftDay(n){DAY=addDays(DAY,n);render()}
+
+/* ===== Tasks for a day ===== */
+function tasksFor(ds){
+ const d=parseD(ds),wd=d.getDay(),md=d.getDate(),last=daysIn(d.getFullYear(),d.getMonth());
+ return S.tasks.filter(t=>t.freq==='daily'||(t.freq==='weekly'&&t.day==wd)||(t.freq==='monthly'&&(t.day==md||(t.day>last&&md===last))));
+}
+function toggleTask(id){S.done[DAY]=S.done[DAY]||{};S.done[DAY][id]=!S.done[DAY][id];save();render()}
+
+/* ===== Reminders ===== */
+function remDT(r){return new Date(r.date+'T'+(r.time||'09:00'))}
+function remOver(r){return !r.done&&remDT(r)<new Date()}
+function nextDate(r){
+ if(r.repeat==='daily')return addDays(r.date,1);
+ if(r.repeat==='weekly')return addDays(r.date,7);
+ if(r.repeat==='monthly'){const d=parseD(r.date);const day=r.mday||d.getDate();let y=d.getFullYear(),m=d.getMonth()+1;if(m>11){m=0;y++}return dstr(new Date(y,m,Math.min(day,daysIn(y,m))))}
+ return null;
+}
+function remDone(id){
+ const r=S.reminders.find(x=>x.id===id);if(!r)return;
+ const nd=nextDate(r);
+ if(nd){r.date=nd;delete S.alerted[r.id];toast('Done. Next: '+fmtD(nd))}else{r.done=true;r.doneOn=todayStr();toast('Marked done')}
+ save();render();
+}
+function remSnooze(id,mins){
+ const r=S.reminders.find(x=>x.id===id);if(!r)return;
+ const t=new Date(Date.now()+mins*60000);r.date=dstr(t);r.time=pad(t.getHours())+':'+pad(t.getMinutes());r.done=false;delete S.alerted[r.id];save();render();toast('Snoozed to '+fmtT(r.time))
+}
+function remTomorrow(id){const r=S.reminders.find(x=>x.id===id);r.date=addDays(todayStr(),1);r.done=false;delete S.alerted[r.id];save();render();toast('Moved to tomorrow')}
+function gcal(r){
+ const s=remDT(r),e=new Date(s.getTime()+30*60000);
+ const f=d=>d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'T'+pad(d.getHours())+pad(d.getMinutes())+'00';
+ let u='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(r.title)+'&dates='+f(s)+'/'+f(e)+'&details='+encodeURIComponent((r.cat||'')+(r.notes?' – '+r.notes:''))+'&ctz=Asia/Kolkata';
+ if(r.repeat&&r.repeat!=='none')u+='&recur='+encodeURIComponent('RRULE:FREQ='+r.repeat.toUpperCase());
+ return u;
+}
+
+/* ===== Alarm checker ===== */
+let curAlert=null;
+function beep(){try{const c=new (window.AudioContext||window.webkitAudioContext)();[0,0.35,0.7].forEach(t=>{const o=c.createOscillator(),g=c.createGain();o.frequency.value=880;o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(.3,c.currentTime+t);o.start(c.currentTime+t);o.stop(c.currentTime+t+.2)})}catch(e){} if(navigator.vibrate)navigator.vibrate([300,150,300])}
+function checkAlarms(){
+ const now=new Date();
+ for(const r of S.reminders){
+  if(r.done||S.alerted[r.id+r.date+r.time])continue;
+  if(remDT(r)<=now&&now-remDT(r)<12*3600e3){
+   S.alerted[r.id+r.date+r.time]=1;save();curAlert=r.id;
+   document.getElementById('alertText').innerHTML=esc(r.title)+'<div class="small">'+esc(r.cat||'')+' · '+fmtT(r.time)+'</div>';
+   document.getElementById('alertBox').classList.add('show');beep();
+   try{if('Notification'in window&&Notification.permission==='granted')new Notification('Showroom reminder',{body:r.title})}catch(e){}
+   break;
+  }
+ }
+}
+function closeAlert(){document.getElementById('alertBox').classList.remove('show');curAlert=null}
+function alertDone(){if(curAlert)remDone(curAlert);closeAlert()}
+function alertSnooze(m){if(curAlert)remSnooze(curAlert,m);closeAlert()}
+setInterval(checkAlarms,20000);
+
+/* ===== Navigation ===== */
+function go(t){TAB=t;document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));window.scrollTo(0,0);render()}
+function fabAction(){({today:()=>editRem(),rem:()=>editRem(),iss:()=>editIss(),sales:()=>{},staff:()=>editStaff(),more:()=>{}})[TAB]()}
+
+function render(){
+ document.getElementById('dateSel').value=DAY;
+ document.getElementById('hTitle').textContent='Showroom Manager';
+ document.getElementById('hSub').textContent=S.settings.branch+' · '+fmtD(DAY);
+ const fab=document.getElementById('fab');fab.classList.toggle('hidden',TAB==='sales'||TAB==='more');
+ const m=document.getElementById('main');
+ m.innerHTML={today:vToday,rem:vRem,iss:vIss,sales:vSales,staff:vStaff,more:vMore}[TAB]();
+}
+
+/* ===== Today view ===== */
+function vToday(){
+ const ts=tasksFor(DAY),dn=S.done[DAY]||{},cnt=ts.filter(t=>dn[t.id]).length,pct=ts.length?Math.round(cnt/ts.length*100):0;
+ const over=S.reminders.filter(remOver).length;
+ const dueToday=S.reminders.filter(r=>!r.done&&r.date===DAY).sort((a,b)=>(a.time||'').localeCompare(b.time||''));
+ const openIss=S.issues.filter(i=>i.status!=='Closed').length;
+ const sd=S.sales[DAY]||{},gt=S.settings.targets.gold,gp=gt?Math.round((+sd.gold||0)/gt*100):0;
+ const isOff=parseD(DAY).getDay()==S.settings.weeklyOff;
+ let h='';
+ if(isOff)h+='<div class="banner">🏖️ '+DAYS[S.settings.weeklyOff]+' is your weekly off. Take rest – only urgent items below.</div>';
+ h+='<div class="stats">'+
+ '<div class="stat"><div class="n">'+cnt+'/'+ts.length+'</div><div class="l">Checklist done</div><div class="bar"><i style="width:'+pct+'%"></i></div></div>'+
+ '<div class="stat" onclick="remFilter=\'overdue\';go(\'rem\')"><div class="n" style="color:'+(over?'var(--bad)':'var(--ok)')+'">'+over+'</div><div class="l">Overdue reminders</div></div>'+
+ '<div class="stat" onclick="go(\'iss\')"><div class="n" style="color:'+(openIss?'var(--warn)':'var(--ok)')+'">'+openIss+'</div><div class="l">Open follow-ups</div></div>'+
+ '<div class="stat" onclick="go(\'sales\')"><div class="n">'+(+sd.gold||0)+' g</div><div class="l">Gold today ('+gp+'% of '+gt+' g)</div><div class="bar"><i style="width:'+Math.min(gp,100)+'%;background:var(--gold)"></i></div></div>'+
+ '</div>';
+ h+='<div class="card"><h2>Due today <small>'+dueToday.length+'</small></h2>';
+ h+=dueToday.length?dueToday.map(remItem).join(''):'<div class="empty">No reminders for this day. Tap + to add.</div>';
+ h+='</div>';
+ h+='<div class="card"><h2>Daily checklist <small>'+pct+'% done</small></h2>';
+ for(const b of BLOCKS){
+  const bt=ts.filter(t=>t.block===b.id);if(!bt.length)continue;
+  const bd=bt.filter(t=>dn[t.id]).length;
+  h+='<div class="blockhead"><span>'+b.name+'</span><span class="small">'+bd+'/'+bt.length+'</span></div>';
+  h+=bt.map(t=>'<div class="task'+(dn[t.id]?' done':'')+'"><input type="checkbox" '+(dn[t.id]?'checked':'')+' onchange="toggleTask(\''+t.id+'\')"><div class="t">'+esc(t.title)+(t.freq!=='daily'?'<span class="tag">'+t.freq+'</span>':'')+'</div></div>').join('');
+ }
+ h+='<div class="row" style="margin-top:10px"><button class="btn sec sm" onclick="go(\'more\');setTimeout(()=>editTasks(),50)">Edit checklist</button><button class="btn sec sm" onclick="markAll()">Mark all done</button></div></div>';
+ return h;
+}
+function markAll(){if(!confirm('Mark all checklist items done for this day?'))return;S.done[DAY]=S.done[DAY]||{};tasksFor(DAY).forEach(t=>S.done[DAY][t.id]=true);save();render()}
+
+/* ===== Reminders view ===== */
+function remItem(r){
+ const o=remOver(r);
+ return '<div class="item"><div class="ttl">'+esc(r.title)+' <span class="tag '+(r.priority||'med')+'">'+({high:'High',med:'Medium',low:'Low'}[r.priority||'med'])+'</span>'+(o?'<span class="tag over">Overdue</span>':'')+'</div>'+
+ '<div class="meta">'+fmtD(r.date)+' · '+fmtT(r.time)+' · '+esc(r.cat||'')+(r.repeat&&r.repeat!=='none'?' · 🔁 '+r.repeat:'')+(r.notes?'<br>'+esc(r.notes):'')+'</div>'+
+ '<div class="acts">'+(r.done?'<button class="btn sm sec" onclick="reopenRem(\''+r.id+'\')">Reopen</button>':
+ '<button class="btn sm gr" onclick="remDone(\''+r.id+'\')">✓ Done</button><button class="btn sm sec" onclick="remSnooze(\''+r.id+'\',60)">+1 hr</button><button class="btn sm sec" onclick="remTomorrow(\''+r.id+'\')">Tomorrow</button>')+
+ '<a class="btn sm sec" style="text-decoration:none" target="_blank" href="'+gcal(r)+'">📅 Phone alert</a>'+
+ '<button class="btn sm sec" onclick="editRem(\''+r.id+'\')">Edit</button></div></div>';
+}
+function reopenRem(id){const r=S.reminders.find(x=>x.id===id);r.done=false;save();render()}
+function vRem(){
+ const t=todayStr();
+ const F={today:r=>!r.done&&r.date===t,upcoming:r=>!r.done&&r.date>t,overdue:remOver,done:r=>r.done,all:()=>true};
+ const L={today:'Today',overdue:'Overdue',upcoming:'Upcoming',done:'Done',all:'All'};
+ let list=S.reminders.filter(F[remFilter]).sort((a,b)=>remDT(a)-remDT(b));
+ if(remFilter==='done')list.reverse();
+ let h='<div class="chips">'+Object.keys(L).map(k=>'<button class="chip'+(remFilter===k?' on':'')+'" onclick="remFilter=\''+k+'\';render()">'+L[k]+' ('+S.reminders.filter(F[k]).length+')</button>').join('')+'</div>';
+ h+='<div class="card"><h2>'+L[remFilter]+' reminders</h2>'+(list.length?list.map(remItem).join(''):'<div class="empty">Nothing here. Tap + to add a reminder.</div>')+'</div>';
+ h+='<div class="card"><h2>Quick add</h2><div class="small" style="margin-bottom:8px">Tap one to add it for today with a preset time.</div><div class="row">'+
+ QUICK.map((q,i)=>'<button class="btn sm sec" onclick="quickRem('+i+')">'+q[0]+'</button>').join('')+'</div></div>';
+ if('Notification'in window&&Notification.permission!=='granted')h+='<div class="card"><div class="small">Allow notifications so reminders pop up while this app is open.</div><button class="btn sm" style="margin-top:8px" onclick="Notification.requestPermission().then(render)">Allow notifications</button></div>';
+ h+='<div class="small" style="padding:0 4px">Alarms ring while this app is open. For alerts when the phone is locked, tap “📅 Phone alert” to save it in Google Calendar.</div>';
+ return h;
+}
+const QUICK=[
+ ['Send daily sales report','21:30','Head Office','high','daily'],
+ ['Morning gate meeting','09:30','Meeting','high','daily'],
+ ['Call vendor for pending item','11:00','Vendor','med','none'],
+ ['Scheme maturity follow-up calls','12:00','Scheme','med','none'],
+ ['Customer delivery / repair follow-up','16:00','Customer','med','none'],
+ ['Reply HO email','11:30','Head Office','high','none'],
+ ['Staff counter shuffling','10:00','Staff / HR','med','weekly'],
+ ['Pay petty cash bills','15:00','Other','low','none']
+];
+function quickRem(i){const q=QUICK[i];S.reminders.push({id:uid(),title:q[0],date:todayStr(),time:q[1],cat:q[2],priority:q[3],repeat:q[4],notes:'',done:false});save();remFilter='today';render();toast('Added for '+fmtT(q[1]))}
+function opts(arr,sel){return arr.map(a=>{const v=Array.isArray(a)?a[0]:a,l=Array.isArray(a)?a[1]:a;return '<option value="'+esc(v)+'"'+(v==sel?' selected':'')+'>'+esc(l)+'</option>'}).join('')}
+function editRem(id){
+ const r=id?S.reminders.find(x=>x.id===id):{title:'',date:TAB==='today'?DAY:todayStr(),time:'',cat:'Head Office',priority:'med',repeat:'none',notes:''};
+ if(!r.time){const n=new Date(Date.now()+3600e3);r.time=pad(n.getHours())+':00'}
+ openModal('<h3>'+(id?'Edit':'New')+' reminder</h3>'+
+ '<label>What to remember</label><input id="f_t" value="'+esc(r.title)+'" placeholder="e.g. Send aged stock report to HO">'+
+ '<div class="g2"><div><label>Date</label><input type="date" id="f_d" value="'+r.date+'"></div><div><label>Time</label><input type="time" id="f_tm" value="'+r.time+'"></div></div>'+
+ '<div class="g2"><div><label>Category</label><select id="f_c">'+opts(REM_CATS,r.cat)+'</select></div><div><label>Priority</label><select id="f_p">'+opts([['high','High'],['med','Medium'],['low','Low']],r.priority)+'</select></div></div>'+
+ '<label>Repeat</label><select id="f_r">'+opts([['none','No repeat'],['daily','Every day'],['weekly','Every week'],['monthly','Every month']],r.repeat)+'</select>'+
+ '<label>Notes (optional)</label><textarea id="f_n">'+esc(r.notes)+'</textarea>'+
+ '<div class="row" style="margin-top:14px"><button class="btn" onclick="saveRem(\''+(id||'')+'\')">Save</button><button class="btn sec" onclick="closeModal()">Cancel</button>'+(id?'<button class="btn rd" style="margin-left:auto" onclick="delRem(\''+id+'\')">Delete</button>':'')+'</div>');
+}
+function saveRem(id){
+ const t=v('f_t').trim();if(!t)return toast('Enter what to remember');
+ const o={title:t,date:v('f_d')||todayStr(),time:v('f_tm')||'09:00',cat:v('f_c'),priority:v('f_p'),repeat:v('f_r'),notes:v('f_n')};
+ o.mday=parseD(o.date).getDate();
+ if(id){Object.assign(S.reminders.find(x=>x.id===id),o)}else S.reminders.push(Object.assign({id:uid(),done:false},o));
+ save();closeModal();render();toast('Reminder saved');
+}
+function delRem(id){if(!confirm('Delete this reminder?'))return;S.reminders=S.reminders.filter(x=>x.id!==id);save();closeModal();render()}
+
+/* ===== Follow-ups / issues ===== */
+function vIss(){
+ const t=todayStr();
+ const F={open:i=>i.status!=='Closed',overdue:i=>i.status!=='Closed'&&i.due&&i.due<t,closed:i=>i.status==='Closed',all:()=>true};
+ const L={open:'Open',overdue:'Overdue',closed:'Closed',all:'All'};
+ const list=S.issues.filter(F[issFilter]).sort((a,b)=>({high:0,med:1,low:2}[a.priority]-{high:0,med:1,low:2}[b.priority])||(a.raised||'').localeCompare(b.raised||''));
+ let h='<div class="chips">'+Object.keys(L).map(k=>'<button class="chip'+(issFilter===k?' on':'')+'" onclick="issFilter=\''+k+'\';render()">'+L[k]+' ('+S.issues.filter(F[k]).length+')</button>').join('')+'</div>';
+ h+='<div class="card"><h2>Maintenance & vendor follow-ups</h2>';
+ h+=list.length?list.map(i=>{
+  const age=diffDays(i.raised,t),od=i.status!=='Closed'&&i.due&&i.due<t;
+  return '<div class="item"><div class="ttl">'+esc(i.title)+' <span class="tag '+i.priority+'">'+({high:'High',med:'Medium',low:'Low'}[i.priority])+'</span>'+(od?'<span class="tag over">Overdue</span>':'')+'</div>'+
+  '<div class="meta">'+esc(i.cat)+(i.vendor?' · '+esc(i.vendor):'')+' · <b>'+esc(i.status)+'</b><br>Raised '+fmtD(i.raised)+(i.status!=='Closed'?' · '+age+' day'+(age==1?'':'s')+' open':'')+(i.due?' · Target '+fmtD(i.due):'')+(i.notes?'<br>'+esc(i.notes):'')+'</div>'+
+  '<div class="acts">'+(i.status!=='Closed'?'<button class="btn sm gr" onclick="setIss(\''+i.id+'\',\'Closed\')">✓ Close</button>'+(i.status==='Open'?'<button class="btn sm sec" onclick="setIss(\''+i.id+'\',\'In progress\')">In progress</button>':'')+'<button class="btn sm sec" onclick="issRemind(\''+i.id+'\')">⏰ Remind tomorrow</button>':'<button class="btn sm sec" onclick="setIss(\''+i.id+'\',\'Open\')">Reopen</button>')+
+  '<button class="btn sm sec" onclick="editIss(\''+i.id+'\')">Edit</button></div></div>'}).join(''):'<div class="empty">No items. Tap + to log an issue (AC, UPS, lift, vendor, tag issue…).</div>';
+ h+='</div>';
+ return h;
+}
+function setIss(id,st){const i=S.issues.find(x=>x.id===id);i.status=st;i.updated=todayStr();if(st==='Closed')i.closedOn=todayStr();save();render()}
+function issRemind(id){const i=S.issues.find(x=>x.id===id);S.reminders.push({id:uid(),title:'Follow up: '+i.title+(i.vendor?' ('+i.vendor+')':''),date:addDays(todayStr(),1),time:'11:00',cat:'Maintenance',priority:i.priority,repeat:'none',notes:'',done:false});save();toast('Reminder set for tomorrow 11 AM')}
+function editIss(id){
+ const i=id?S.issues.find(x=>x.id===id):{title:'',cat:'Electrical',vendor:'',raised:todayStr(),due:addDays(todayStr(),3),status:'Open',priority:'med',notes:''};
+ openModal('<h3>'+(id?'Edit':'New')+' follow-up</h3>'+
+ '<label>Issue / pending item</label><input id="i_t" value="'+esc(i.title)+'" placeholder="e.g. 1st floor AC not cooling">'+
+ '<div class="g2"><div><label>Type</label><select id="i_c">'+opts(ISS_CATS,i.cat)+'</select></div><div><label>Priority</label><select id="i_p">'+opts([['high','High'],['med','Medium'],['low','Low']],i.priority)+'</select></div></div>'+
+ '<label>Vendor / person responsible</label><input id="i_v" value="'+esc(i.vendor)+'" placeholder="Name & phone">'+
+ '<div class="g2"><div><label>Raised on</label><input type="date" id="i_r" value="'+i.raised+'"></div><div><label>Target date</label><input type="date" id="i_d" value="'+(i.due||'')+'"></div></div>'+
+ '<label>Status</label><select id="i_s">'+opts(['Open','In progress','Waiting approval','Closed'],i.status)+'</select>'+
+ '<label>Notes / action taken</label><textarea id="i_n">'+esc(i.notes)+'</textarea>'+
+ '<div class="row" style="margin-top:14px"><button class="btn" onclick="saveIss(\''+(id||'')+'\')">Save</button><button class="btn sec" onclick="closeModal()">Cancel</button>'+(id?'<button class="btn rd" style="margin-left:auto" onclick="delIss(\''+id+'\')">Delete</button>':'')+'</div>');
+}
+function saveIss(id){
+ const t=v('i_t').trim();if(!t)return toast('Enter the issue');
+ const o={title:t,cat:v('i_c'),priority:v('i_p'),vendor:v('i_v'),raised:v('i_r')||todayStr(),due:v('i_d'),status:v('i_s'),notes:v('i_n'),updated:todayStr()};
+ if(id)Object.assign(S.issues.find(x=>x.id===id),o);else S.issues.push(Object.assign({id:uid()},o));
+ save();closeModal();render();toast('Saved');
+}
+function delIss(id){if(!confirm('Delete this item?'))return;S.issues=S.issues.filter(x=>x.id!==id);save();closeModal();render()}
+
+/* ===== Sales ===== */
+const SF=[['gold','Gold (g)'],['diamond','Diamond (ct)'],['silver','Silver (g)'],['scheme','Monthly Scheme (₹)'],['prebook','Pre-Booking (₹)'],['footfall','Walk-ins'],['conv','Converted (bills)']];
+function monthDays(ds){
+ const d=parseD(ds),y=d.getFullYear(),m=d.getMonth(),n=daysIn(y,m);let all=[],work=[];
+ for(let i=1;i<=n;i++){const s=dstr(new Date(y,m,i));all.push(s);if(new Date(y,m,i).getDay()!=S.settings.weeklyOff)work.push(s)}
+ return S.settings.targetDays==='work'?work:all;
+}
+function vSales(){
+ const sd=S.sales[DAY]||{},T=S.settings.targets;
+ let h='<div class="card"><h2>Entry for '+fmtD(DAY)+'</h2><div class="g2">'+SF.map(f=>'<div><label>'+f[1]+'</label><input type="number" inputmode="decimal" step="any" id="s_'+f[0]+'" value="'+(sd[f[0]]??'')+'"></div>').join('')+'</div>'+
+ '<button class="btn full" style="margin-top:12px" onclick="saveSales()">Save day sales</button></div>';
+ const days=monthDays(DAY),tot={};SF.forEach(f=>tot[f[0]]=0);
+ const upto=days.filter(x=>x<=DAY);
+ Object.keys(S.sales).forEach(k=>{if(k.slice(0,7)===DAY.slice(0,7))SF.forEach(f=>tot[f[0]]+=+S.sales[k][f[0]]||0)});
+ const left=days.length-upto.length;
+ const M=[['gold','Gold',T.gold*days.length,'g',v=>v.toFixed(1)+' g'],['diamond','Diamond',T.diamond*days.length,'ct',v=>v.toFixed(2)+' ct'],['silver','Silver',T.silver*days.length,'g',v=>v.toFixed(0)+' g'],['scheme','Monthly Scheme',T.scheme,'₹',inr],['prebook','Pre-Booking',T.prebook,'₹',inr]];
+ const mon=parseD(DAY).toLocaleString('en-IN',{month:'long',year:'numeric'});
+ h+='<div class="card"><h2>'+mon+' – target vs achievement <small>'+upto.length+'/'+days.length+' days</small></h2>';
+ for(const [k,n,tg,u,f] of M){
+  const a=tot[k],p=tg?Math.round(a/tg*100):0,exp=tg*upto.length/days.length,need=left>0?Math.max(tg-a,0)/left:0,col=a>=exp?'var(--ok)':(a>=exp*0.85?'var(--warn)':'var(--bad)');
+  h+='<div class="tgt"><div class="top"><span><b>'+n+'</b></span><span>'+f(a)+' / '+f(tg)+' · <b style="color:'+col+'">'+p+'%</b></span></div><div class="bar"><i style="width:'+Math.min(p,100)+'%;background:'+col+'"></i></div><div class="hint">'+(a>=tg?'🎉 Target achieved':(left?'Need '+f(need)+' per day for the remaining '+left+' days':'Month ended – short by '+f(tg-a)))+'</div></div>';
+ }
+ const conv=tot.footfall?Math.round(tot.conv/tot.footfall*100):0;
+ h+='<div class="srow"><span>Walk-ins this month</span><b>'+tot.footfall+'</b></div><div class="srow"><span>Conversion</span><b>'+conv+'%</b></div></div>';
+ const rows=Object.keys(S.sales).filter(k=>k.slice(0,7)===DAY.slice(0,7)).sort().reverse();
+ h+='<div class="card"><h2>Daily register</h2>'+(rows.length?rows.map(k=>{const s=S.sales[k];return '<div class="srow" onclick="setDay(\''+k+'\')"><span>'+fmtD(k)+'</span><span class="small">G '+(+s.gold||0)+' g · D '+(+s.diamond||0)+' ct · S '+(+s.silver||0)+' g</span></div>'}).join(''):'<div class="empty">No entries this month yet.</div>')+'</div>';
+ return h;
+}
+function saveSales(){const o={};SF.forEach(f=>{const x=v('s_'+f[0]);if(x!=='')o[f[0]]=+x});S.sales[DAY]=o;save();render();toast('Sales saved for '+fmtD(DAY))}
+
+/* ===== Staff ===== */
+const AT=[['P','P'],['A','A'],['L','L'],['H','½'],['W','WO']];
+function vStaff(){
+ const a=S.att[DAY]||{};
+ let c={P:0,A:0,L:0,H:0,W:0,'-':0};S.staff.forEach(s=>c[a[s.id]||'-']++);
+ let h='<div class="stats"><div class="stat"><div class="n" style="color:var(--ok)">'+(c.P+c.H)+'</div><div class="l">Present (incl. half day)</div></div><div class="stat"><div class="n" style="color:var(--bad)">'+(c.A+c.L)+'</div><div class="l">Absent / Leave</div></div></div>';
+ h+='<div class="card"><h2>Attendance – '+fmtD(DAY)+' <small>'+c['-']+' not marked</small></h2>';
+ if(!S.staff.length)h+='<div class="empty">Add your staff with the + button. Then mark attendance daily here.</div>';
+ else{
+  h+='<div class="row" style="margin-bottom:8px"><button class="btn sm sec" onclick="allP()">Mark all Present</button></div>';
+  h+=S.staff.map(s=>'<div class="srow"><div onclick="editStaff(\''+s.id+'\')"><b>'+esc(s.name)+'</b><div class="small">'+esc(s.role||'')+(s.counter?' · '+esc(s.counter):'')+'</div></div><div class="att">'+AT.map(x=>'<button class="'+x[0]+(a[s.id]===x[0]?' on':'')+'" onclick="mark(\''+s.id+'\',\''+x[0]+'\')">'+x[1]+'</button>').join('')+'</div></div>').join('');
+  h+='<div class="small" style="margin-top:8px">P Present · A Absent · L Leave · ½ Half day · WO Week off. Tap a name to edit counter.</div>';
+ }
+ h+='</div>';
+ if(S.staff.length){
+  const mk=DAY.slice(0,7),sum={};S.staff.forEach(s=>sum[s.id]={P:0,A:0,L:0,H:0,W:0});
+  Object.keys(S.att).filter(k=>k.slice(0,7)===mk).forEach(k=>Object.entries(S.att[k]).forEach(([id,st])=>{if(sum[id])sum[id][st]++}));
+  h+='<div class="card"><h2>This month summary</h2>'+S.staff.map(s=>{const x=sum[s.id];return '<div class="srow"><span>'+esc(s.name)+'</span><span class="small">P '+x.P+' · ½ '+x.H+' · L '+x.L+' · A '+x.A+' · WO '+x.W+'</span></div>'}).join('')+'</div>';
+  const byC={};S.staff.forEach(s=>{if(s.counter&&a[s.id]!=='A'&&a[s.id]!=='L'&&a[s.id]!=='W')(byC[s.counter]=byC[s.counter]||[]).push(s.name)});
+  h+='<div class="card"><h2>Counter allocation today</h2>'+(Object.keys(byC).length?Object.keys(byC).sort().map(k=>'<div class="srow"><b>'+esc(k)+'</b><span class="small">'+byC[k].map(esc).join(', ')+'</span></div>').join(''):'<div class="empty">Set a counter for each staff (tap their name).</div>')+'</div>';
+ }
+ return h;
+}
+function mark(id,st){S.att[DAY]=S.att[DAY]||{};S.att[DAY][id]=S.att[DAY][id]===st?undefined:st;save();render()}
+function allP(){S.att[DAY]=S.att[DAY]||{};S.staff.forEach(s=>{if(!S.att[DAY][s.id])S.att[DAY][s.id]='P'});save();render()}
+const COUNTERS=['','Gold Counter 1','Gold Counter 2','Gold Counter 3','Diamond Counter','Silver Counter','Scheme Desk','Billing / Cash','Reception','Repair / Orders','Strong Room','Floor'];
+function editStaff(id){
+ const s=id?S.staff.find(x=>x.id===id):{name:'',role:'Sales Executive',counter:''};
+ openModal('<h3>'+(id?'Edit':'Add')+' staff</h3><label>Name</label><input id="st_n" value="'+esc(s.name)+'">'+
+ '<label>Role</label><select id="st_r">'+opts(['Sales Executive','Senior Sales Executive','Floor Manager','Cashier','Scheme Executive','Marketing','Security','Housekeeping','Trainee','Other'],s.role)+'</select>'+
+ '<label>Counter (choose or type)</label><input id="st_c" list="cl" value="'+esc(s.counter)+'"><datalist id="cl">'+COUNTERS.map(c=>'<option value="'+c+'">').join('')+'</datalist>'+
+ '<div class="row" style="margin-top:14px"><button class="btn" onclick="saveStaff(\''+(id||'')+'\')">Save</button><button class="btn sec" onclick="closeModal()">Cancel</button>'+(id?'<button class="btn rd" style="margin-left:auto" onclick="delStaff(\''+id+'\')">Remove</button>':'')+'</div>');
+}
+function saveStaff(id){const n=v('st_n').trim();if(!n)return toast('Enter name');const o={name:n,role:v('st_r'),counter:v('st_c')};if(id)Object.assign(S.staff.find(x=>x.id===id),o);else S.staff.push(Object.assign({id:uid()},o));save();closeModal();render()}
+function delStaff(id){if(!confirm('Remove this staff member?'))return;S.staff=S.staff.filter(x=>x.id!==id);save();closeModal();render()}
+
+/* ===== More: reports, meeting, settings ===== */
+const MEET=[
+ ['Targets','Today\'s target: Gold '+'{gold}'+' g, Diamond {diamond} ct, Silver {silver} g. Every counter must contribute.'],
+ ['Greeting','Greet every customer with a smile within 10 seconds. No customer should wait unattended.'],
+ ['Grooming','Uniform, ID card, neat hair and grooming are compulsory throughout the day.'],
+ ['Schemes','Explain Monthly Scheme and Pre-Booking to every walk-in customer. Target at least 1 enrolment per person.'],
+ ['Non-conversion','Every walk-in that does not buy must be entered in the non-conversion register with the reason.'],
+ ['Stock safety','Show only one tray at a time. Count pieces before and after showing. Never leave a tray open.'],
+ ['Mobile','No personal mobile use on the floor.'],
+ ['Display','Keep counters dust-free and display full. Inform me about empty or slow items.'],
+ ['Cross-selling','Suggest matching items (earrings with chain, silver gifts) to increase bill value.'],
+ ['Teamwork','Help other counters during rush. Customer first, counter second.']
+];
+function vMore(){
+ let h='<div class="card"><h2>📲 Daily report for WhatsApp</h2><div class="small">Report for '+fmtD(DAY)+'. Copy or share to head office / staff group.</div><pre class="rep" id="rep">'+esc(buildReport())+'</pre><div class="row"><button class="btn sm" onclick="copyTxt(\'rep\')">Copy</button><button class="btn sm sec" onclick="shareTxt(\'rep\')">Share / WhatsApp</button></div></div>';
+ h+='<div class="card"><h2>📣 Morning meeting message</h2><div class="small" style="margin-bottom:6px">Choose the points for today:</div>'+MEET.map((m,i)=>'<label style="display:flex;gap:8px;align-items:center;color:var(--txt);font-size:14px;margin:6px 0"><input type="checkbox" style="width:20px;height:20px" class="mp" value="'+i+'" '+(i<4?'checked':'')+' onchange="buildMeet()">'+m[0]+'</label>').join('')+
+ '<label>Extra instruction (optional)</label><input id="mx" oninput="buildMeet()" placeholder="e.g. Audit team visiting today"><pre class="rep" id="meet"></pre><div class="row"><button class="btn sm" onclick="copyTxt(\'meet\')">Copy</button><button class="btn sm sec" onclick="shareTxt(\'meet\')">Share / WhatsApp</button></div></div>';
+ h+='<div class="card"><h2>⚙️ Settings</h2>'+
+ '<label>Branch name</label><input id="se_b" value="'+esc(S.settings.branch)+'">'+
+ '<label>Your name (for report signature)</label><input id="se_m" value="'+esc(S.settings.manager)+'">'+
+ '<label>Weekly off</label><select id="se_w">'+opts(DAYS.map((d,i)=>[i,d]),S.settings.weeklyOff)+'</select>'+
+ '<label>Count target days</label><select id="se_td">'+opts([['all','All days of the month'],['work','Exclude weekly off days']],S.settings.targetDays)+'</select>'+
+ '<div class="g2"><div><label>Gold target / day (g)</label><input type="number" step="any" id="se_g" value="'+S.settings.targets.gold+'"></div><div><label>Diamond / day (ct)</label><input type="number" step="any" id="se_d" value="'+S.settings.targets.diamond+'"></div>'+
+ '<div><label>Silver / day (g)</label><input type="number" step="any" id="se_s" value="'+S.settings.targets.silver+'"></div><div><label>Monthly Scheme / month (₹)</label><input type="number" step="any" id="se_sc" value="'+S.settings.targets.scheme+'"></div>'+
+ '<div><label>Pre-Booking / month (₹)</label><input type="number" step="any" id="se_pb" value="'+S.settings.targets.prebook+'"></div></div>'+
+ '<div class="row" style="margin-top:12px"><button class="btn" onclick="saveSet()">Save settings</button><button class="btn sec" onclick="editTasks()">Edit daily checklist</button></div></div>';
+ h+='<div class="card"><h2>💾 Backup</h2><div class="small" style="margin-bottom:8px">Data stays on this phone. Take a backup every week, or before clearing browser data.</div><div class="row"><button class="btn sm" onclick="backup()">Download backup</button><button class="btn sm sec" onclick="document.getElementById(\'imp\').click()">Restore backup</button><button class="btn sm sec" onclick="salesCSV()">Sales to Excel (CSV)</button></div><input type="file" id="imp" accept=".json" class="hidden" onchange="restore(this)">'+
+ '<button class="btn sm rd" style="margin-top:12px" onclick="resetAll()">Reset everything</button></div>';
+ setTimeout(buildMeet,0);
+ return h;
+}
+function buildReport(){
+ const ts=tasksFor(DAY),dn=S.done[DAY]||{},pend=ts.filter(t=>!dn[t.id]);
+ const s=S.sales[DAY]||{},a=S.att[DAY]||{},T=S.settings.targets;
+ let c={P:0,A:0,L:0,H:0,W:0};Object.values(a).forEach(x=>{if(c[x]!==undefined)c[x]++});
+ const open=S.issues.filter(i=>i.status!=='Closed');
+ let r='*Daily Report – '+S.settings.branch+'*\nDate: '+fmtD(DAY)+'\n\n*Sales*\nGold: '+(+s.gold||0)+' g (Target '+T.gold+' g)\nDiamond: '+(+s.diamond||0)+' ct (Target '+T.diamond+' ct)\nSilver: '+(+s.silver||0)+' g (Target '+T.silver+' g)\nMonthly Scheme: '+inr(s.scheme)+'\nPre-Booking: '+inr(s.prebook)+'\nWalk-ins: '+(+s.footfall||0)+' | Converted: '+(+s.conv||0)+(s.footfall?' ('+Math.round((s.conv||0)/s.footfall*100)+'%)':'');
+ if(S.staff.length)r+='\n\n*Staff*\nPresent: '+c.P+(c.H?' | Half day: '+c.H:'')+' | Leave: '+c.L+' | Absent: '+c.A+' | Week off: '+c.W;
+ r+='\n\n*Checklist*: '+(ts.length-pend.length)+'/'+ts.length+' completed';
+ if(pend.length)r+='\nPending: '+pend.slice(0,6).map(t=>t.title).join('; ')+(pend.length>6?' (+'+(pend.length-6)+' more)':'');
+ r+='\n\n*Open follow-ups*: '+open.length;
+ open.slice(0,6).forEach((i,n)=>r+='\n'+(n+1)+'. '+i.title+' – '+i.status+' ('+diffDays(i.raised,todayStr())+' days)');
+ r+='\n\nRegards,\n'+(S.settings.manager?S.settings.manager+'\n':'')+'Showroom Manager';
+ return r;
+}
+function buildMeet(){
+ const el=document.getElementById('meet');if(!el)return;
+ const T=S.settings.targets,sel=[...document.querySelectorAll('.mp:checked')].map(x=>+x.value);
+ let pts=sel.map(i=>MEET[i][1].replace('{gold}',T.gold).replace('{diamond}',T.diamond).replace('{silver}',T.silver));
+ const x=(document.getElementById('mx')||{}).value;if(x&&x.trim())pts.push(x.trim());
+ el.textContent='Good morning Team,\n\nPlease ensure the following points are followed today:\n'+pts.map((p,i)=>(i+1)+'. '+p).join('\n')+'\n\nLet us give our best today. Please take this seriously and ensure compliance.\n\n– Showroom Manager';
+}
+function copyTxt(id){const t=document.getElementById(id).textContent;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('Copied')).catch(()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('Copied')})}
+function shareTxt(id){const t=document.getElementById(id).textContent;if(navigator.share)navigator.share({text:t}).catch(()=>{});else window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank')}
+function saveSet(){
+ S.settings.branch=v('se_b')||S.settings.branch;S.settings.manager=v('se_m');S.settings.weeklyOff=+v('se_w');S.settings.targetDays=v('se_td');
+ S.settings.targets={gold:+v('se_g')||0,diamond:+v('se_d')||0,silver:+v('se_s')||0,scheme:+v('se_sc')||0,prebook:+v('se_pb')||0};
+ save();render();toast('Settings saved');
+}
+function editTasks(){
+ const fq=t=>t.freq==='daily'?'Daily':t.freq==='weekly'?'Every '+DAYS[t.day]:'Monthly on day '+t.day;
+ let h='<h3>Daily checklist</h3><div class="small">Add or remove activities. Weekly and monthly ones show only on their day.</div>';
+ for(const b of BLOCKS){const bt=S.tasks.filter(t=>t.block===b.id);h+='<div class="blockhead" style="margin-top:12px">'+b.name+'</div>'+bt.map(t=>'<div class="srow"><span style="font-size:14px">'+esc(t.title)+'<div class="small">'+fq(t)+'</div></span><button class="btn sm rd" onclick="delTask(\''+t.id+'\')">✕</button></div>').join('')}
+ h+='<div class="card" style="margin-top:14px"><b>Add activity</b><label>Activity</label><input id="tk_t" placeholder="e.g. Check gold rate board updated">'+
+ '<div class="g2"><div><label>Time block</label><select id="tk_b">'+opts(BLOCKS.map(b=>[b.id,b.name.replace(/^\S+\s/,'')]))+'</select></div><div><label>How often</label><select id="tk_f" onchange="document.getElementById(\'tk_dw\').style.display=this.value===\'weekly\'?\'block\':\'none\';document.getElementById(\'tk_dm\').style.display=this.value===\'monthly\'?\'block\':\'none\'">'+opts([['daily','Every day'],['weekly','Once a week'],['monthly','Once a month']])+'</select></div></div>'+
+ '<div id="tk_dw" style="display:none"><label>Which day</label><select id="tk_w">'+opts(DAYS.map((d,i)=>[i,d]),3)+'</select></div>'+
+ '<div id="tk_dm" style="display:none"><label>Date of month (1–31)</label><input type="number" id="tk_m" min="1" max="31" value="1"></div>'+
+ '<button class="btn" style="margin-top:10px" onclick="addTask()">Add</button></div><button class="btn sec full" onclick="closeModal();render()">Close</button>';
+ openModal(h);
+}
+function addTask(){const t=v('tk_t').trim();if(!t)return toast('Enter activity');const f=v('tk_f');S.tasks.push({id:uid(),title:t,block:v('tk_b'),freq:f,day:f==='weekly'?+v('tk_w'):f==='monthly'?Math.min(31,Math.max(1,+v('tk_m')||1)):null});save();editTasks();toast('Added')}
+function delTask(id){if(!confirm('Remove this activity?'))return;S.tasks=S.tasks.filter(t=>t.id!==id);save();editTasks()}
+function dl(name,data,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;document.body.appendChild(a);a.click();a.remove()}
+function backup(){dl('showroom-backup-'+todayStr()+'.json',JSON.stringify(S),'application/json');toast('Backup downloaded')}
+function restore(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.settings||!d.tasks)throw 0;if(!confirm('Replace current data with this backup?'))return;S=d;save();render();toast('Backup restored')}catch(e){toast('Not a valid backup file')}};r.readAsText(f)}
+function salesCSV(){let c='Date,Gold (g),Diamond (ct),Silver (g),Monthly Scheme (Rs),Pre-Booking (Rs),Walk-ins,Converted\n';Object.keys(S.sales).sort().forEach(k=>{const s=S.sales[k];c+=k+','+SF.map(f=>s[f[0]]??'').join(',')+'\n'});dl('showroom-sales-'+todayStr()+'.csv',c,'text/csv');toast('CSV downloaded')}
+function resetAll(){if(!confirm('This deletes ALL data on this phone. Take a backup first. Continue?'))return;if(!confirm('Are you sure?'))return;S=defaults();save();render()}
+
+/* ===== Helpers ===== */
+function v(id){const e=document.getElementById(id);return e?e.value:''}
+function openModal(h){document.getElementById('sheet').innerHTML=h;document.getElementById('modal').classList.add('show')}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+let tt;function toast(m){let e=document.getElementById('toast');if(!e){e=document.createElement('div');e.id='toast';e.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:9px 16px;border-radius:20px;font-size:13px;z-index:70;max-width:90%;text-align:center';document.body.appendChild(e)}e.textContent=m;e.style.display='block';clearTimeout(tt);tt=setTimeout(()=>e.style.display='none',2200)}
+
+render();checkAlarms();
+</script>
+</body>
+</html>
