@@ -78,6 +78,17 @@ pre.rep{white-space:pre-wrap;background:#faf7f2;border:1px solid var(--bd);borde
 .hidden{display:none}
 .blockhead{font-size:13px;font-weight:700;color:var(--pri);margin:6px 0 2px;display:flex;justify-content:space-between}
 .small{font-size:12px;color:var(--mut)}
+.rt{overflow-x:auto}
+.rt table{border-collapse:collapse;width:100%;font-size:12px}
+.rt th,.rt td{border:1px solid var(--bd);padding:5px 6px;text-align:right;white-space:nowrap}
+.rt th{background:#f6efe3;color:var(--pri)}
+.rt td:first-child,.rt th:first-child{text-align:left}
+.rt tr.tot td{font-weight:700;background:#faf3e6}
+.rt tr.off td{color:#999}
+.rt tr.miss td{background:#fff4f4}
+.rhead{text-align:center;margin-bottom:10px}
+.rhead h2{justify-content:center;font-size:18px;margin:0}
+@media print{header,nav,.fab,.noprint,#toast{display:none!important}body{padding:0;background:#fff;font-size:12px}main{padding:0}.card{box-shadow:none;border:1px solid #ccc;break-inside:avoid;page-break-inside:avoid}textarea{border:0;padding:0}}
 </style>
 </head>
 <body>
@@ -253,15 +264,15 @@ setInterval(checkAlarms,20000);
 
 /* ===== Navigation ===== */
 function go(t){TAB=t;document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));window.scrollTo(0,0);render()}
-function fabAction(){({today:()=>editRem(),rem:()=>editRem(),iss:()=>editIss(),sales:()=>{},staff:()=>editStaff(),more:()=>{}})[TAB]()}
+function fabAction(){({today:()=>editRem(),rem:()=>editRem(),iss:()=>editIss(),sales:()=>{},staff:()=>editStaff(),more:()=>{},report:()=>{}})[TAB]()}
 
 function render(){
  document.getElementById('dateSel').value=DAY;
  document.getElementById('hTitle').textContent='Showroom Manager';
  document.getElementById('hSub').textContent=S.settings.branch+' · '+fmtD(DAY);
- const fab=document.getElementById('fab');fab.classList.toggle('hidden',TAB==='sales'||TAB==='more');
+ const fab=document.getElementById('fab');fab.classList.toggle('hidden',TAB==='sales'||TAB==='more'||TAB==='report');
  const m=document.getElementById('main');
- m.innerHTML={today:vToday,rem:vRem,iss:vIss,sales:vSales,staff:vStaff,more:vMore}[TAB]();
+ m.innerHTML={today:vToday,rem:vRem,iss:vIss,sales:vSales,staff:vStaff,more:vMore,report:vReport}[TAB]();
 }
 
 /* ===== Today view ===== */
@@ -399,7 +410,8 @@ function monthDays(ds){
 }
 function vSales(){
  const sd=S.sales[DAY]||{},T=S.settings.targets;
- let h='<div class="card"><h2>Entry for '+fmtD(DAY)+'</h2><div class="g2">'+SF.map(f=>'<div><label>'+f[1]+'</label><input type="number" inputmode="decimal" step="any" id="s_'+f[0]+'" value="'+(sd[f[0]]??'')+'"></div>').join('')+'</div>'+
+ let h='<button class="btn full" style="margin-bottom:12px;background:var(--gold)" onclick="go(\'report\')">📊 Month-end report – '+parseD(DAY).toLocaleString('en-IN',{month:'long',year:'numeric'})+'</button>';
+ h+='<div class="card"><h2>Entry for '+fmtD(DAY)+'</h2><div class="g2">'+SF.map(f=>'<div><label>'+f[1]+'</label><input type="number" inputmode="decimal" step="any" id="s_'+f[0]+'" value="'+(sd[f[0]]??'')+'"></div>').join('')+'</div>'+
  '<button class="btn full" style="margin-top:12px" onclick="saveSales()">Save day sales</button></div>';
  const days=monthDays(DAY),tot={};SF.forEach(f=>tot[f[0]]=0);
  const upto=days.filter(x=>x<=DAY);
@@ -419,6 +431,83 @@ function vSales(){
  return h;
 }
 function saveSales(){const o={};SF.forEach(f=>{const x=v('s_'+f[0]);if(x!=='')o[f[0]]=+x});S.sales[DAY]=o;save();render();toast('Sales saved for '+fmtD(DAY))}
+
+
+/* ===== Month-end report ===== */
+function monthData(ds){
+ const d=parseD(ds),y=d.getFullYear(),m=d.getMonth(),n=daysIn(y,m),mk=ds.slice(0,7),T=S.settings.targets,today=todayStr();
+ const all=[];for(let i=1;i<=n;i++)all.push(dstr(new Date(y,m,i)));
+ const tdays=monthDays(ds);
+ const endD=today.slice(0,7)===mk?today:(today<mk+'-01'?mk+'-01':all[n-1]);
+ const shown=all.filter(x=>x<=endD);
+ const rows=shown.map(x=>{const s=S.sales[x],off=parseD(x).getDay()==S.settings.weeklyOff;return {date:x,off,has:!!s&&Object.keys(s).length>0,s:s||{}}});
+ const tot={};SF.forEach(f=>tot[f[0]]=0);rows.forEach(r=>SF.forEach(f=>tot[f[0]]+=+r.s[f[0]]||0));
+ const entered=rows.filter(r=>r.has).length,missing=rows.filter(r=>!r.has&&!r.off&&r.date<today).map(r=>r.date);
+ const tdUpto=tdays.filter(x=>x<=endD).length;
+ const cats=[['gold','Gold','g',T.gold*tdays.length,2],['diamond','Diamond','ct',T.diamond*tdays.length,2],['silver','Silver','g',T.silver*tdays.length,0],['scheme','Monthly Scheme','₹',T.scheme,0],['prebook','Pre-Booking','₹',T.prebook,0]].map(([k,name,u,tg,dp])=>{
+  const a=tot[k],tillDate=tg*tdUpto/tdays.length;
+  let best=null;rows.forEach(r=>{const x=+r.s[k]||0;if(x>0&&(!best||x>best.v))best={v:x,d:r.date}});
+  const metDays=(k==='gold'||k==='diamond'||k==='silver')?rows.filter(r=>(+r.s[k]||0)>=T[k]).length:null;
+  return {k,name,u,tg,tillDate,a,pct:tg?a/tg*100:0,pctTill:tillDate?a/tillDate*100:0,avg:entered?a/entered:0,best,metDays,dp};
+ });
+ const weeks=[];for(let w=0;w<5;w++){const ds2=rows.filter(r=>{const dd=parseD(r.date).getDate();return dd>w*7&&dd<=(w+1)*7});if(!ds2.length)continue;const o={label:'Week '+(w+1)+' ('+parseD(ds2[0].date).getDate()+'–'+parseD(ds2[ds2.length-1].date).getDate()+')'};SF.forEach(f=>o[f[0]]=ds2.reduce((a,r)=>a+(+r.s[f[0]]||0),0));weeks.push(o)}
+ const staff=S.staff.map(st=>{const c={P:0,A:0,L:0,H:0,W:0};Object.keys(S.att).forEach(k=>{if(k.slice(0,7)===mk&&S.att[k][st.id])c[S.att[k][st.id]]++});const wd=c.P+c.H+c.A+c.L;return {name:st.name,c,pct:wd?Math.round((c.P+c.H*0.5)/wd*100):null}});
+ let tDone=0,tAll=0;shown.forEach(x=>{const ts=tasksFor(x),dn=S.done[x]||{};if(parseD(x).getDay()==S.settings.weeklyOff)return;tAll+=ts.length;tDone+=ts.filter(t=>dn[t.id]).length});
+ const raised=S.issues.filter(i=>(i.raised||'').slice(0,7)===mk),closed=S.issues.filter(i=>(i.closedOn||'').slice(0,7)===mk),open=S.issues.filter(i=>i.status!=='Closed');
+ return {mk,label:d.toLocaleString('en-IN',{month:'long',year:'numeric'}),rows,tot,entered,missing,cats,weeks,staff,chk:{done:tDone,all:tAll},raised,closed,open,endD,full:endD===all[n-1]};
+}
+function fq2(v,dp){return (+v||0).toLocaleString('en-IN',{maximumFractionDigits:dp,minimumFractionDigits:dp?Math.min(dp,2):0})}
+function fv(c,v){return c.u==='₹'?inr(v):fq2(v,c.dp)+' '+c.u}
+function vReport(){
+ const R=monthData(DAY);S.remarks=S.remarks||{};
+ const conv=R.tot.footfall?(R.tot.conv/R.tot.footfall*100).toFixed(1):'0';
+ let h='<div class="row noprint" style="margin-bottom:12px"><button class="btn sec sm" onclick="go(\'sales\')">‹ Back</button><button class="btn sm" onclick="window.print()">🖨️ Print / Save PDF</button><button class="btn sm sec" onclick="shareMonth()">📲 WhatsApp summary</button><button class="btn sm sec" onclick="monthCSV()">⬇️ Excel (CSV)</button></div>';
+ h+='<div class="card"><div class="rhead"><h2>Monthly Sales & Operations Report</h2><div>'+esc(S.settings.branch)+'</div><div class="small">'+R.label+(R.full?'':' · till '+fmtD(R.endD))+' · Prepared by '+esc(S.settings.manager||'Showroom Manager')+'</div></div>';
+ if(R.missing.length)h+='<div class="banner noprint">⚠️ Sales not entered for '+R.missing.length+' working day'+(R.missing.length>1?'s':'')+': '+R.missing.map(x=>parseD(x).getDate()).join(', ')+'. Enter them for a correct report.</div>';
+ h+='<b style="color:var(--pri)">1. Target vs Achievement</b><div class="rt" style="margin:6px 0 12px"><table><tr><th>Category</th><th>Month target</th><th>Achieved</th><th>Ach %</th>'+(R.full?'':'<th>Target till date</th><th>% till date</th>')+'<th>Short / Excess</th><th>Avg / day</th></tr>'+
+ R.cats.map(c=>{const diff=c.a-c.tg;return '<tr><td>'+c.name+'</td><td>'+fv(c,c.tg)+'</td><td><b>'+fv(c,c.a)+'</b></td><td style="color:'+(c.pct>=100?'var(--ok)':c.pct>=85?'var(--warn)':'var(--bad)')+'"><b>'+c.pct.toFixed(1)+'%</b></td>'+(R.full?'':'<td>'+fv(c,c.tillDate)+'</td><td>'+c.pctTill.toFixed(1)+'%</td>')+'<td style="color:'+(diff>=0?'var(--ok)':'var(--bad)')+'">'+(diff>=0?'+':'−')+fv(c,Math.abs(diff))+'</td><td>'+fv(c,c.avg)+'</td></tr>'}).join('')+'</table></div>';
+ h+='<b style="color:var(--pri)">2. Highlights</b><div style="font-size:13px;margin:6px 0 12px;line-height:1.6">'+
+ R.cats.map(c=>c.best?'• Best '+c.name+' day: '+fmtD(c.best.d)+' – '+fv(c,c.best.v)+(c.metDays!==null?' · Daily target met on '+c.metDays+' day'+(c.metDays==1?'':'s'):''):'').filter(Boolean).join('<br>')+
+ '<br>• Walk-ins: '+R.tot.footfall+' · Converted: '+R.tot.conv+' · Conversion: '+conv+'%'+(R.entered?' · Avg walk-ins/day: '+(R.tot.footfall/R.entered).toFixed(0):'')+
+ '<br>• Sales entered for '+R.entered+' day'+(R.entered==1?'':'s')+'</div>';
+ h+='<b style="color:var(--pri)">3. Week-wise</b><div class="rt" style="margin:6px 0 12px"><table><tr><th>Week</th><th>Gold g</th><th>Diamond ct</th><th>Silver g</th><th>Scheme</th><th>Pre-Booking</th><th>Walk-ins</th></tr>'+
+ R.weeks.map(w=>'<tr><td>'+w.label+'</td><td>'+fq2(w.gold,2)+'</td><td>'+fq2(w.diamond,2)+'</td><td>'+fq2(w.silver,0)+'</td><td>'+inr(w.scheme)+'</td><td>'+inr(w.prebook)+'</td><td>'+w.footfall+'</td></tr>').join('')+'</table></div>';
+ h+='<b style="color:var(--pri)">4. Day-wise sales register</b><div class="rt" style="margin:6px 0 12px"><table><tr><th>Date</th><th>Gold g</th><th>Dia ct</th><th>Silver g</th><th>Scheme</th><th>Pre-Bk</th><th>Walk-in</th><th>Conv</th><th>Conv %</th></tr>'+
+ R.rows.map(r=>{const d=parseD(r.date),lab=d.getDate()+' '+DAYS[d.getDay()].slice(0,3);if(!r.has)return '<tr class="'+(r.off?'off':'miss')+'"><td>'+lab+'</td><td colspan="8" style="text-align:center">'+(r.off?'Weekly off':'Not entered')+'</td></tr>';const s=r.s;return '<tr><td>'+lab+'</td><td>'+fq2(s.gold,2)+'</td><td>'+fq2(s.diamond,2)+'</td><td>'+fq2(s.silver,0)+'</td><td>'+inr(s.scheme)+'</td><td>'+inr(s.prebook)+'</td><td>'+(+s.footfall||0)+'</td><td>'+(+s.conv||0)+'</td><td>'+(s.footfall?Math.round((s.conv||0)/s.footfall*100)+'%':'–')+'</td></tr>'}).join('')+
+ '<tr class="tot"><td>Total</td><td>'+fq2(R.tot.gold,2)+'</td><td>'+fq2(R.tot.diamond,2)+'</td><td>'+fq2(R.tot.silver,0)+'</td><td>'+inr(R.tot.scheme)+'</td><td>'+inr(R.tot.prebook)+'</td><td>'+R.tot.footfall+'</td><td>'+R.tot.conv+'</td><td>'+conv+'%</td></tr></table></div>';
+ if(R.staff.length)h+='<b style="color:var(--pri)">5. Staff attendance</b><div class="rt" style="margin:6px 0 12px"><table><tr><th>Staff</th><th>Present</th><th>½ Day</th><th>Leave</th><th>Absent</th><th>Week off</th><th>Att %</th></tr>'+R.staff.map(x=>'<tr><td>'+esc(x.name)+'</td><td>'+x.c.P+'</td><td>'+x.c.H+'</td><td>'+x.c.L+'</td><td>'+x.c.A+'</td><td>'+x.c.W+'</td><td>'+(x.pct===null?'–':x.pct+'%')+'</td></tr>').join('')+'</table></div>';
+ const cp=R.chk.all?Math.round(R.chk.done/R.chk.all*100):0;
+ h+='<b style="color:var(--pri)">'+(R.staff.length?6:5)+'. Operations</b><div style="font-size:13px;margin:6px 0 12px;line-height:1.6">• Daily checklist compliance: '+cp+'% ('+R.chk.done+' of '+R.chk.all+' activities)<br>• Follow-ups raised this month: '+R.raised.length+' · Closed: '+R.closed.length+' · Still open: '+R.open.length+
+ R.open.slice(0,8).map(i=>'<br>&nbsp;&nbsp;– '+esc(i.title)+' ('+esc(i.cat)+', '+diffDays(i.raised,todayStr())+' days, '+esc(i.status)+')').join('')+'</div>';
+ h+='<b style="color:var(--pri)">Manager remarks</b><textarea style="margin-top:6px" placeholder="Reasons for shortfall, action plan for next month, support needed from HO…" oninput="S.remarks[\''+R.mk+'\']=this.value;save()">'+esc(S.remarks[R.mk]||'')+'</textarea>';
+ h+='<div style="margin-top:24px;font-size:13px">Regards,<br>'+esc(S.settings.manager||'')+(S.settings.manager?'<br>':'')+'Showroom Manager<br>'+esc(S.settings.branch)+'</div></div>';
+ return h;
+}
+function monthText(){
+ const R=monthData(DAY),conv=R.tot.footfall?(R.tot.conv/R.tot.footfall*100).toFixed(1):'0';
+ let t='*Monthly Report – '+S.settings.branch+'*\n'+R.label+(R.full?'':' (till '+fmtD(R.endD)+')')+'\n\n*Target vs Achievement*';
+ R.cats.forEach(c=>{t+='\n'+c.name+': '+fv(c,c.a)+' / '+fv(c,c.tg)+' – *'+c.pct.toFixed(1)+'%*'});
+ t+='\n\n*Walk-ins*: '+R.tot.footfall+' | Converted: '+R.tot.conv+' ('+conv+'%)';
+ R.cats.forEach(c=>{if(c.best&&c.u!=='₹')t+='\nBest '+c.name+' day: '+fmtD(c.best.d)+' – '+fv(c,c.best.v)});
+ if(R.staff.length){const p=R.staff.filter(x=>x.pct!==null);if(p.length)t+='\n\n*Staff attendance avg*: '+Math.round(p.reduce((a,x)=>a+x.pct,0)/p.length)+'%'}
+ t+='\n*Follow-ups*: '+R.closed.length+' closed, '+R.open.length+' open';
+ const rm=(S.remarks||{})[R.mk];if(rm)t+='\n\n*Remarks*: '+rm;
+ t+='\n\nRegards,\n'+(S.settings.manager?S.settings.manager+'\n':'')+'Showroom Manager';
+ return t;
+}
+function shareMonth(){const t=monthText();if(navigator.share)navigator.share({text:t}).catch(()=>{});else window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank')}
+function monthCSV(){
+ const R=monthData(DAY),q=x=>'"'+String(x).replace(/"/g,'""')+'"';
+ let c=q('Monthly Report – '+S.settings.branch)+'\n'+q(R.label)+'\n\nTarget vs Achievement\nCategory,Unit,Month Target,Achieved,Ach %,Short/Excess,Avg per day\n';
+ R.cats.forEach(x=>c+=[x.name,x.u==='₹'?'Rs':x.u,x.tg.toFixed(2),x.a.toFixed(2),x.pct.toFixed(1),(x.a-x.tg).toFixed(2),x.avg.toFixed(2)].map(q).join(',')+'\n');
+ c+='\nDay-wise\nDate,Day,Gold (g),Diamond (ct),Silver (g),Scheme (Rs),Pre-Booking (Rs),Walk-ins,Converted,Status\n';
+ R.rows.forEach(r=>{const s=r.s;c+=[r.date,DAYS[parseD(r.date).getDay()],s.gold??'',s.diamond??'',s.silver??'',s.scheme??'',s.prebook??'',s.footfall??'',s.conv??'',r.has?'':(r.off?'Weekly off':'Not entered')].map(q).join(',')+'\n'});
+ c+=['TOTAL','',R.tot.gold,R.tot.diamond,R.tot.silver,R.tot.scheme,R.tot.prebook,R.tot.footfall,R.tot.conv,''].map(q).join(',')+'\n';
+ if(R.staff.length){c+='\nStaff attendance\nStaff,Present,Half day,Leave,Absent,Week off,Att %\n';R.staff.forEach(x=>c+=[x.name,x.c.P,x.c.H,x.c.L,x.c.A,x.c.W,x.pct??''].map(q).join(',')+'\n')}
+ c+='\nFollow-ups open\nIssue,Type,Raised,Status\n';R.open.forEach(i=>c+=[i.title,i.cat,i.raised,i.status].map(q).join(',')+'\n');
+ const rm=(S.remarks||{})[R.mk];if(rm)c+='\nRemarks\n'+q(rm)+'\n';
+ dl('Monthly-Report-'+R.mk+'.csv','\ufeff'+c,'text/csv');toast('Report downloaded – open in Excel / Sheets');
+}
 
 /* ===== Staff ===== */
 const AT=[['P','P'],['A','A'],['L','L'],['H','½'],['W','WO']];
