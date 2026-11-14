@@ -411,7 +411,7 @@ function monthDays(ds){
 function vSales(){
  const sd=S.sales[DAY]||{},T=S.settings.targets;
  let h='<button class="btn full" style="margin-bottom:12px;background:var(--gold)" onclick="go(\'report\')">📊 Month-end report – '+parseD(DAY).toLocaleString('en-IN',{month:'long',year:'numeric'})+'</button>';
- h+='<div class="card"><h2>Entry for '+fmtD(DAY)+'</h2><label class="btn sec full" style="display:block;text-align:center;margin:0 0 6px;color:var(--pri);font-size:14px;position:relative;overflow:hidden">📷 Fill from sale report image<input type="file" id="ocrIn" accept="image/*" onchange="ocrStart(this)" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer"></label><div class="small" style="text-align:center;margin-bottom:6px">Choose the report photo or screenshot from your Gallery / WhatsApp images</div><div class="g2">'+SF.map(f=>'<div><label>'+f[1]+'</label><input type="number" inputmode="decimal" step="any" id="s_'+f[0]+'" value="'+(sd[f[0]]??'')+'"></div>').join('')+'</div>'+
+ h+='<div class="card"><h2>Entry for '+fmtD(DAY)+'</h2><label class="btn sec full" style="display:block;text-align:center;margin:0 0 6px;color:var(--pri);font-size:14px;position:relative;overflow:hidden">📷 Fill from sale report image<input type="file" id="ocrIn" accept="image/*" onchange="ocrStart(this)" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer"></label><div class="small" style="text-align:center;margin-bottom:6px">Choose the report photo or screenshot from your Gallery / WhatsApp images</div>'+(S.settings.sheet?'<button class="btn sec full" style="margin-bottom:8px" onclick="driveSync(false)">🔄 Sync from Drive folder'+(S.settings.lastSync?' <small>(last '+esc(S.settings.lastSync)+')</small>':'')+'</button>':'')+'<div class="g2">'+SF.map(f=>'<div><label>'+f[1]+'</label><input type="number" inputmode="decimal" step="any" id="s_'+f[0]+'" value="'+(sd[f[0]]??'')+'"></div>').join('')+'</div>'+
  '<button class="btn full" style="margin-top:12px" onclick="saveSales()">Save day sales</button></div>';
  if(sd.detail)h+='<div class="card"><h2>Full report – '+fmtD(DAY)+' <small>from image</small></h2>'+Object.entries(sd.detail).map(([k,x])=>'<div class="srow"><span>'+esc(k)+'</span><b>'+(+x).toLocaleString('en-IN')+'</b></div>').join('')+'<button class="btn sm sec" style="margin-top:8px" onclick="ocrReview(\''+DAY+'\',Object.entries(S.sales[DAY].detail).map(([l,v])=>({label:l,value:String(v),flag:false})))">Edit full report</button></div>';
  const days=monthDays(DAY),tot={};SF.forEach(f=>tot[f[0]]=0);
@@ -431,7 +431,7 @@ function vSales(){
  h+='<div class="card"><h2>Daily register</h2>'+(rows.length?rows.map(k=>{const s=S.sales[k];return '<div class="srow" onclick="setDay(\''+k+'\')"><span>'+fmtD(k)+'</span><span class="small">G '+(+s.gold||0)+' g · D '+(+s.diamond||0)+' ct · S '+(+s.silver||0)+' g</span></div>'}).join(''):'<div class="empty">No entries this month yet.</div>')+'</div>';
  return h;
 }
-function saveSales(){const o={};SF.forEach(f=>{const x=v('s_'+f[0]);if(x!=='')o[f[0]]=+x});if(S.sales[DAY]&&S.sales[DAY].detail)o.detail=S.sales[DAY].detail;S.sales[DAY]=o;save();render();toast('Sales saved for '+fmtD(DAY))}
+function saveSales(){const o={};SF.forEach(f=>{const x=v('s_'+f[0]);if(x!=='')o[f[0]]=+x});if(S.sales[DAY]&&S.sales[DAY].detail)o.detail=S.sales[DAY].detail;if(S.sales[DAY]&&S.sales[DAY].srcFile)o.srcFile=S.sales[DAY].srcFile;S.sales[DAY]=o;save();render();toast('Sales saved for '+fmtD(DAY))}
 
 
 
@@ -657,7 +657,7 @@ function vMore(){
  '<div class="g2"><div><label>Gold target / day (g)</label><input type="number" step="any" id="se_g" value="'+S.settings.targets.gold+'"></div><div><label>Diamond / day (ct)</label><input type="number" step="any" id="se_d" value="'+S.settings.targets.diamond+'"></div>'+
  '<div><label>Silver / day (g)</label><input type="number" step="any" id="se_s" value="'+S.settings.targets.silver+'"></div><div><label>Monthly Scheme / month (₹)</label><input type="number" step="any" id="se_sc" value="'+S.settings.targets.scheme+'"></div>'+
  '<div><label>Pre-Booking / month (₹)</label><input type="number" step="any" id="se_pb" value="'+S.settings.targets.prebook+'"></div></div>'+
- '<label style="margin-top:14px"><b>Image reading – which report line fills each figure</b></label><div class="g2">'+[['gold','Gold (g)'],['diamond','Diamond (ct)'],['silver','Silver (g)'],['scheme','Monthly Scheme (₹)'],['prebook','Pre-Booking (₹)']].map(([k,l])=>'<div><label>'+l+'</label><select id="mp_'+k+'">'+opts([['','– none –']].concat(RLABELS.map(x=>[x,x])),getMap()[k])+'</select></div>').join('')+'</div>'+
+ '<label style="margin-top:14px"><b>Auto-sync: Google Sheet link (filled daily from your Drive folder)</b></label><input id="se_sh" placeholder="Paste the sheet link" value="'+esc(S.settings.sheet||'')+'">'+'<label style="margin-top:14px"><b>Image reading – which report line fills each figure</b></label><div class="g2">'+[['gold','Gold (g)'],['diamond','Diamond (ct)'],['silver','Silver (g)'],['scheme','Monthly Scheme (₹)'],['prebook','Pre-Booking (₹)']].map(([k,l])=>'<div><label>'+l+'</label><select id="mp_'+k+'">'+opts([['','– none –']].concat(RLABELS.map(x=>[x,x])),getMap()[k])+'</select></div>').join('')+'</div>'+
  '<div class="row" style="margin-top:12px"><button class="btn" onclick="saveSet()">Save settings</button><button class="btn sec" onclick="editTasks()">Edit daily checklist</button></div></div>';
  h+='<div class="card"><h2>💾 Backup</h2><div class="small" style="margin-bottom:8px">Data stays on this phone. Take a backup every week, or before clearing browser data.</div><div class="row"><button class="btn sm" onclick="backup()">Download backup</button><button class="btn sm sec" onclick="document.getElementById(\'imp\').click()">Restore backup</button><button class="btn sm sec" onclick="salesCSV()">Sales to Excel (CSV)</button></div><input type="file" id="imp" accept=".json" class="hidden" onchange="restore(this)">'+
  '<button class="btn sm rd" style="margin-top:12px" onclick="resetAll()">Reset everything</button></div>';
@@ -689,7 +689,7 @@ function copyTxt(id){const t=document.getElementById(id).textContent;(navigator.
 function shareTxt(id){const t=document.getElementById(id).textContent;if(navigator.share)navigator.share({text:t}).catch(()=>{});else window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank')}
 function saveSet(){
  S.settings.branch=v('se_b')||S.settings.branch;S.settings.manager=v('se_m');S.settings.weeklyOff=+v('se_w');S.settings.targetDays=v('se_td');
- S.settings.map={};['gold','diamond','silver','scheme','prebook'].forEach(k=>S.settings.map[k]=v('mp_'+k));
+ S.settings.sheet=sheetId(v('se_sh'));S.settings.map={};['gold','diamond','silver','scheme','prebook'].forEach(k=>S.settings.map[k]=v('mp_'+k));
  S.settings.targets={gold:+v('se_g')||0,diamond:+v('se_d')||0,silver:+v('se_s')||0,scheme:+v('se_sc')||0,prebook:+v('se_pb')||0};
  save();render();toast('Settings saved');
 }
@@ -718,7 +718,26 @@ function openModal(h){document.getElementById('sheet').innerHTML=h;document.getE
 function closeModal(){document.getElementById('modal').classList.remove('show')}
 let tt;function toast(m){let e=document.getElementById('toast');if(!e){e=document.createElement('div');e.id='toast';e.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:9px 16px;border-radius:20px;font-size:13px;z-index:70;max-width:90%;text-align:center';document.body.appendChild(e)}e.textContent=m;e.style.display='block';clearTimeout(tt);tt=setTimeout(()=>e.style.display='none',2200)}
 
+
+/* ===== Auto-sync from Google Sheet (filled daily from Drive folder) ===== */
+function sheetId(x){x=(x||'').trim();const m=x.match(/\/d\/([A-Za-z0-9_-]{20,})/);return m?m[1]:(/^[A-Za-z0-9_-]{20,}$/.test(x)?x:'')}
+function parseCSV(t){const rows=[];let r=[],c='',q=false;for(let i=0;i<t.length;i++){const ch=t[i];if(q){if(ch=='"'){if(t[i+1]=='"'){c+='"';i++}else q=false}else c+=ch}else if(ch=='"')q=true;else if(ch==','){r.push(c);c=''}else if(ch=='\n'){r.push(c);rows.push(r);r=[];c=''}else if(ch!='\r')c+=ch}if(c!==''||r.length){r.push(c);rows.push(r)}return rows}
+async function driveSync(silent){
+ const id=S.settings.sheet;if(!id)return;
+ try{
+  const res=await fetch('https://docs.google.com/spreadsheets/d/'+id+'/gviz/tq?tqx=out:csv&sheet=Data&t='+Date.now());
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  const rows=parseCSV(await res.text()).slice(1).filter(r=>/^\d{4}-\d{2}-\d{2}$/.test(r[0]||''));
+  const by={};rows.forEach(r=>{const d=r[0];(by[d]=by[d]||{file:'',det:{}});if(r[1])by[d].det[r[1]]=r[2]===''?0:+r[2];by[d].file=r[4]||by[d].file});
+  let n=0;const M=getMap();
+  Object.entries(by).forEach(([d,x])=>{const o=Object.assign({},S.sales[d]||{});if(o.srcFile===x.file)return;o.detail=x.det;Object.keys(M).forEach(k=>{if(M[k]&&x.det[M[k]]!==undefined)o[k]=x.det[M[k]]});o.srcFile=x.file;S.sales[d]=o;n++});
+  S.settings.lastSync=new Date().toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});save();render();
+  if(n||!silent)toast(n?('Synced '+n+' day'+(n>1?'s':'')+' from Drive'):'Already up to date');
+ }catch(e){if(!silent)toast('Sync failed – check internet')}
+}
+(function(){try{const u=new URL(location.href),sh=sheetId(u.searchParams.get('sheet')||'');if(sh&&S.settings.sheet!==sh){S.settings.sheet=sh;save();setTimeout(()=>toast('Auto-sync linked'),400)}if(sh){u.searchParams.delete('sheet');history.replaceState(null,'',u.pathname+u.search+u.hash)}}catch(e){}})();
 render();checkAlarms();
+if(S.settings.sheet&&navigator.onLine!==false)driveSync(true);
 </script>
 </body>
 </html>
