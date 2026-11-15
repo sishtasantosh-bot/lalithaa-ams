@@ -6,6 +6,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#7a1f2b">
 <title>Showroom Manager</title>
+<link rel="manifest" href="sm-manifest.json"><meta name="theme-color" content="#7a1f2b"><link rel="icon" href="sm-icon-192.png"><link rel="apple-touch-icon" href="sm-icon-192.png">
 <style>
 :root{--pri:#7a1f2b;--pri2:#a33445;--gold:#c9a227;--bg:#f6f3ee;--card:#fff;--txt:#222;--mut:#777;--ok:#2e7d32;--warn:#e08a00;--bad:#c62828;--bd:#e5ded3}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -736,6 +737,7 @@ async function driveSync(silent){
  }catch(e){if(!silent)toast('Sync failed – check internet')}
 }
 (function(){try{const u=new URL(location.href),sh=sheetId(u.searchParams.get('sheet')||'');if(sh&&S.settings.sheet!==sh){S.settings.sheet=sh;save();setTimeout(()=>toast('Auto-sync linked'),400)}if(sh){u.searchParams.delete('sheet');history.replaceState(null,'',u.pathname+u.search+u.hash)}}catch(e){}})();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sm-sw.js').catch(()=>{});
 render();checkAlarms();
 if(S.settings.sheet&&navigator.onLine!==false)driveSync(true);
 </script>
